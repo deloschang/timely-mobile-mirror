@@ -9,5 +9,15 @@
     android:layout_height="wrap_content"
     android:text="Hello World, MainActivity"
     />
+
+<TextView
+    android:id="@+id/text"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text=" No location yet "
+    />
+
+
+
 </LinearLayout>
 
