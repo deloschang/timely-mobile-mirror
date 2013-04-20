@@ -108,35 +108,36 @@ public class MainActivity extends Activity {
 	    	new NetworkGet().execute(url);
 	    	
 	    	
+	    	noteLatLong(latitude, longitude);
         ////////////////////////////
         // Notification
-        Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this,
-                0, notificationIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-
-//        NotificationManager nm = (NotificationManager) ctx
-	    	System.out.println("Notification portion reached");
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-//        Resources res = ctx.getResources();
-        Notification.Builder builder = new Notification.Builder(this)
-                    .setContentTitle("Timely")
-                    .setContentText("Lat: "+latitude+", Long: "+longitude);
-
-        builder.setContentIntent(contentIntent)
-                    .setSmallIcon(R.drawable.timely)
-                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timely));
-//                    .setTicker(res.getString("Test ticker"))
-//                    .setWhen(System.currentTimeMillis())
-//                    .setAutoCancel(true)
-        Notification n = builder.build();
-
-        final int YOUR_NOTIF_ID = 0;
-        nm.notify(YOUR_NOTIF_ID, n);
+//        Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
+//        PendingIntent contentIntent = PendingIntent.getActivity(this,
+//                0, notificationIntent,
+//                PendingIntent.FLAG_CANCEL_CURRENT);
+//
+////        NotificationManager nm = (NotificationManager) ctx
+//	    	System.out.println("Notification portion reached");
+//        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+////        Resources res = ctx.getResources();
+//        Notification.Builder builder = new Notification.Builder(this)
+//                    .setContentTitle("Timely")
+//                    .setContentText("Lat: "+latitude+", Long: "+longitude);
+//
+//        builder.setContentIntent(contentIntent)
+//                    .setSmallIcon(R.drawable.timely)
+//                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timely));
+////                    .setTicker(res.getString("Test ticker"))
+////                    .setWhen(System.currentTimeMillis())
+////                    .setAutoCancel(true)
+//        Notification n = builder.build();
+//
+//        final int YOUR_NOTIF_ID = 0;
+//        nm.notify(YOUR_NOTIF_ID, n);
         
         
-        // end
+        /////// end /////
 	    	
     	}
     	
@@ -157,6 +158,9 @@ public class MainActivity extends Activity {
 		    	// GET request to MapQuest with latitude longitude
 			    String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 		    	new NetworkGet().execute(url);
+		    	
+		    	// test send notification
+		    	noteLatLong(latitude, longitude);
     	    }
 
 			@Override
@@ -315,5 +319,38 @@ public class MainActivity extends Activity {
 		            
 		        }
         }
+    }
+    
+    private void noteLatLong(String latitude, String longitude){
+    	
+        ////////////////////////////
+        // Notification
+        Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+//        NotificationManager nm = (NotificationManager) ctx
+	    	System.out.println("Notification portion reached");
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+//        Resources res = ctx.getResources();
+        Notification.Builder builder = new Notification.Builder(this)
+                    .setContentTitle("Timely")
+                    .setContentText("Lat: "+latitude+", Long: "+longitude);
+
+        builder.setContentIntent(contentIntent)
+                    .setSmallIcon(R.drawable.timely)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timely));
+//                    .setTicker(res.getString("Test ticker"))
+//                    .setWhen(System.currentTimeMillis())
+//                    .setAutoCancel(true)
+        Notification n = builder.build();
+
+        final int YOUR_NOTIF_ID = 0;
+        nm.notify(YOUR_NOTIF_ID, n);
+        
+        
+        /////// end /////
     }
 }
