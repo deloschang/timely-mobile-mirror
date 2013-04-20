@@ -21,6 +21,7 @@
 	    />
 
 
+	<!-- Building information -->
    <LinearLayout
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
@@ -30,7 +31,7 @@
 		    android:id="@+id/building_name_title"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
-		    android:text="Building name: "
+		    android:text="Building: "
 		    />
 		
 		<TextView
@@ -39,6 +40,26 @@
 		    android:layout_height="wrap_content"
 		    />
 		
+		
+	</LinearLayout>
+	
+   <!-- Footway and city information -->
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_margin="5dp" >
+		<TextView
+		    android:id="@+id/address_extra_title"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Location: "
+		    />
+		
+		<TextView
+		    android:id="@+id/address_extra"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    />
 	</LinearLayout>
 
 

@@ -237,18 +237,34 @@ public class MainActivity extends Activity {
 					try {
 						response = EntityUtils.toString(resEntityGet); // response JSON 
 			            
-						// Parse JSON
-						JSONObject jObject = new JSONObject(response);
-						JSONObject addressObject = jObject.getJSONObject("address");
-						String building_name = addressObject.getString("building");
-						
 						// Set JSON text (testing purposes)
 		            	TextView view = (TextView) findViewById(R.id.text);
 		            	view.setText(response);
 		            	
+						// Parse JSON
+						JSONObject jObject = new JSONObject(response);
+						JSONObject addressObject = jObject.getJSONObject("address");
+		            	
 		            	// Set building name 
+						String building_name = addressObject.getString("building");
 		            	TextView building = (TextView) findViewById(R.id.building);
 		            	building.setText(building_name);
+		            	
+		            	// Set extra address
+		            	String footway = addressObject.getString("footway");
+		            	String city_address = addressObject.getString("city");
+		            	
+		            	TextView address_extra = (TextView) findViewById(R.id.address_extra);
+		            	if (footway != null){
+			            	String extra_address = footway + ", " + city_address;
+			            	address_extra.setText(extra_address);
+		            	} else {
+		            		String extra_address = city_address;
+			            	address_extra.setText(extra_address);
+		            	}
+		            	
+		            	
+		            	
 		            	
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
