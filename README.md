@@ -15,13 +15,16 @@ ant clean; ant debug; ./install_app.sh
 
 once your Android phone is connected over USB. 
 
-
 App name: Timely
 Package name: dartmouth.timely
+- 
+* For Google Maps API v2, you may need to sign your own debug SHA1 certificate
+for the correct API key (~/.android/debug.keystore).
 
 
 Troubleshooting
 -------------
-In Eclipse, if 'Import Existing Project to Workspace' doesn't work, try
+* In Eclipse, if 'Import Existing Project to Workspace' doesn't work, try
 'File -> Import -> Existing Android Code to Workspace'
+
 
