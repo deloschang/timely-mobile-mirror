@@ -261,6 +261,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 
 		@Override
+		// after GET request finished
 		protected void onPostExecute(HttpResponse result) {
 			HttpEntity resEntityGet = result.getEntity();  
 
@@ -276,27 +277,28 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 					// Parse JSON
 					JSONObject jObject = new JSONObject(response);
-					JSONObject addressObject = jObject.getJSONObject("address");
+//					JSONObject addressObject = jObject.getJSONObject("address");
 
 					// Set building name 
-					String building_name = addressObject.getString("building");
+//					String building_name = addressObject.getString("building");
+					String display_name_obj = jObject.getString("display_name");
+					
+					String[] display_name_arr = display_name_obj.split(",");
 					TextView building = (TextView) findViewById(R.id.building);
-					building.setText(building_name);
+					building.setText(display_name_arr[0]); // building name
 
 					// Set extra address
-					String footway = addressObject.getString("footway");
-					String city_address = addressObject.getString("city");
+//					String footway = addressObject.getString("footway");
+//					String city_address = addressObject.getString("city");
 
-					TextView address_extra = (TextView) findViewById(R.id.address_extra);
-					if (footway != ""){
-						String extra_address = footway + ", " + city_address;
-						address_extra.setText(extra_address);
-					} else {
-						String extra_address = city_address;
-						address_extra.setText(extra_address);
-					}
-
-
+//					TextView address_extra = (TextView) findViewById(R.id.address_extra);
+//					if (footway != ""){
+//						String extra_address = footway + ", " + city_address;
+//						address_extra.setText(extra_address);
+//					} else {
+//						String extra_address = city_address;
+//						address_extra.setText(extra_address);
+//					}
 
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -341,5 +343,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	public void onMapClick(LatLng point) {
 		map.addMarker(new MarkerOptions().position(point).title("point"));
 		map.animateCamera(CameraUpdateFactory.newLatLng(point));
+		
+		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
+		new NetworkGet().execute(url);
 	}
 }
