@@ -46,6 +46,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends FragmentActivity implements OnMapClickListener{
@@ -225,7 +226,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					location = EntityUtils.toString(result.getEntity());
 					System.out.println ("Location from server " + location);
 					//	            	TextView view = (TextView) findViewById(R.id.text);
-
 					//	            	view.setText(location);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -272,8 +272,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					response = EntityUtils.toString(resEntityGet); // response JSON 
 
 					// Set JSON text (testing purposes)
-					TextView view = (TextView) findViewById(R.id.text);
-					view.setText(response);
+//					TextView view = (TextView) findViewById(R.id.text);
+//					view.setText(response);
 
 					// Parse JSON
 					JSONObject jObject = new JSONObject(response);
@@ -341,10 +341,17 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 	@Override
 	public void onMapClick(LatLng point) {
-		map.addMarker(new MarkerOptions().position(point).title("point"));
+		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
+		new NetworkGet().execute(url); // reverse-geocode
+		
+		// Create marker at user's point
+		Marker usermarker = map.addMarker(new MarkerOptions().position(point)
+				.title("point")
+				.snippet("Snippet"));
+		usermarker.showInfoWindow(); // display marker title automatically
+		
 		map.animateCamera(CameraUpdateFactory.newLatLng(point));
 		
-		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
-		new NetworkGet().execute(url);
+		
 	}
 }
