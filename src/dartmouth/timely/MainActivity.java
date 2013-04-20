@@ -121,38 +121,39 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
 		if (location != null) {
-			// Got location: latitude, longitude
+			// LatLng object and Strings of coordinates
 			String latitude = Double.toString(location.getLatitude());
 			String longitude = Double.toString(location.getLongitude());
-			System.out.println ("Latitude: " + latitude + "Longitude: " + longitude);
-
+			
 			// Post to API with latitude and longitude
 			new NetworkPost().execute(TIMELY_API_URL, latitude,longitude);
 
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+			
+//			LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+//			new NetworkGet().execute(url, user_coord);
 			new NetworkGet().execute(url);
 
-
+			// test send notification
 			noteLatLong(latitude, longitude);
 		}
 
 		final LocationListener locationListener = new LocationListener() {
-
 			// Once location has changed
 			public void onLocationChanged(Location location) {
 				String latitude = Double.toString(location.getLatitude());
 				String longitude = Double.toString(location.getLongitude());
-
-				System.out.println ("Latitude_new: " + latitude + "Longitude_new: " + longitude);
-
-
 
 				// POST to API with latitude and longitude
 				new NetworkPost().execute(TIMELY_API_URL, latitude, longitude);
 
 				// GET request to MapQuest with latitude longitude
 				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+				
+				// creates a marker at current user location // 
+//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+//				new NetworkGet().execute(url, user_coord);
 				new NetworkGet().execute(url);
 
 				// test send notification
@@ -252,14 +253,15 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		@Override
 		// use Object type for different type parameters
 		protected Wrapper doInBackground(Object... params) {
-			Wrapper p = new Wrapper();
+			Wrapper p = new Wrapper(); // Wrapper class is returned to OnPostExecute
 			String url = (String) params[0];
 			
+			// Check if the user clicked the map
+			// If so, a LatLng point object will be passed
 			try {
 				p.point = (LatLng) params[1];
 			} catch (Exception e){
 				// not a map click, continue
-				
 			}
 
 			// Set up the GET request
@@ -268,7 +270,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			HttpGet get = new HttpGet(getURL);
 
 			try {
-				p.result = client.execute(get); // returned to your onPostExecute(result) method
+				p.result = client.execute(get); 
 				return p;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -288,16 +290,14 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				try {
 					response = EntityUtils.toString(resEntityGet); // response JSON 
 
-					// Set JSON text (testing purposes)
+					// Set full JSON text (enable this and uncomment in main.xml to view full JSON)
+					// Or just use curl on the MAPQUEST_API URL
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(response);
+					/////// end ///////
 
 					// Parse JSON
 					JSONObject jObject = new JSONObject(response);
-//					JSONObject addressObject = jObject.getJSONObject("address");
-
-					// Set building name 
-//					String building_name = addressObject.getString("building");
 					String display_name_obj = jObject.getString("display_name");
 					
 					String[] display_name_arr = display_name_obj.split(",");
@@ -313,23 +313,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 					}
 					
-					// Change the text
-//					TextView building = (TextView) findViewById(R.id.building);
-//					building.setText(display_name_arr[0]); // building name
-
-					// Set extra address
-//					String footway = addressObject.getString("footway");
-//					String city_address = addressObject.getString("city");
-
-//					TextView address_extra = (TextView) findViewById(R.id.address_extra);
-//					if (footway != ""){
-//						String extra_address = footway + ", " + city_address;
-//						address_extra.setText(extra_address);
-//					} else {
-//						String extra_address = city_address;
-//						address_extra.setText(extra_address);
-//					}
-
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -370,6 +353,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	}
 
 	@Override
+	/* 
+	 * Called when user clicks on the Google Map
+	 * Create a marker at that point, move camera
+	 * @see com.google.android.gms.maps.GoogleMap.OnMapClickListener#onMapClick(com.google.android.gms.maps.model.LatLng)
+	 */
 	public void onMapClick(LatLng point) {
 		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
 		

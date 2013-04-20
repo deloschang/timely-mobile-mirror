@@ -31,7 +31,7 @@
     <application android:label="@string/app_name" android:icon="@drawable/timely">
         <activity android:name="MainActivity"
                   android:label="@string/app_name"
-                  android:theme="@android:style/Theme.Black.NoTitleBar"
+                  android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
