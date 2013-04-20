@@ -37,15 +37,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements OnMapClickListener{
 
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
@@ -57,6 +60,7 @@ public class MainActivity extends FragmentActivity {
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 	
 	// Google Maps API lat/lng for Hanover
+	private GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
 	static final int ZOOM_LEVEL = 17;
 
@@ -99,11 +103,15 @@ public class MainActivity extends FragmentActivity {
 		int playStatus = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 		
 		if (playStatus == ConnectionResult.SUCCESS){
-			GoogleMap map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
+			map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
 					.getMap(); // generate the map
 			
 			// set camera to Dartmouth
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
+			map.setOnMapClickListener(this);
+			
+		} else {
+			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -327,5 +335,11 @@ public class MainActivity extends FragmentActivity {
 
 		final int YOUR_NOTIF_ID = 0;
 		nm.notify(YOUR_NOTIF_ID, n);
+	}
+
+	@Override
+	public void onMapClick(LatLng point) {
+		map.addMarker(new MarkerOptions().position(point).title("point"));
+		map.animateCamera(CameraUpdateFactory.newLatLng(point));
 	}
 }
