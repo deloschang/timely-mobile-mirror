@@ -38,9 +38,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends FragmentActivity {
 
@@ -52,6 +55,9 @@ public class MainActivity extends FragmentActivity {
 
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
+	
+	// Google Maps API lat/lng for Hanover
+	static final LatLng DARTMOUTH_COORD = new LatLng(43.703279,-72.288584);
 
 	/** Called when the activity is first created. */
 	@Override
@@ -89,9 +95,14 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.main);
 
 		// Google Maps API v2 dance
-		GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-		GoogleMap map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
-				.getMap(); // generate the map
+		int playStatus = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+		
+		if (playStatus == ConnectionResult.SUCCESS){
+			GoogleMap map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
+					.getMap(); // generate the map
+			
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, 15));
+		}
 	}
 
 	public void sendLocation(String accessToken) {    	
