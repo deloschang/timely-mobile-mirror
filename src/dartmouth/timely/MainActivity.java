@@ -38,6 +38,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+
 public class MainActivity extends Activity {
 
 	// API for calendar
@@ -86,6 +90,11 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        // Google Maps API v2 dance
+        GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        GoogleMap map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMap();
 
         //Log.d("Timely","created");
     }
