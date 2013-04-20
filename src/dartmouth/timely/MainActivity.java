@@ -334,6 +334,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 									display_name_arr[0].contains("Pond") ||
 									display_name_arr[0].contains("Ridge") ||
 									display_name_arr[0].contains("Church") ||
+									display_name_arr[0].contains("Terrace") ||
 									display_name_arr[0].contains("Alumni Center")){
 								poll = 0;
 								pollmap.put(display_name_arr[0], poll);
