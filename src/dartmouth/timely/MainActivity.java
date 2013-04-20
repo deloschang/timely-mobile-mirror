@@ -16,6 +16,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -29,7 +33,6 @@ import android.location.LocationManager;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 //import com.google.api.client.http.HttpResponse;
 
@@ -39,7 +42,11 @@ public class MainActivity extends Activity {
 
 	// API for calendar
     final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
+    
+    // Test API for now; to be replaced
     final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
+    
+    // Mapquest API for building names
     final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
     
     /** Called when the activity is first created. */
@@ -85,9 +92,12 @@ public class MainActivity extends Activity {
     	Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     	
     	if (location != null) {
+    		// Got location: latitude, longitude
     		String latitude = Double.toString(location.getLatitude());
     		String longitude = Double.toString(location.getLongitude());
 	    	System.out.println ("Latitude: " + latitude + "Longitude: " + longitude);
+	    	
+	    	// Post to API with latitude and longitude
 	    	new NetworkPost().execute(TIMELY_API_URL, latitude,longitude);
 	    	
 	    	// GET request to MapQuest with latitude longitude
@@ -96,6 +106,8 @@ public class MainActivity extends Activity {
     	}
     	
     	final LocationListener locationListener = new LocationListener() {
+    		
+    		// Once location has changed
     	    public void onLocationChanged(Location location) {
     	    	String latitude = Double.toString(location.getLatitude());
         		String longitude = Double.toString(location.getLongitude());
@@ -104,8 +116,12 @@ public class MainActivity extends Activity {
     	    	
 			    
     	        
-    	    	// POST with latitude and longitude
+    	    	// POST to API with latitude and longitude
     	    	new NetworkPost().execute(TIMELY_API_URL, latitude, longitude);
+    	    	
+		    	// GET request to MapQuest with latitude longitude
+			    String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+		    	new NetworkGet().execute(url);
     	    }
 
 			@Override
@@ -138,6 +154,7 @@ public class MainActivity extends Activity {
     }
     
     
+    // POST request to the Timely API
     private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
         @Override
         protected HttpResponse doInBackground(String... params) {
@@ -189,34 +206,14 @@ public class MainActivity extends Activity {
         }
     }
     
+    // GET request for the Mapquest API
     private class NetworkGet extends AsyncTask<String, Void, HttpResponse>  {
+    	
         @Override
         protected HttpResponse doInBackground(String... params) {
             String url = params[0];
             
-//		    try {
-//		        HttpClient client = new DefaultHttpClient();  
-//		        String getURL = url;
-//		        HttpGet get = new HttpGet(getURL);
-//		        HttpResponse responseGet = client.execute(get);  
-//		        HttpEntity resEntityGet = responseGet.getEntity();  
-//		        
-//		        if (resEntityGet != null) {  
-//		        	
-//		            // do something with the response
-//		            String response = EntityUtils.toString(resEntityGet);
-//		            System.out.println("GET RESPONSE " + response);
-//		            
-//	            	TextView view = (TextView) findViewById(R.id.text);
-//	            	view.setText(response);
-//		            
-//		            
-//		        }
-//		    } catch (Exception e) {
-//		        e.printStackTrace();
-//		    }
-		    
-		    
+            // Set up the GET request
 	        HttpClient client = new DefaultHttpClient();  
 	        String getURL = url;
 	        HttpGet get = new HttpGet(getURL);
@@ -235,19 +232,31 @@ public class MainActivity extends Activity {
 		        HttpEntity resEntityGet = result.getEntity();  
 		        
 		        if (resEntityGet != null) {  
-		        	
-		            // do something with the response
 		            String response;
+		            
 					try {
-						response = EntityUtils.toString(resEntityGet);
-			            System.out.println("GET RESPONSE " + response);
+						response = EntityUtils.toString(resEntityGet); // response JSON 
 			            
+						// Parse JSON
+						JSONObject jObject = new JSONObject(response);
+						JSONObject addressObject = jObject.getJSONObject("address");
+						String building_name = addressObject.getString("building");
+						
+						// Set JSON text (testing purposes)
 		            	TextView view = (TextView) findViewById(R.id.text);
 		            	view.setText(response);
+		            	
+		            	// Set building name 
+		            	TextView building = (TextView) findViewById(R.id.building);
+		            	building.setText(building_name);
+		            	
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -256,40 +265,5 @@ public class MainActivity extends Activity {
 		        }
         }
     }
-
-        
-   /*     
-    public void postData(String latitude, String longitude) {
-    	// Create a new HttpClient and Post Header
-    	AndroidHttpClient client = AndroidHttpClient.newInstance("Android UserAgent");
-    	HttpPost httppost = new HttpPost(TIMELY_API_URL);
-        
-        System.out.println ("Posting data with Lat " + latitude + "And long " + longitude);
-        
-        try {
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("latitude", latitude));
-            nameValuePairs.add(new BasicNameValuePair("longitude", longitude));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-            // Execute HTTP Post Request
-            HttpResponse response = client.execute(httppost);
-            System.out.println ("Request Made");
-            
-            
-            String location = EntityUtils.toString(response.getEntity());
-            
-            System.out.println ("Location from server " + location);
-            
-            TextView view = (TextView) findViewById(R.id.text);
-            view.setText(location);
-            
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-
     	
-    }
-    */  
 }

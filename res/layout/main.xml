@@ -4,19 +4,42 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView
+    
+<!-- <TextView
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="MainActivity"
-    />
+    /> -->
 
-<TextView
-    android:id="@+id/text"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text=" No location yet "
-    />
 
+	<!--  Top testing header -->
+	<TextView
+	    android:id="@+id/text"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="No location yet"
+	    />
+
+
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_margin="5dp" >
+       
+		<TextView
+		    android:id="@+id/building_name_title"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:text="Building name: "
+		    />
+		
+		<TextView
+		    android:id="@+id/building"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    />
+		
+	</LinearLayout>
 
 
 </LinearLayout>
