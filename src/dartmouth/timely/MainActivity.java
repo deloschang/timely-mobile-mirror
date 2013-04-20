@@ -28,6 +28,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,7 +37,6 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -239,12 +239,28 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		}
 	}
 
+	// wrapper class
+	public class Wrapper {
+		public HttpResponse result;
+		public LatLng point;
+	}
+	
 	// GET request for the Mapquest API
-	private class NetworkGet extends AsyncTask<String, Void, HttpResponse>  {
+	// Wrapper class enables multiple type parameters
+	private class NetworkGet extends AsyncTask<Object, Void, Wrapper>  {
 
 		@Override
-		protected HttpResponse doInBackground(String... params) {
-			String url = params[0];
+		// use Object type for different type parameters
+		protected Wrapper doInBackground(Object... params) {
+			Wrapper p = new Wrapper();
+			String url = (String) params[0];
+			
+			try {
+				p.point = (LatLng) params[1];
+			} catch (Exception e){
+				// not a map click, continue
+				
+			}
 
 			// Set up the GET request
 			HttpClient client = new DefaultHttpClient();  
@@ -252,7 +268,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			HttpGet get = new HttpGet(getURL);
 
 			try {
-				return client.execute(get); // returned to your onPostExecute(result) method
+				p.result = client.execute(get); // returned to your onPostExecute(result) method
+				return p;
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
@@ -262,8 +279,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 		@Override
 		// after GET request finished
-		protected void onPostExecute(HttpResponse result) {
-			HttpEntity resEntityGet = result.getEntity();  
+		protected void onPostExecute(Wrapper p) {
+			HttpEntity resEntityGet = p.result.getEntity();  
 
 			if (resEntityGet != null) {  
 				String response;
@@ -284,8 +301,21 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					String display_name_obj = jObject.getString("display_name");
 					
 					String[] display_name_arr = display_name_obj.split(",");
-					TextView building = (TextView) findViewById(R.id.building);
-					building.setText(display_name_arr[0]); // building name
+					
+					// Check if user clicked on map
+					if (p.point != null){
+						// Create marker at user's point
+						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
+								.title(display_name_arr[0])
+								.snippet("Snippet"));
+						usermarker.showInfoWindow(); // display marker title automatically
+	
+						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
+					}
+					
+					// Change the text
+//					TextView building = (TextView) findViewById(R.id.building);
+//					building.setText(display_name_arr[0]); // building name
 
 					// Set extra address
 //					String footway = addressObject.getString("footway");
@@ -342,16 +372,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	@Override
 	public void onMapClick(LatLng point) {
 		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
-		new NetworkGet().execute(url); // reverse-geocode
 		
-		// Create marker at user's point
-		Marker usermarker = map.addMarker(new MarkerOptions().position(point)
-				.title("point")
-				.snippet("Snippet"));
-		usermarker.showInfoWindow(); // display marker title automatically
-		
-		map.animateCamera(CameraUpdateFactory.newLatLng(point));
-		
-		
+		// Send lat/lng in parameters to draw a marker on the map with the title 
+		new NetworkGet().execute(url, point); // reverse-geocode
 	}
 }
