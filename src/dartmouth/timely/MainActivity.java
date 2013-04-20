@@ -16,10 +16,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -34,9 +32,13 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
-//import com.google.api.client.http.HttpResponse;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.view.View;
 
 public class MainActivity extends Activity {
 
@@ -46,7 +48,7 @@ public class MainActivity extends Activity {
     // Test API for now; to be replaced
     final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
     
-    // Mapquest API for building names
+    // Mapquest API
     final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
     
     /** Called when the activity is first created. */
@@ -57,6 +59,9 @@ public class MainActivity extends Activity {
     	
         Account account = accounts[0];
         //Log.d("Timely","started");
+        
+        
+	    
 
         accountManager.invalidateAuthToken(account.type, accountManager.KEY_AUTHTOKEN);
         
@@ -103,6 +108,38 @@ public class MainActivity extends Activity {
 	    	// GET request to MapQuest with latitude longitude
 		    String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 	    	new NetworkGet().execute(url);
+	    	
+	    	
+        ////////////////////////////
+        // Notification
+        Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+//        NotificationManager nm = (NotificationManager) ctx
+	    	System.out.println("Notification portion reached");
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+//        Resources res = ctx.getResources();
+        Notification.Builder builder = new Notification.Builder(this)
+                    .setContentTitle("Timely")
+                    .setContentText("Test text");
+
+        builder.setContentIntent(contentIntent)
+                    .setSmallIcon(R.drawable.ic_launcher);
+//                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.some_big_img))
+//                    .setTicker(res.getString("Test ticker"))
+//                    .setWhen(System.currentTimeMillis())
+//                    .setAutoCancel(true)
+        Notification n = builder.build();
+
+        final int YOUR_NOTIF_ID = 0;
+        nm.notify(YOUR_NOTIF_ID, n);
+        
+        
+        // end
+	    	
     	}
     	
     	final LocationListener locationListener = new LocationListener() {
@@ -281,5 +318,4 @@ public class MainActivity extends Activity {
 		        }
         }
     }
-    	
 }
