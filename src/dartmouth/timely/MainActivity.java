@@ -24,7 +24,12 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,13 +37,6 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
-
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.view.View;
 
 public class MainActivity extends Activity {
 
@@ -124,11 +122,11 @@ public class MainActivity extends Activity {
 //        Resources res = ctx.getResources();
         Notification.Builder builder = new Notification.Builder(this)
                     .setContentTitle("Timely")
-                    .setContentText("Test text");
+                    .setContentText("Lat: "+latitude+", Long: "+longitude);
 
         builder.setContentIntent(contentIntent)
-                    .setSmallIcon(R.drawable.ic_launcher);
-//                    .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.some_big_img))
+                    .setSmallIcon(R.drawable.timely)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timely));
 //                    .setTicker(res.getString("Test ticker"))
 //                    .setWhen(System.currentTimeMillis())
 //                    .setAutoCancel(true)
