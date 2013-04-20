@@ -5,14 +5,27 @@
     android:layout_height="fill_parent"
     >
     
-<!-- <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="MainActivity"
-    /> -->
+    <!-- Header Strip -->
 
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="34dp"
+        android:orientation="horizontal"
+        android:background="@color/white">
+        
+	    <!-- Top Icon -->
+	    <ImageView
+	        android:id="@+id/timely_header"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:src="@drawable/timely_new_font" />
 
-	<!--  Top testing header -->
+    </RelativeLayout>
+    
+	<!--  Top testing header with full JSON -->
 	<TextView
 	    android:id="@+id/text"
 	    android:layout_width="fill_parent"
