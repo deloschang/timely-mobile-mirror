@@ -17,6 +17,8 @@ once your Android phone is connected over USB.
 
 App name: Timely
 Package name: dartmouth.timely
+
+Google Maps API 
 - 
 * For Google Maps API v2, you may need to sign your own debug SHA1 certificate
 for the correct API key (~/.android/debug.keystore).
