@@ -57,7 +57,8 @@ public class MainActivity extends FragmentActivity {
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 	
 	// Google Maps API lat/lng for Hanover
-	static final LatLng DARTMOUTH_COORD = new LatLng(43.703279,-72.288584);
+	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
+	static final int ZOOM_LEVEL = 17;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -101,7 +102,8 @@ public class MainActivity extends FragmentActivity {
 			GoogleMap map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
 					.getMap(); // generate the map
 			
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, 15));
+			// set camera to Dartmouth
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
 		}
 	}
 
@@ -209,7 +211,6 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		protected void onPostExecute(HttpResponse result) {
-			//Do something with result
 			if (result != null) {
 				String location;
 				try {
