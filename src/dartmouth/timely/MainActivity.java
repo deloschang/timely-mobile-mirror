@@ -3,7 +3,9 @@ package dartmouth.timely;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,7 +30,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
@@ -64,6 +65,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	private GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
 	static final int ZOOM_LEVEL = 17;
+	
+	// polling
+	Map<String, Integer> pollmap = new HashMap<String, Integer>();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -282,12 +286,12 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		@Override
 		// after GET request finished
 		protected void onPostExecute(Wrapper p) {
+			try {
 			HttpEntity resEntityGet = p.result.getEntity();  
 
 			if (resEntityGet != null) {  
 				String response;
 
-				try {
 					response = EntityUtils.toString(resEntityGet); // response JSON 
 
 					// Set full JSON text (enable this and uncomment in main.xml to view full JSON)
@@ -304,15 +308,85 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					
 					// Check if user clicked on map
 					if (p.point != null){
+						// Generate some interesting stats
+						JSONObject addressObject = jObject.getJSONObject("address");
+						String city = addressObject.getString("city");
+						
+						int poll;
+						if (!pollmap.containsKey(display_name_arr[0])){
+							poll = 0;
+							if (display_name_arr[0].contains("Cemetery") ||
+									display_name_arr[0].contains("St") || 
+									display_name_arr[0].contains("Street") ||
+									display_name_arr[0].contains("River") || 
+									display_name_arr[0].contains("Road") ||
+									display_name_arr[0].contains("Rd") ||
+									display_name_arr[0].contains("Lane") ||
+									display_name_arr[0].contains("Ln") ||
+									display_name_arr[0].contains("High School") ||
+									display_name_arr[0].contains("Catholic") ||
+									display_name_arr[0].contains("Avenue") ||
+									display_name_arr[0].contains("Trail") ||
+									display_name_arr[0].contains("Park") ||
+									display_name_arr[0].contains("Route") ||
+									display_name_arr[0].contains("President") ||
+									display_name_arr[0].contains("Emergency") ||
+									display_name_arr[0].contains("Pond") ||
+									display_name_arr[0].contains("Ridge") ||
+									display_name_arr[0].contains("Church") ||
+									display_name_arr[0].contains("Alumni Center")){
+								poll = 0;
+								pollmap.put(display_name_arr[0], poll);
+							} else if (city.contains("Hanover")){
+								double first_step = Math.random();
+								
+								if (display_name_arr[0].contains("Library")
+										|| display_name_arr[0].contains("Hall")
+										|| display_name_arr[0].contains("Webster Avenue") 
+										|| display_name_arr[0].contains("Gymnasium")){
+									poll = 10 + (int)(Math.random()*60);
+									pollmap.put(display_name_arr[0], poll);
+								} else {
+									
+									// check other conditions
+									if (first_step < 0.3){
+										poll = (int)(Math.random()*40);
+										pollmap.put(display_name_arr[0], poll);
+									} else {
+										double second_step = Math.random();
+										if (second_step < 0.5){
+											poll = (int)(Math.random()*20);
+											pollmap.put(display_name_arr[0], poll);
+										} else {
+											double third_step = Math.random();
+											if (third_step < 0.8){
+												poll = (int)(Math.random()*10);
+												pollmap.put(display_name_arr[0], poll);
+											} else {
+												poll = (int)(Math.random()*5);
+												pollmap.put(display_name_arr[0], poll);
+											}
+										}
+									}
+								}
+									
+							}
+						} else {
+							// contains
+							poll = pollmap.get(display_name_arr[0]);
+						}
+							
+						
 						// Create marker at user's point
 						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
 								.title(display_name_arr[0])
-								.snippet("Snippet"));
+								.snippet(Integer.toString(poll) + " Timely users"));
 						usermarker.showInfoWindow(); // display marker title automatically
 	
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 					}
-					
+
+			}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -320,9 +394,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-
-			}
 		}
 	}
 
