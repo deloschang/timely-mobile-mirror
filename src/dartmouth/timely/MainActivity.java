@@ -31,6 +31,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -394,8 +395,12 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 								.snippet(Integer.toString(poll) + " Timely users"));
 						usermarker.showInfoWindow(); // display marker title automatically
 						
-						// Add the path 
+						// Add the point to the path 
 						polyline_options.add(p.point);
+						polyline_options.width(10);
+						polyline_options.color(Color.CYAN);
+//							.width(25)
+//							.color(android.R.color.holo_blue_bright);
 						map.addPolyline(polyline_options);
 						
 	
