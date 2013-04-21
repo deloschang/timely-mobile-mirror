@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.os.AsyncTask;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.calendar.model.Events;
 
 /**
@@ -24,19 +25,20 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, Boolean>{
 	protected Boolean doInBackground(MainActivity... params){
 		// grab client from Activity 
 //		com.google.api.services.calendar.Calendar client = params[0].client;
-		String pageToken = null;
+//		String pageToken = null;
 		
 		// to do
 		try {
 			System.out.println("Grabbing events list");
 			
-			Events events = activity.client.events().list("primary").setPageToken(pageToken).execute();
+			Events events = activity.client.events().list("primary").execute();
 			System.out.println("Event: " + events);
+		} catch (UserRecoverableAuthIOException e) {
+	          activity.startActivityForResult(e.getIntent(), activity.REQUEST_AUTHORIZATION);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		Calendar calendar = client.calendars().insert(entry).setFields(CalendarInfo.FIELDS).execute();
 		
 		return null;
 	}

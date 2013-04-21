@@ -99,7 +99,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	com.google.api.services.calendar.Calendar client;
 	
 	// Dynamic updating location
-	boolean isUpdating = false;
+	boolean isUpdating = true;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -163,8 +163,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				}
 			}
 		};
-		
 		new Thread(runnableOffMain).start();
+		// end
 
 
 		// POST the lat/lng to API first
@@ -238,7 +238,10 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		if (credential.getSelectedAccountName() == null) {
 			// ask user to choose account
 			chooseAccount();
-		} 
+		} else {
+			// If already chosen, this fires
+			new AsyncLoadEvent(this).execute();
+		}
 	}
 
 	private void chooseAccount() {
@@ -257,6 +260,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				checkGooglePlayServicesAvailable();
 			}
 			break;
+			
 		case REQUEST_AUTHORIZATION:
 			if (resultCode == Activity.RESULT_OK) {
 				// Pull upcoming event 
@@ -401,10 +405,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					location = EntityUtils.toString(result.getEntity());
 					System.out.println ("Info from server " + location);
 					
+					// Test the JSON (uncomment id.text from main.xml)
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(location);
 					
-					// Parse JSON
+					// Parse JSON from the API response
 					JSONObject jObject = new JSONObject(location);
 					String header = jObject.getString("message");
 					String snippet = "This is a test snippet";
