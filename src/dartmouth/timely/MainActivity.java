@@ -93,8 +93,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	final JsonFactory jsonFactory = new GsonFactory();
 	private static final String PREF_ACCOUNT_NAME = "accountName";
 
-
-
 	com.google.api.services.calendar.Calendar client;
 
 	/** Called when the activity is first created. */
@@ -222,6 +220,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				chooseAccount();
 			}
 			break;
+			
 		case REQUEST_ACCOUNT_PICKER:
 			if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
 				String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
@@ -231,6 +230,12 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(PREF_ACCOUNT_NAME, accountName);
 					editor.commit();
+					
+					// do something
+					// write an async load event that uses the API to grab the latest 
+					// from a certain calendar. 
+					// Display that event as a notification with appropriate descriptions.
+					new AsyncLoadEvent(this).execute();
 				}
 			}
 			break;
@@ -454,7 +459,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 									display_name_arr[0].contains("Ridge") ||
 									display_name_arr[0].contains("Church") ||
 									display_name_arr[0].contains("Terrace") ||
-									display_name_arr[0].contains("Alumni Center")){
+									display_name_arr[0].contains("Alumni Center") ||
+									display_name_arr[0].contains("Esker")){
 								poll = 0;
 								pollmap.put(display_name_arr[0], poll);
 							} else if (city.contains("Hanover")){
