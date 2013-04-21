@@ -49,6 +49,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MainActivity extends FragmentActivity implements OnMapClickListener{
 
@@ -65,6 +67,10 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	private GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
 	static final int ZOOM_LEVEL = 17;
+	
+	// main options object
+	PolylineOptions polyline_options;
+	
 	
 	// polling
 	Map<String, Integer> pollmap = new HashMap<String, Integer>();
@@ -114,6 +120,10 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			// set camera to Dartmouth
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
 			map.setOnMapClickListener(this);
+			
+			// path of the user with clicks (shortest distance)
+			polyline_options = new PolylineOptions();
+			Polyline path_from_clicks = map.addPolyline(polyline_options);
 			
 		} else {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
@@ -383,6 +393,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 								.title(display_name_arr[0])
 								.snippet(Integer.toString(poll) + " Timely users"));
 						usermarker.showInfoWindow(); // display marker title automatically
+						
+						// Add the path 
+						polyline_options.add(p.point);
+						map.addPolyline(polyline_options);
+						
 	
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 					}
