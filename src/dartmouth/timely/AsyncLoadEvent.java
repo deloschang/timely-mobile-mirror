@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.os.AsyncTask;
 
+import com.google.api.services.calendar.model.Events;
 
 /**
  * Asynchronously grabs Timely event
@@ -12,15 +13,27 @@ import android.os.AsyncTask;
  */
 class AsyncLoadEvent extends AsyncTask<MainActivity, Void, Boolean>{
 
+	private final MainActivity activity;
+	
 //	final com.google.api.services.calendar.Calendar client;
+	AsyncLoadEvent(MainActivity activity){
+		this.activity = activity;
+	}
 
 	@Override
 	protected Boolean doInBackground(MainActivity... params){
+		// grab client from Activity 
+//		com.google.api.services.calendar.Calendar client = params[0].client;
 		String pageToken = null;
-		com.google.api.services.calendar.Calendar client = params[0].client;
 		
-		events = client.events().list('primary').setPageToken(pageToken).execute();
-		Calendar calendar = client.calendars().insert(entry).setFields(CalendarInfo.FIELDS).execute();
+		// to do
+		try {
+			Events events = activity.client.events().list("primary").setPageToken(pageToken).execute();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		Calendar calendar = client.calendars().insert(entry).setFields(CalendarInfo.FIELDS).execute();
 		
 		return null;
 	}

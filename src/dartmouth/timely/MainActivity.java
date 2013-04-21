@@ -65,7 +65,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
 	// Test API for now; to be replaced
-	final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
+//	final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
+	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
 
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
@@ -231,10 +232,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					editor.putString(PREF_ACCOUNT_NAME, accountName);
 					editor.commit();
 					
-					// do something
-					// write an async load event that uses the API to grab the latest 
-					// from a certain calendar. 
-					// Display that event as a notification with appropriate descriptions.
+					
+					// Pull upcoming event 
 					new AsyncLoadEvent(this).execute();
 				}
 			}
@@ -254,13 +253,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			String longitude = Double.toString(location.getLongitude());
 
 			// Post to API with latitude and longitude
-			new NetworkPost().execute(TIMELY_API_URL, latitude,longitude);
+			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
 
+			
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-
-			//			LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
-			//			new NetworkGet().execute(url, user_coord);
 			new NetworkGet().execute(url);
 
 			// test send notification
@@ -274,7 +271,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				String longitude = Double.toString(location.getLongitude());
 
 				// POST to API with latitude and longitude
-				new NetworkPost().execute(TIMELY_API_URL, latitude, longitude);
+				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
 
 				// GET request to MapQuest with latitude longitude
 				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
