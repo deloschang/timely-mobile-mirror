@@ -21,15 +21,15 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -41,7 +41,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,6 +51,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.calendar.CalendarScopes;
+
 
 public class MainActivity extends FragmentActivity implements OnMapClickListener{
 
@@ -63,74 +69,176 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
-	
+
 	// Google Maps API lat/lng for Hanover
 	private GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
 	static final int ZOOM_LEVEL = 17;
-	
+
+
 	// main options object
 	PolylineOptions polyline_options;
-	
-	
+
+
 	// polling
 	Map<String, Integer> pollmap = new HashMap<String, Integer>();
+
+	// oAuth2
+	static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
+	static final int REQUEST_AUTHORIZATION = 1;
+	static final int REQUEST_ACCOUNT_PICKER = 2;
+	GoogleAccountCredential credential;
+	final HttpTransport transport = AndroidHttp.newCompatibleTransport();
+
+	final JsonFactory jsonFactory = new GsonFactory();
+	private static final String PREF_ACCOUNT_NAME = "accountName";
+
+
+
+	com.google.api.services.calendar.Calendar client;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		AccountManager accountManager = AccountManager.get(MainActivity.this);    	
-		Account[] accounts = accountManager.getAccountsByType("com.google");
 
-		Account account = accounts[0];
-		//Log.d("Timely","started");
-
-
-		accountManager.invalidateAuthToken(account.type, accountManager.KEY_AUTHTOKEN);
-
-		accountManager.getAuthToken(account,
-				"oauth2:https://www.googleapis.com/auth/calendar", null,
-				this,
-				new AccountManagerCallback<Bundle>(){ 
-			public void run(AccountManagerFuture<Bundle> future) {
-				try{
-					Bundle bundle = future.getResult();
-					if(bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
-						String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-						sendLocation (token);
-					}else {
-
-					}
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}  
-			}
-		}, null);        
+		// Old oAuth Code
+		//		AccountManager accountManager = AccountManager.get(MainActivity.this);    	
+		//		Account[] accounts = accountManager.getAccountsByType("com.google");
+		//
+		//		Account account = accounts[0];
+		//		//Log.d("Timely","started");
+		//
+		//
+		//		accountManager.invalidateAuthToken(account.type, accountManager.KEY_AUTHTOKEN);
+		//
+		//		accountManager.getAuthToken(account,
+		//				"oauth2:https://www.googleapis.com/auth/calendar", null,
+		//				this,
+		//				new AccountManagerCallback<Bundle>(){ 
+		//			public void run(AccountManagerFuture<Bundle> future) {
+		//				try{
+		//					Bundle bundle = future.getResult();
+		//					if(bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
+		//						String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+		//						sendLocation (token);
+		//					}else {
+		//
+		//					}
+		//				}
+		//				catch(Exception e){
+		//					e.printStackTrace();
+		//				}  
+		//			}
+		//		}, null);        
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+
+		// Google Accounts
+		credential = GoogleAccountCredential.usingOAuth2(this, CalendarScopes.CALENDAR);
+		SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+		credential.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
+		// Calendar client
+		client = new com.google.api.services.calendar.Calendar.Builder(
+				transport, jsonFactory, credential).setApplicationName("Timely")
+				.build();
+
+
 		// Google Maps API v2 dance
-		int playStatus = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-		
-		if (playStatus == ConnectionResult.SUCCESS){
+		if (checkGooglePlayServicesAvailable()){
 			map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
 					.getMap(); // generate the map
-			
+
 			// set camera to Dartmouth
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
 			map.setOnMapClickListener(this);
-			
+
 			// path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
 			Polyline path_from_clicks = map.addPolyline(polyline_options);
-			
+
 		} else {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (checkGooglePlayServicesAvailable()) {
+			haveGooglePlayServices();
+		}
+	}
+
+	/** Check that Google Play services APK is installed and up to date. */
+	private boolean checkGooglePlayServicesAvailable() {
+		final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+			return false;
+		}
+		return true;
+	}
+
+	void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+						connectionStatusCode, MainActivity.this, REQUEST_GOOGLE_PLAY_SERVICES);
+				dialog.show();
+			}
+		});
+	}
+
+	private void haveGooglePlayServices() {
+		// check if there is already an account selected
+		if (credential.getSelectedAccountName() == null) {
+			// ask user to choose account
+			chooseAccount();
+		} 
+	}
+
+	private void chooseAccount() {
+		startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_GOOGLE_PLAY_SERVICES:
+			if (resultCode == Activity.RESULT_OK) {
+				haveGooglePlayServices();
+			} else {
+				checkGooglePlayServicesAvailable();
+			}
+			break;
+		case REQUEST_AUTHORIZATION:
+			if (resultCode == Activity.RESULT_OK) {
+				// do something
+			} else {
+				chooseAccount();
+			}
+			break;
+		case REQUEST_ACCOUNT_PICKER:
+			if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
+				String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
+				if (accountName != null) {
+					credential.setSelectedAccountName(accountName);
+					SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putString(PREF_ACCOUNT_NAME, accountName);
+					editor.commit();
+				}
+			}
+			break;
+		}
+	}
+
+
+	/** Grab location coordinates and do something **/
 	public void sendLocation(String accessToken) {    	
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
 		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -139,15 +247,15 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			// LatLng object and Strings of coordinates
 			String latitude = Double.toString(location.getLatitude());
 			String longitude = Double.toString(location.getLongitude());
-			
+
 			// Post to API with latitude and longitude
 			new NetworkPost().execute(TIMELY_API_URL, latitude,longitude);
 
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-			
-//			LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
-//			new NetworkGet().execute(url, user_coord);
+
+			//			LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+			//			new NetworkGet().execute(url, user_coord);
 			new NetworkGet().execute(url);
 
 			// test send notification
@@ -165,10 +273,10 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 				// GET request to MapQuest with latitude longitude
 				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-				
+
 				// creates a marker at current user location // 
-//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
-//				new NetworkGet().execute(url, user_coord);
+				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+				//				new NetworkGet().execute(url, user_coord);
 				new NetworkGet().execute(url);
 
 				// test send notification
@@ -260,7 +368,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		public HttpResponse result;
 		public LatLng point;
 	}
-	
+
 	// GET request for the Mapquest API
 	// Wrapper class enables multiple type parameters
 	private class NetworkGet extends AsyncTask<Object, Void, Wrapper>  {
@@ -270,7 +378,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		protected Wrapper doInBackground(Object... params) {
 			Wrapper p = new Wrapper(); // Wrapper class is returned to OnPostExecute
 			String url = (String) params[0];
-			
+
 			// Check if the user clicked the map
 			// If so, a LatLng point object will be passed
 			try {
@@ -298,31 +406,31 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		// after GET request finished
 		protected void onPostExecute(Wrapper p) {
 			try {
-			HttpEntity resEntityGet = p.result.getEntity();  
+				HttpEntity resEntityGet = p.result.getEntity();  
 
-			if (resEntityGet != null) {  
-				String response;
+				if (resEntityGet != null) {  
+					String response;
 
 					response = EntityUtils.toString(resEntityGet); // response JSON 
 
 					// Set full JSON text (enable this and uncomment in main.xml to view full JSON)
 					// Or just use curl on the MAPQUEST_API URL
-//					TextView view = (TextView) findViewById(R.id.text);
-//					view.setText(response);
+					//					TextView view = (TextView) findViewById(R.id.text);
+					//					view.setText(response);
 					/////// end ///////
 
 					// Parse JSON
 					JSONObject jObject = new JSONObject(response);
 					String display_name_obj = jObject.getString("display_name");
-					
+
 					String[] display_name_arr = display_name_obj.split(",");
-					
+
 					// Check if user clicked on map
 					if (p.point != null){
 						// Generate some interesting stats
 						JSONObject addressObject = jObject.getJSONObject("address");
 						String city = addressObject.getString("city");
-						
+
 						int poll;
 						if (!pollmap.containsKey(display_name_arr[0])){
 							poll = 0;
@@ -351,7 +459,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 								pollmap.put(display_name_arr[0], poll);
 							} else if (city.contains("Hanover")){
 								double first_step = Math.random();
-								
+
 								if (display_name_arr[0].contains("Library")
 										|| display_name_arr[0].contains("Hall")
 										|| display_name_arr[0].contains("Webster Avenue") 
@@ -359,7 +467,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 									poll = 10 + (int)(Math.random()*60);
 									pollmap.put(display_name_arr[0], poll);
 								} else {
-									
+
 									// check other conditions
 									if (first_step < 0.3){
 										poll = (int)(Math.random()*40);
@@ -381,40 +489,38 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 										}
 									}
 								}
-									
+
 							}
 						} else {
 							// contains
 							poll = pollmap.get(display_name_arr[0]);
 						}
-							
-						
+
+
 						// Create marker at user's point
 						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
 								.title(display_name_arr[0])
 								.snippet(Integer.toString(poll) + " Timely users"));
 						usermarker.showInfoWindow(); // display marker title automatically
-						
-						// Add the point to the path 
+
+						// Add the point to the path  with options
 						polyline_options.add(p.point);
 						polyline_options.width(10);
 						polyline_options.color(Color.CYAN);
-//							.width(25)
-//							.color(android.R.color.holo_blue_bright);
 						map.addPolyline(polyline_options);
-						
-	
+
+
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 					}
 
-			}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -452,7 +558,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	 */
 	public void onMapClick(LatLng point) {
 		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
-		
+
 		// Send lat/lng in parameters to draw a marker on the map with the title 
 		new NetworkGet().execute(url, point); // reverse-geocode
 	}
