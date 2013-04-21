@@ -52,7 +52,7 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"
 	    android:textStyle="bold"
-	    android:text="\@ Y Combinator"
+	    android:text="@string/demo_location"
 	    />
 
 

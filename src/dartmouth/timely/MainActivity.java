@@ -38,7 +38,9 @@ import android.location.LocationManager;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -95,6 +97,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	private static final String PREF_ACCOUNT_NAME = "accountName";
 
 	com.google.api.services.calendar.Calendar client;
+	
+	// Dynamic updating location
+	boolean isUpdating = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -132,6 +137,34 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		// Dynamically update the location
+		final Handler offMainHandler = new Handler();
+		
+		final TextView current_location = (TextView) findViewById(R.id.current_location);
+		
+		Runnable runnableOffMain = new Runnable(){
+			@Override
+			public void run(){
+				while(true){
+					pause();
+					offMainHandler.post(new Runnable(){
+						@Override
+						public void run(){
+							if (isUpdating){
+								current_location.setText(R.string.demo_location);
+								isUpdating = false;
+							} else {
+								current_location.setText("Updating location..");
+								isUpdating = true;
+							}
+						}
+					});
+				}
+			}
+		};
+		
+		new Thread(runnableOffMain).start();
 
 
 		// POST the lat/lng to API first
@@ -165,6 +198,13 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		}
 	}
 
+	private void pause(){
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e){
+			e.printStackTrace();
+		}
+	}
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -219,6 +259,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			break;
 		case REQUEST_AUTHORIZATION:
 			if (resultCode == Activity.RESULT_OK) {
+				// Pull upcoming event 
+				new AsyncLoadEvent(this).execute();
+				
 				// do something
 			} else {
 				chooseAccount();
@@ -237,7 +280,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					
 					
 					// Pull upcoming event 
-//					new AsyncLoadEvent(this).execute();
+					new AsyncLoadEvent(this).execute();
 				}
 			}
 			break;
@@ -546,6 +589,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 	// Pops a notification for user
 	private void noteLatLong(String header, String inner_info){
+		// fix intent
 		Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this,
 				0, notificationIntent,

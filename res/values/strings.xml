@@ -3,4 +3,5 @@
     <string name="app_name">Timely</string>
     
     <string name="api_location_key">apilocationkey</string>
+    <string name="demo_location">\@ Y Combinator</string>
 </resources>

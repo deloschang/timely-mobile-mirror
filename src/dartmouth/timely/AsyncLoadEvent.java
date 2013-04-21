@@ -28,7 +28,10 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, Boolean>{
 		
 		// to do
 		try {
+			System.out.println("Grabbing events list");
+			
 			Events events = activity.client.events().list("primary").setPageToken(pageToken).execute();
+			System.out.println("Event: " + events);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
