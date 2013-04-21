@@ -134,6 +134,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		setContentView(R.layout.main);
 
 
+		// POST the lat/lng to API first
+		sendLocation();
+		
 		// Google Accounts
 		credential = GoogleAccountCredential.usingOAuth2(this, CalendarScopes.CALENDAR);
 		SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
@@ -234,7 +237,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					
 					
 					// Pull upcoming event 
-					new AsyncLoadEvent(this).execute();
+//					new AsyncLoadEvent(this).execute();
 				}
 			}
 			break;
@@ -243,7 +246,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 
 	/** Grab location coordinates and do something **/
-	public void sendLocation(String accessToken) {    	
+	public void sendLocation() {    	
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
 		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -251,6 +254,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			// LatLng object and Strings of coordinates
 			String latitude = Double.toString(location.getLatitude());
 			String longitude = Double.toString(location.getLongitude());
+			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
 
 			// Post to API with latitude and longitude
 			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
@@ -260,8 +264,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 			new NetworkGet().execute(url);
 
-			// test send notification
-			noteLatLong(latitude, longitude);
 		}
 
 		final LocationListener locationListener = new LocationListener() {
@@ -269,17 +271,18 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			public void onLocationChanged(Location location) {
 				String latitude = Double.toString(location.getLatitude());
 				String longitude = Double.toString(location.getLongitude());
+				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
 
 				// POST to API with latitude and longitude
 				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
 
 				// GET request to MapQuest with latitude longitude
-				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+//				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 
 				// creates a marker at current user location // 
 				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
 				//				new NetworkGet().execute(url, user_coord);
-				new NetworkGet().execute(url);
+//				new NetworkGet().execute(url);
 
 				// test send notification
 				noteLatLong(latitude, longitude);
@@ -305,6 +308,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			}
 		};
 
+//					TextView view = (TextView) findViewById(R.id.text);
+//					view.setText(location);
+		System.out.println("Checking new location..");
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
 
 		//new JsonFactory();
@@ -350,17 +356,28 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				String location;
 				try {
 					location = EntityUtils.toString(result.getEntity());
-					System.out.println ("Location from server " + location);
-					//	            	TextView view = (TextView) findViewById(R.id.text);
-					//	            	view.setText(location);
+					System.out.println ("Info from server " + location);
+					
+//					TextView view = (TextView) findViewById(R.id.text);
+//					view.setText(location);
+					
+					// Parse JSON
+					JSONObject jObject = new JSONObject(location);
+					String header = jObject.getString("message");
+					String snippet = "This is a test snippet";
+					
+					// test send notification
+					noteLatLong(header, snippet);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
 			}
 		}
 	}
@@ -417,8 +434,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 					// Set full JSON text (enable this and uncomment in main.xml to view full JSON)
 					// Or just use curl on the MAPQUEST_API URL
-					//					TextView view = (TextView) findViewById(R.id.text);
-					//					view.setText(response);
+//					TextView view = (TextView) findViewById(R.id.text);
+//					view.setText(response);
 					/////// end ///////
 
 					// Parse JSON
@@ -528,7 +545,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	}
 
 	// Pops a notification for user
-	private void noteLatLong(String latitude, String longitude){
+	private void noteLatLong(String header, String inner_info){
 		Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this,
 				0, notificationIntent,
@@ -538,8 +555,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Notification.Builder builder = new Notification.Builder(this)
-		.setContentTitle("Timely")
-		.setContentText("Lat: "+latitude+", Long: "+longitude);
+		.setContentTitle(header)
+		.setContentText(inner_info);
 
 		builder.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
