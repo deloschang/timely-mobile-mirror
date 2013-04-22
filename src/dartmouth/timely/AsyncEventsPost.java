@@ -25,6 +25,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 	 */
 	class AsyncEventsPost extends AsyncTask<String, Void, String>{
 
+		// will shift lat / lng
+		// 0.005 max
+		final double POSITIVE_RANDOMIZER = 0.0035;
+		final double NEGATIVE_RANDOMIZER = 0.0035;
+		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -64,6 +69,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 							jObject.getJSONObject("location");
 						} catch (Exception e) {
 							// these are null location; throw them out
+							// continue to the next loop
 							continue;
 						}
 						
@@ -71,8 +77,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						
 						// location exists, retrieve lat and long
 						// lat and lon named on the API 
-						double latitude = Double.parseDouble(locationObject.getString("lat"));
-						double longitude = Double.parseDouble(locationObject.getString("lon"));
+						double latitude = Double.parseDouble(locationObject.getString("lat")) 
+								+ Math.random() * (POSITIVE_RANDOMIZER) 
+								- Math.random() * (NEGATIVE_RANDOMIZER);
+						
+						double longitude = Double.parseDouble(locationObject.getString("lon")) 
+								+ Math.random() * (POSITIVE_RANDOMIZER)
+								- Math.random() * (NEGATIVE_RANDOMIZER);
 						
 						LatLng event_location = new LatLng(latitude, longitude);
 						
