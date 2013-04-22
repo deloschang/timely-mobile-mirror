@@ -200,12 +200,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			map.setOnMapClickListener(this);
 
 			// Scrape campus events and load onto map as markers
-//			new NetworkGet().execute(TIMELY_EVENTS_API);
-			
-//			String url = MAPQUEST_API+"&lat=37.386785&lon=-122.067962";
-//			new NetworkGet().execute(url);
-			new NetworkEvents().execute(TIMELY_EVENTS_API);
-			
+			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
 			
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
@@ -612,60 +607,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 		}
 	}
 	
-	/**
-	 * Asynchronously grabs event listings from the Timely events API
-	 * 
-	 * @author Delos Chang
-	 */
-	private class NetworkEvents extends AsyncTask<String, Void, String>{
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-		}
-		
-		@Override
-		protected String doInBackground(String... params) {
-			String link = params[0];
-			// Set up the GET request
-			HttpClient client = new DefaultHttpClient();  
-			String grabURL = link;
-			HttpGet createget = new HttpGet(grabURL);
-			
-			try {
-				HttpResponse result = client.execute(createget); 
-				return EntityUtils.toString(result.getEntity());
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			} 
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			try {
-				if (result != null) {
-					String response = result;
-					
-					// Parse JSON from the API response
-					JSONArray jArray = new JSONArray(response);
-					
-					for (int i = 0; i < jArray.length(); i++){
-						JSONObject jObject = jArray.getJSONObject(i);
-						String title = jObject.getString("title");
-						System.out.println(title);
-					}
-				}
-				
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 
 
 	// Pops a notification for user
