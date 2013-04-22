@@ -1,9 +1,11 @@
 package dartmouth.timely;
 
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,10 +71,17 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 	// Test API for now; to be replaced
 //	final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
+	
+	// Places API 
 	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
+	
+	// Events API 
+	final String TIMELY_EVENTS_API = "http://timely-api.herokuapp.com/events";
 
+	
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
+	
 
 	// Google Maps API lat/lng for Hanover
 	private GoogleMap map;
@@ -189,7 +199,15 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
 			map.setOnMapClickListener(this);
 
-			// path of the user with clicks (shortest distance)
+			// Scrape campus events and load onto map as markers
+//			new NetworkGet().execute(TIMELY_EVENTS_API);
+			
+//			String url = MAPQUEST_API+"&lat=37.386785&lon=-122.067962";
+//			new NetworkGet().execute(url);
+			new NetworkEvents().execute(TIMELY_EVENTS_API);
+			
+			
+			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
 			Polyline path_from_clicks = map.addPolyline(polyline_options);
 
@@ -332,7 +350,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 //				new NetworkGet().execute(url);
 
 				// test send notification
-				noteLatLong(latitude, longitude);
+//				noteLatLong(latitude, longitude);
 			}
 
 			@Override
@@ -416,6 +434,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					
 					// test send notification
 					noteLatLong(header, snippet);
+					noteLatLong("Lab 1 Notification", snippet);
+					
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -591,6 +611,62 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			}
 		}
 	}
+	
+	/**
+	 * Asynchronously grabs event listings from the Timely events API
+	 * 
+	 * @author Delos Chang
+	 */
+	private class NetworkEvents extends AsyncTask<String, Void, String>{
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+		
+		@Override
+		protected String doInBackground(String... params) {
+			String link = params[0];
+			// Set up the GET request
+			HttpClient client = new DefaultHttpClient();  
+			String grabURL = link;
+			HttpGet createget = new HttpGet(grabURL);
+			
+			try {
+				HttpResponse result = client.execute(createget); 
+				return EntityUtils.toString(result.getEntity());
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			} 
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			try {
+				if (result != null) {
+					String response = result;
+					
+					// Parse JSON from the API response
+					JSONArray jArray = new JSONArray(response);
+					
+					for (int i = 0; i < jArray.length(); i++){
+						JSONObject jObject = jArray.getJSONObject(i);
+						String title = jObject.getString("title");
+						System.out.println(title);
+					}
+				}
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	// Pops a notification for user
 	private void noteLatLong(String header, String inner_info){
