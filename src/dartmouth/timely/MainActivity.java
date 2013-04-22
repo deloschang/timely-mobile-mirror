@@ -51,6 +51,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -86,6 +87,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	// Google Maps API lat/lng for Hanover
 	public static GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
+	static final LatLng DORM_LOCATION = new LatLng(43.703779,-72.290617);  // starting point
+	
 	static final int ZOOM_LEVEL = 17;
 
 
@@ -205,6 +208,20 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
 			Polyline path_from_clicks = map.addPolyline(polyline_options);
+			
+			// User starts here 
+			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
+					.title("Home")
+					.snippet("from location and sleep patterns")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
+					);
+			starting_point.showInfoWindow(); // display marker title automatically
+			
+			polyline_options.add(DORM_LOCATION);
+			polyline_options.width(10);
+			polyline_options.color(Color.CYAN);
+			map.addPolyline(polyline_options);
+			
 
 		} else {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();

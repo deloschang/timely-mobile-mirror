@@ -8,7 +8,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.services.calendar.model.Events;
 
 /**
- * Asynchronously grabs Timely event
+ * Asynchronously grabs event from Google Calendar
  * 
  * @author Delos Chang
  */
@@ -29,7 +29,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, Boolean>{
 		
 		// to do
 		try {
-			System.out.println("Grabbing events list");
+			System.out.println("Grabbing events listing");
 			
 			Events events = activity.client.events().list("primary").execute();
 			System.out.println("Event: " + events);

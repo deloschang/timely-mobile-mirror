@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.net.ParseException;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -97,7 +98,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						// add event marker to the map
 						Marker usermarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
 								.title(event_title)
-								.snippet(event_concordance));
+								.snippet(event_concordance)
+								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color
+								
+								);
 						
 						
 					}
