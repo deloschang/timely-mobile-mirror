@@ -84,7 +84,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	
 
 	// Google Maps API lat/lng for Hanover
-	private GoogleMap map;
+	public static GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
 	static final int ZOOM_LEVEL = 17;
 
