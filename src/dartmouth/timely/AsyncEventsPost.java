@@ -27,8 +27,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 		// will shift lat / lng
 		// 0.005 max
-		final double POSITIVE_RANDOMIZER = 0.0035;
-		final double NEGATIVE_RANDOMIZER = 0.0035;
+		final double POSITIVE_RANDOMIZER = 0.0025;
+		final double NEGATIVE_RANDOMIZER = 0.0025;
 		
 		@Override
 		protected void onPreExecute() {
@@ -87,13 +87,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						
 						LatLng event_location = new LatLng(latitude, longitude);
 						
-						// retrieve title
-						String event_title  = jObject.getString("title");
+						// retrieve title and concordance
+						// strip tags
+						String event_title  = jObject.getString("title").replaceAll("<[^>]*", "");
+						
+						JSONObject dateObject = jObject.getJSONObject("date");
+						String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
 						
 						// add event marker to the map
 						Marker usermarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
 								.title(event_title)
-								.snippet("Snippet"));
+								.snippet(event_concordance));
 						
 						
 					}
