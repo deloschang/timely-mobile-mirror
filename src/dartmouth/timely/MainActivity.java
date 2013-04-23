@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,6 +36,9 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -446,7 +447,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					String snippet = "This is a test snippet";
 					
 					// test send notification
-					noteLatLong(header, snippet, getApplicationContext());
+//					noteLatLong(header, snippet, getApplicationContext());
 					
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -650,6 +651,13 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 		final int YOUR_NOTIF_ID = 0;
 		nm.notify(YOUR_NOTIF_ID, n);
+		
+		// Ring
+		try {
+	        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	        Ringtone r = RingtoneManager.getRingtone(ctx, notification);
+	        r.play();
+	    } catch (Exception e) {}
 	}
 
 	@Override
