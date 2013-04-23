@@ -76,6 +76,8 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 				);
 		
-		MainActivity.noteLatLong("Leave for class", success, context);
+		if (MainActivity.class_visited == 0){
+			MainActivity.noteLatLong("Leave for class", success, context);
+		}
 	}
 }

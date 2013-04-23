@@ -98,7 +98,8 @@ OnMarkerClickListener {
 	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
 	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
 	
-	static final LatLng FREE_FOOD_ROCKY= new LatLng(43.70575,-72.289966); // Free Food Rocky
+	static final LatLng FREE_FOOD_ROCKY = new LatLng(43.70575,-72.289966); // Free Food Rocky
+	static final LatLng FREE_FOOD_WILDER = new LatLng(43.705099,-72.286439); // Free Food Wilder
 	
 	
 	static final int ZOOM_LEVEL = 17;
@@ -129,10 +130,17 @@ OnMarkerClickListener {
 	// Routing
 	static Marker routeMarker;
 	static Marker classMarker; // class marker (e.g. COSC 51)
+	static Marker mollysMarker;
+	static Marker kafMarker;
+	static Marker hopMarker;
+	static Marker freeFoodRockyMarker;
+	static Marker freeFoodWilderMarker;
+	static Marker lousMarker;
 	
 	// switches
 	int silence_phone = 0;
-	int class_visited = 0;
+	static int class_visited = 0;
+	static int estimate_reminder = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -726,28 +734,37 @@ OnMarkerClickListener {
 			class_visited = 0;
 			
 			// Add food options
-			Marker hopMarker = map.addMarker(new MarkerOptions().position(HOP_LOCATION)
+			hopMarker = map.addMarker(new MarkerOptions().position(HOP_LOCATION)
 					.title("Eat at the Hop")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			Marker mollysMarker = map.addMarker(new MarkerOptions().position(MOLLYS)
+			mollysMarker = map.addMarker(new MarkerOptions().position(MOLLYS)
 					.title("Eat at Molly's")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			Marker lousMarker = map.addMarker(new MarkerOptions().position(LOUS)
+			lousMarker = map.addMarker(new MarkerOptions().position(LOUS)
 					.title("Eat at Lou's")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			Marker kafMarker = map.addMarker(new MarkerOptions().position(KAF)
+			kafMarker = map.addMarker(new MarkerOptions().position(KAF)
 					.title("Eat at King Arthur's Flour")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			kafMarker.showInfoWindow();
+			freeFoodRockyMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_ROCKY)
+					.title("Free Food @ Lunch with Folt")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("scraped from listserv"));
 			
+			freeFoodWilderMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_WILDER)
+					.title("Free Food @ Mathematics Society")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("scraped from listserv"));
+			
+			kafMarker.showInfoWindow();
 		}
 	}
 	
@@ -769,6 +786,30 @@ OnMarkerClickListener {
 			silence_phone = 1;
 			class_visited = 1;
 			return true;
+		}
+		
+		if (clickedMarker.equals(kafMarker)){
+			addToPolyline(kafMarker);
+		}
+		
+		if (clickedMarker.equals(hopMarker)){
+			addToPolyline(hopMarker);
+		}
+		
+		if (clickedMarker.equals(lousMarker)){
+			addToPolyline(lousMarker);
+		}
+		
+		if (clickedMarker.equals(freeFoodRockyMarker)){
+			addToPolyline(freeFoodRockyMarker);
+		}
+		
+		if (clickedMarker.equals(freeFoodWilderMarker)){
+			addToPolyline(freeFoodWilderMarker);
+		}
+		
+		if (clickedMarker.equals(mollysMarker)){
+			addToPolyline(mollysMarker);
 		}
 		
 		
