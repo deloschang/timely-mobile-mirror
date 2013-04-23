@@ -241,6 +241,7 @@ OnMarkerClickListener {
 			
 			// 1st marker: User starts here 
 			// 2nd marker: Class added from AsyncLoadEvent
+			// 3rd marker: Lunch options
 			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
@@ -498,6 +499,7 @@ OnMarkerClickListener {
 		public HttpResponse result;
 		public LatLng point;
 	}
+	
 
 	// GET request for the Mapquest API
 	// Wrapper class enables multiple type parameters
@@ -765,6 +767,12 @@ OnMarkerClickListener {
 					.snippet("scraped from listserv"));
 			
 			kafMarker.showInfoWindow();
+		}
+		
+		if (estimate_reminder == 0 ){
+			new AsyncLoadEstimate(this).execute();
+			
+			estimate_reminder = 1;
 		}
 	}
 	
