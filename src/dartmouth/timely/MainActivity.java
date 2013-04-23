@@ -93,6 +93,13 @@ OnMarkerClickListener {
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.705105,-72.289582);
 	static final LatLng DORM_LOCATION = new LatLng(43.703779,-72.290617);  // starting point
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
+	static final LatLng HOP_LOCATION = new LatLng(43.70209,-72.28788); // Hop
+	static final LatLng KAF = new LatLng(43.705239,-72.288503); // KAF
+	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
+	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
+	
+	static final LatLng FREE_FOOD_ROCKY= new LatLng(43.70575,-72.289966); // Free Food Rocky
+	
 	
 	static final int ZOOM_LEVEL = 17;
 
@@ -125,6 +132,7 @@ OnMarkerClickListener {
 	
 	// switches
 	int silence_phone = 0;
+	int class_visited = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -179,6 +187,9 @@ OnMarkerClickListener {
 							if (isUpdating){
 								current_location.setText(R.string.demo_location);
 								isUpdating = false;
+								
+								// check switches by time
+								delayedCheck();
 							} else {
 								current_location.setText("Updating location..");
 								isUpdating = true;
@@ -623,7 +634,7 @@ OnMarkerClickListener {
 
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 						
-						// check switches
+						// check switches delayed
 						checkSwitches();
 					}
 
@@ -670,11 +681,6 @@ OnMarkerClickListener {
 		final int YOUR_NOTIF_ID = 0;
 		nm.notify(YOUR_NOTIF_ID, n);
 		
-		// Ring
-//		try {
-//	        Ringtone r = RingtoneManager.getRingtone(ctx, notification);
-//	        r.play();
-//	    } catch (Exception e) {}
 	}
 
 	@Override
@@ -708,14 +714,47 @@ OnMarkerClickListener {
 		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			noteLatLong("Unsilencing phone", "out of class", getApplicationContext());
 			
-			
 			silence_phone = 0;
+		}
+		
+		
+	}
+	
+	public void delayedCheck(){
+		if (class_visited == 1){
+			noteLatLong("Lunch Menu Options Loaded", "usual lunch time", getApplicationContext());
+			class_visited = 0;
+			
+			// Add food options
+			Marker hopMarker = map.addMarker(new MarkerOptions().position(HOP_LOCATION)
+					.title("Eat at the Hop")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("Lunch menu loaded"));
+			
+			Marker mollysMarker = map.addMarker(new MarkerOptions().position(MOLLYS)
+					.title("Eat at Molly's")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("Lunch menu loaded"));
+			
+			Marker lousMarker = map.addMarker(new MarkerOptions().position(LOUS)
+					.title("Eat at Lou's")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("Lunch menu loaded"));
+			
+			Marker kafMarker = map.addMarker(new MarkerOptions().position(KAF)
+					.title("Eat at King Arthur's Flour")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
+					.snippet("Lunch menu loaded"));
+			
+			kafMarker.showInfoWindow();
+			
 		}
 	}
 	
 	@Override
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
+		checkSwitches();
 		if (clickedMarker.equals(classMarker)){
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
@@ -728,10 +767,10 @@ OnMarkerClickListener {
 
 			classMarker = null; 
 			silence_phone = 1;
+			class_visited = 1;
 			return true;
 		}
 		
-		checkSwitches();
 		
 		return false;
 	}
