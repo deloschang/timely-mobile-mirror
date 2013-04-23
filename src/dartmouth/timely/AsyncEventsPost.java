@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.net.ParseException;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -24,7 +25,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 	 * 
 	 * @author Delos Chang
 	 */
-	class AsyncEventsPost extends AsyncTask<String, Void, String>{
+	class AsyncEventsPost extends AsyncTask<String, Void, String>
+		implements OnMarkerClickListener{
 
 		// will shift lat / lng
 		// 0.005 max
@@ -62,6 +64,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 					// Parse JSON from the API response
 					JSONArray jArray = new JSONArray(response);
 					
+					MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 					for (int i = 0; i < jArray.length(); i++){
 						JSONObject jObject = jArray.getJSONObject(i); // main object
 						
@@ -114,5 +117,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+
+		@Override
+		public boolean onMarkerClick(Marker marker) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}

@@ -207,12 +207,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
-			Polyline path_from_clicks = map.addPolyline(polyline_options);
 			
 			// User starts here 
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
-					.snippet("from location and sleep patterns")
+					.snippet("from location and sleep sensors")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 					);
 			starting_point.showInfoWindow(); // display marker title automatically
@@ -220,8 +219,8 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			polyline_options.add(DORM_LOCATION);
 			polyline_options.width(10);
 			polyline_options.color(Color.CYAN);
-			map.addPolyline(polyline_options);
 			
+			Polyline path_from_clicks = map.addPolyline(polyline_options);
 
 		} else {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
@@ -634,7 +633,6 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 				0, notificationIntent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 
-		System.out.println("Notification portion reached");
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Notification.Builder builder = new Notification.Builder(this)
