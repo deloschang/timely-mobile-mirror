@@ -67,7 +67,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 		MainActivity.map.addMarker(new MarkerOptions()
 				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
 				.title(success)
-				.snippet("from Timely's Class Scheduler")
+				.snippet("from Class Scheduler")
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 				);
 	}
