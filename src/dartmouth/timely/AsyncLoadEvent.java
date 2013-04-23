@@ -3,6 +3,7 @@ package dartmouth.timely;
 import java.io.IOException;
 import java.util.List;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -19,11 +20,14 @@ import com.google.api.services.calendar.model.Events;
 class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 
 	final String CLASS_CALENDAR_FROM_API = "hskbfmkfc5dhbb517ih1r11gjs@group.calendar.google.com";
+	
 	private final MainActivity activity;
+	Context context;
 	
 //	final com.google.api.services.calendar.Calendar client;
 	AsyncLoadEvent(MainActivity activity){
 		this.activity = activity;
+		this.context = activity.getApplicationContext();
 	}
 
 	@Override
@@ -70,5 +74,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 				.snippet("from Class Scheduler")
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 				);
+		
+		MainActivity.noteLatLong("Leave for class", success, context);
 	}
 }

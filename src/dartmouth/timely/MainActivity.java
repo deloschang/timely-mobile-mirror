@@ -446,8 +446,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 					String snippet = "This is a test snippet";
 					
 					// test send notification
-					noteLatLong(header, snippet);
-					noteLatLong("Lab 1 Notification", snippet);
+					noteLatLong(header, snippet, getApplicationContext());
 					
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -628,22 +627,22 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 
 	// Pops a notification for user
-	private void noteLatLong(String header, String inner_info){
+	public static void noteLatLong(String header, String inner_info, Context ctx){
 		// fix intent
-		Intent notificationIntent = new Intent(this, NotificationReceiverActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this,
+		Intent notificationIntent = new Intent(ctx, NotificationReceiverActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(ctx,
 				0, notificationIntent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 
-		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		NotificationManager nm = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
-		Notification.Builder builder = new Notification.Builder(this)
+		Notification.Builder builder = new Notification.Builder(ctx)
 		.setContentTitle(header)
 		.setContentText(inner_info);
 
 		builder.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
-		.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timely));
+		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely));
 		//                    .setTicker(res.getString("Test ticker"))
 		//                    .setWhen(System.currentTimeMillis())
 		//                    .setAutoCancel(true)
