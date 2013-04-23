@@ -36,14 +36,13 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Ringtone;
+import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -705,7 +704,10 @@ OnMarkerClickListener {
 	public void checkSwitches(){
 		if (silence_phone == 1){
 			// Unsilence phone 
+			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			noteLatLong("Unsilencing phone", "out of class", getApplicationContext());
+			
 			
 			silence_phone = 0;
 		}
@@ -718,14 +720,17 @@ OnMarkerClickListener {
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
 				
+			// Silence phone in class
+			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
 			
+
 			classMarker = null; 
 			silence_phone = 1;
 			return true;
 		}
 		
-		// check switches 
 		checkSwitches();
 		
 		return false;
