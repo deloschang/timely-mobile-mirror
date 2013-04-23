@@ -662,7 +662,7 @@ OnMarkerClickListener {
 
 
 	// Pops a notification for user
-	public static void noteLatLong(String header, String inner_info, Context ctx){
+	public static void noteLatLong(String header, String inner_info, Context ctx, String subtext){
 		// sound
 		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		
@@ -676,9 +676,11 @@ OnMarkerClickListener {
 
 		Notification.Builder builder = new Notification.Builder(ctx)
 		.setContentTitle(header)
-		.setContentText(inner_info);
+		.setContentText(inner_info)
+		.setSubText(subtext);
 
-		builder.setContentIntent(contentIntent)
+		builder
+//		.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
 		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely_icon))
 		.setTicker(header)
@@ -690,7 +692,10 @@ OnMarkerClickListener {
 
 		final int YOUR_NOTIF_ID = 0;
 		nm.notify(YOUR_NOTIF_ID, n);
-		
+	}
+	
+	public static void noteLatLong(String header, String inner_info, Context ctx){
+		noteLatLong(header, inner_info, ctx, "");
 	}
 
 	@Override
