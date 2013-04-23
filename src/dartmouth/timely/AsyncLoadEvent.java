@@ -69,7 +69,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 	
 	protected final void onPostExecute(String success) {
 		// continue
-		MainActivity.routeMarker = MainActivity.map.addMarker(new MarkerOptions()
+		MainActivity.classMarker = MainActivity.map.addMarker(new MarkerOptions()
 				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
 				.title(success)
 				.snippet("from Class Scheduler")

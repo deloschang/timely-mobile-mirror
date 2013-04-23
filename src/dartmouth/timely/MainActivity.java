@@ -91,7 +91,7 @@ OnMarkerClickListener {
 
 	// Google Maps API lat/lng for Hanover
 	public static GoogleMap map;
-	static final LatLng DARTMOUTH_COORD = new LatLng(43.704446,-72.288697);
+	static final LatLng DARTMOUTH_COORD = new LatLng(43.705105,-72.289582);
 	static final LatLng DORM_LOCATION = new LatLng(43.703779,-72.290617);  // starting point
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
 	
@@ -122,6 +122,10 @@ OnMarkerClickListener {
 	
 	// Routing
 	static Marker routeMarker;
+	static Marker classMarker; // class marker (e.g. COSC 51)
+	
+	// switches
+	int silence_phone = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -618,8 +622,10 @@ OnMarkerClickListener {
 						polyline_options.color(Color.CYAN);
 						map.addPolyline(polyline_options);
 
-
 						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
+						
+						// check switches
+						checkSwitches();
 					}
 
 				}
@@ -637,6 +643,9 @@ OnMarkerClickListener {
 
 	// Pops a notification for user
 	public static void noteLatLong(String header, String inner_info, Context ctx){
+		// sound
+		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+		
 		// fix intent
 		Intent notificationIntent = new Intent(ctx, NotificationReceiverActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(ctx,
@@ -654,6 +663,7 @@ OnMarkerClickListener {
 		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely_icon))
 		.setTicker(header)
 		.setDefaults(Notification.DEFAULT_VIBRATE)
+		.setSound(notification)
 		.setAutoCancel(true)
 		;
 		Notification n = builder.build();
@@ -662,11 +672,10 @@ OnMarkerClickListener {
 		nm.notify(YOUR_NOTIF_ID, n);
 		
 		// Ring
-		try {
-	        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-	        Ringtone r = RingtoneManager.getRingtone(ctx, notification);
-	        r.play();
-	    } catch (Exception e) {}
+//		try {
+//	        Ringtone r = RingtoneManager.getRingtone(ctx, notification);
+//	        r.play();
+//	    } catch (Exception e) {}
 	}
 
 	@Override
@@ -682,26 +691,43 @@ OnMarkerClickListener {
 		new NetworkGet().execute(url, point); // reverse-geocode
 	}
 
+	public void addToPolyline(Marker marker){
+		polyline_options.add(marker.getPosition());
+		polyline_options.width(10);
+		polyline_options.color(Color.CYAN);
+		map.addPolyline(polyline_options);
+
+		marker.showInfoWindow(); // display marker title automatically
+
+		map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+	}
+	
+	public void checkSwitches(){
+		if (silence_phone == 1){
+			// Unsilence phone 
+			noteLatLong("Unsilencing phone", "out of class", getApplicationContext());
+			
+			silence_phone = 0;
+		}
+	}
+	
 	@Override
 	public boolean onMarkerClick(Marker clickedMarker) {
-		System.out.println(" check if equal " );
-		if (clickedMarker.equals(routeMarker)){
-		// Add the point to the path  with options
-			polyline_options.add(routeMarker.getPosition());
-			polyline_options.width(10);
-			polyline_options.color(Color.CYAN);
-			map.addPolyline(polyline_options);
-			
-			routeMarker.showInfoWindow(); // display marker title automatically
-	
-			map.animateCamera(CameraUpdateFactory.newLatLng(routeMarker.getPosition()));
-			
+		
+		if (clickedMarker.equals(classMarker)){
+			// Add the point to the path  with options
+			addToPolyline(classMarker);
+				
 			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
-			routeMarker = null; 
+			
+			classMarker = null; 
+			silence_phone = 1;
 			return true;
 		}
 		
-		System.out.println("doesn't equal");
+		// check switches 
+		checkSwitches();
+		
 		return false;
 	}
 }
