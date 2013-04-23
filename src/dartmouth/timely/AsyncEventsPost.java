@@ -64,7 +64,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 					// Parse JSON from the API response
 					JSONArray jArray = new JSONArray(response);
 					
-					MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 					for (int i = 0; i < jArray.length(); i++){
 						JSONObject jObject = jArray.getJSONObject(i); // main object
 						
@@ -99,7 +98,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
 						
 						// add event marker to the map
-						Marker usermarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
+						MainActivity.map.addMarker(new MarkerOptions().position(event_location)
 								.title(event_title)
 								.snippet(event_concordance)
 								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color

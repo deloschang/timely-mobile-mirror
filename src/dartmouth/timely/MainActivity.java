@@ -43,6 +43,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,7 +68,9 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.calendar.CalendarScopes;
 
 
-public class MainActivity extends FragmentActivity implements OnMapClickListener{
+public class MainActivity extends FragmentActivity implements OnMapClickListener,
+OnMarkerClickListener {
+	
 
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
@@ -115,6 +119,9 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 	
 	// Dynamic updating location
 	boolean isUpdating = true;
+	
+	// Routing
+	static Marker routeMarker;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -212,6 +219,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 			
 			// 1st marker: User starts here 
 			// 2nd marker: Class added from AsyncLoadEvent
+			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
 					.snippet("from location and sleep sensors")
@@ -643,10 +651,11 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 		builder.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
-		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely));
-		//                    .setTicker(res.getString("Test ticker"))
-		//                    .setWhen(System.currentTimeMillis())
-		//                    .setAutoCancel(true)
+		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely_icon))
+		.setTicker(header)
+		.setDefaults(Notification.DEFAULT_VIBRATE)
+		.setAutoCancel(true)
+		;
 		Notification n = builder.build();
 
 		final int YOUR_NOTIF_ID = 0;
@@ -671,5 +680,28 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 
 		// Send lat/lng in parameters to draw a marker on the map with the title 
 		new NetworkGet().execute(url, point); // reverse-geocode
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker clickedMarker) {
+		System.out.println(" check if equal " );
+		if (clickedMarker.equals(routeMarker)){
+		// Add the point to the path  with options
+			polyline_options.add(routeMarker.getPosition());
+			polyline_options.width(10);
+			polyline_options.color(Color.CYAN);
+			map.addPolyline(polyline_options);
+			
+			routeMarker.showInfoWindow(); // display marker title automatically
+	
+			map.animateCamera(CameraUpdateFactory.newLatLng(routeMarker.getPosition()));
+			
+			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
+			routeMarker = null; 
+			return true;
+		}
+		
+		System.out.println("doesn't equal");
+		return false;
 	}
 }

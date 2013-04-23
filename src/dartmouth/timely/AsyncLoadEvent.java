@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.calendar.model.Event;
@@ -68,7 +69,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 	
 	protected final void onPostExecute(String success) {
 		// continue
-		MainActivity.map.addMarker(new MarkerOptions()
+		MainActivity.routeMarker = MainActivity.map.addMarker(new MarkerOptions()
 				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
 				.title(success)
 				.snippet("from Class Scheduler")
