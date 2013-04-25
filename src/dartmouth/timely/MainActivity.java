@@ -140,6 +140,7 @@ OnMarkerClickListener {
 	// switches
 	int silence_phone = 0;
 	static int class_visited = 0;
+	static int load_lunch = 0;
 	static int estimate_reminder = 0;
 
 	/** Called when the activity is first created. */
@@ -736,9 +737,9 @@ OnMarkerClickListener {
 	}
 	
 	public void delayedCheck(){
-		if (class_visited == 1){
-			noteLatLong("Lunch Menu Options Loaded", "usual lunch time", getApplicationContext());
-			class_visited = 0;
+		if (class_visited == 1 && load_lunch == 1){
+			noteLatLong("Lunch Menu Options Loaded", "becuase of your usual lunch time", getApplicationContext());
+			load_lunch = 0;
 			
 			// Add food options
 			hopMarker = map.addMarker(new MarkerOptions().position(HOP_LOCATION)
@@ -798,6 +799,7 @@ OnMarkerClickListener {
 			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
+			load_lunch = 1; // unique param that loads lunch
 			return true;
 		}
 		
