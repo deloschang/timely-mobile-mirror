@@ -219,6 +219,7 @@ OnMarkerClickListener {
 		// deflate the update bar
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
+		findViewById(R.id.lunchCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
@@ -752,6 +753,7 @@ OnMarkerClickListener {
 	public void delayedCheck(){
 		if (class_visited == 1 && load_lunch == 1){
 			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
+			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
 			load_lunch = 0;
 			
 			// Add food options
@@ -816,6 +818,10 @@ OnMarkerClickListener {
 			case Globals.LOAD_ESTIMATE:
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
 				break;
+			
+			case Globals.LOAD_LUNCH_OPTIONS:
+				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
+				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
 				
 			default:
 				break;
