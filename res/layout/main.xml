@@ -54,6 +54,17 @@
 	    android:layout_height="1dp"
 	    android:background="@android:color/darker_gray"/>
 	
+	
+	<!--  Demo Location -->
+	<TextView
+	    android:id="@+id/current_location"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:textStyle="bold"
+	    android:text="@string/demo_location"
+	    />
+	
 	<!--  Update Bar -->
 	<dartmouth.timely.NowLayout
 	    android:id="@+id/nowlayout"
@@ -66,7 +77,7 @@
 		    android:id="@+id/phoneSilenceCard"
 		    style="@style/nowCardStyle"
 		    android:layout_width="match_parent"
-		    android:layout_height="36dp"
+		    android:layout_height="34dp"
 		    android:text="Hello World"
 		    android:typeface="sans"
 		    android:textSize="15sp"
@@ -81,7 +92,7 @@
 		    android:id="@+id/assignmentCard"
 		    style="@style/nowCardStyle"
 		    android:layout_width="match_parent"
-		    android:layout_height="36dp"
+		    android:layout_height="34dp"
 		    android:text="Hi World"
 		    android:typeface="sans"
 		    android:textSize="15sp"
@@ -98,15 +109,6 @@
     </ImageView> -->
 	        
 	
-	<!--  Demo Location -->
-	<TextView
-	    android:id="@+id/current_location"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center"
-	    android:textStyle="bold"
-	    android:text="@string/demo_location"
-	    />
 	
 
 

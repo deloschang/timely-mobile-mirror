@@ -743,6 +743,7 @@ OnMarkerClickListener {
 			updateBar(Globals.UNSILENCE_PHONE, this, Globals.UNSILENCE_PHONE_TEXT);
 			
 			silence_phone = 0;
+			load_lunch = 1; // unique param that loads lunch
 		}
 		
 		
@@ -856,7 +857,6 @@ OnMarkerClickListener {
 //			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
-			load_lunch = 1; // unique param that loads lunch
 			
 			return true;
 		}
