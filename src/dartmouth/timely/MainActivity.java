@@ -44,6 +44,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -142,7 +144,10 @@ OnMarkerClickListener {
 	static int class_visited = 0;
 	static int load_lunch = 0;
 	static int estimate_reminder = 0;
-
+	
+	// Update Bar
+	boolean inversed = true;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -210,7 +215,11 @@ OnMarkerClickListener {
 		};
 		new Thread(runnableOffMain).start();
 		// end
-
+		
+		// deflate the update bar
+		findViewById(R.id.update1).setVisibility(View.GONE);
+		findViewById(R.id.nowlayout).setVisibility(View.GONE);
+//		findViewById(R.id.image1).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
 		sendLocation();
@@ -728,7 +737,7 @@ OnMarkerClickListener {
 			// Unsilence phone 
 			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-			noteLatLong("Unsilencing phone", "out of class", getApplicationContext());
+			noteLatLong("Unsilencing phone", "you're out of class", getApplicationContext());
 			
 			silence_phone = 0;
 		}
@@ -738,7 +747,7 @@ OnMarkerClickListener {
 	
 	public void delayedCheck(){
 		if (class_visited == 1 && load_lunch == 1){
-			noteLatLong("Lunch Menu Options Loaded", "becuase of your usual lunch time", getApplicationContext());
+			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
 			load_lunch = 0;
 			
 			// Add food options
@@ -782,6 +791,29 @@ OnMarkerClickListener {
 		}
 	}
 	
+	public void updateBar(String update){
+		
+		// always do
+		findViewById(R.id.nowlayout).setVisibility(View.VISIBLE);
+		
+		TextView update_bar = (TextView) findViewById(R.id.update1);
+		update_bar.setVisibility(View.VISIBLE);
+		update_bar.setText(update);
+		
+		
+		if (!inversed) {
+			update_bar.startAnimation(
+					AnimationUtils.loadAnimation(getApplicationContext(),
+							R.anim.slide_up_left));
+		} else {
+			update_bar.startAnimation(
+					AnimationUtils.loadAnimation(getApplicationContext(),
+							R.anim.slide_up_right));
+		}
+
+	   inversed = !inversed;
+	}
+	
 	@Override
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
@@ -796,10 +828,14 @@ OnMarkerClickListener {
 			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
 			
 
+			// set update bar
+			updateBar(Globals.IN_CLASS);
+			
 			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
 			load_lunch = 1; // unique param that loads lunch
+			
 			return true;
 		}
 		
@@ -830,4 +866,5 @@ OnMarkerClickListener {
 		
 		return false;
 	}
+	
 }

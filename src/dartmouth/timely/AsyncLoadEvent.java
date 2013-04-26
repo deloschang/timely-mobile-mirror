@@ -5,9 +5,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.calendar.model.Event;
@@ -76,6 +76,9 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 				);
 		
-		MainActivity.noteLatLong("Leave for class", success, context);
+		if (MainActivity.class_visited == 0){
+			MainActivity.noteLatLong("Leave for class", success, context);
+//			context.this.findViewById(R.id.update1).setVisibility(View.GONE);
+		}
 	}
 }
