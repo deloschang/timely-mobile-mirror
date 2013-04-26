@@ -217,7 +217,7 @@ OnMarkerClickListener {
 		// end
 		
 		// deflate the update bar
-		findViewById(R.id.update1).setVisibility(View.GONE);
+		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 //		findViewById(R.id.image1).setVisibility(View.GONE);
 
@@ -739,6 +739,9 @@ OnMarkerClickListener {
 		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			noteLatLong("Unsilencing phone", "you're out of class", getApplicationContext());
 			
+			// set status bar
+			updateBar(Globals.UNSILENCE_PHONE);
+			
 			silence_phone = 0;
 		}
 		
@@ -791,22 +794,39 @@ OnMarkerClickListener {
 		}
 	}
 	
-	public void updateBar(String update){
+	public void updateBar(int key){
 		
 		// always do
 		findViewById(R.id.nowlayout).setVisibility(View.VISIBLE);
 		
-		TextView update_bar = (TextView) findViewById(R.id.update1);
-		update_bar.setVisibility(View.VISIBLE);
-		update_bar.setText(update);
+		TextView card_obj = null;
+		String card_text = null;
 		
+		switch (key){
+			
+			case Globals.SILENCE_PHONE:
+				card_obj = (TextView) findViewById(R.id.phoneSilenceCard);
+				card_text = "Phone silenced (in class)";
+				break;
+				
+			case Globals.UNSILENCE_PHONE:
+				card_obj = (TextView) findViewById(R.id.phoneSilenceCard);
+				card_text = "Phone unsilenced (out of class)";
+				break;
+				
+			default:
+				break;
+		}
+				
+		card_obj.setVisibility(View.VISIBLE);
+		card_obj.setText(card_text);
 		
 		if (!inversed) {
-			update_bar.startAnimation(
+			card_obj.startAnimation(
 					AnimationUtils.loadAnimation(getApplicationContext(),
 							R.anim.slide_up_left));
 		} else {
-			update_bar.startAnimation(
+			card_obj.startAnimation(
 					AnimationUtils.loadAnimation(getApplicationContext(),
 							R.anim.slide_up_right));
 		}
@@ -829,7 +849,7 @@ OnMarkerClickListener {
 			
 
 			// set update bar
-			updateBar(Globals.IN_CLASS);
+			updateBar(Globals.SILENCE_PHONE);
 			
 			classMarker = null; 
 			silence_phone = 1;

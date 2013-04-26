@@ -63,12 +63,12 @@
         android:orientation="vertical" >
 	    
 		 <TextView
-		    android:id="@+id/update1"
+		    android:id="@+id/phoneSilenceCard"
 		    style="@style/nowCardStyle"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:gravity="center"
-		    android:text="Hello World!"
+		    android:text=""
 		    android:typeface="sans"
 		    android:textSize="15sp"
 		    android:layout_margin="5dp"

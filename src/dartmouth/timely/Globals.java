@@ -3,6 +3,10 @@ package dartmouth.timely;
 
 // All the global constants are put here
 public abstract class Globals {
-	public static final String IN_CLASS = "Phone silenced (in class)";
+	
+	// keys for updateBar
+	public static final int SILENCE_PHONE = 1;
+	public static final int UNSILENCE_PHONE = 2;
+	
 
 }
