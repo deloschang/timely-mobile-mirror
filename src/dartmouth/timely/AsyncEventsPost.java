@@ -98,12 +98,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
 						
 						// add event marker to the map
-						MainActivity.map.addMarker(new MarkerOptions().position(event_location)
+						Marker eventMarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
 								.title(event_title)
 								.snippet(event_concordance)
 								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color
 								
 								);
+						
+						// add to the array
+						MainActivity.eventMarkers.add(eventMarker);
+						System.out.println(MainActivity.eventMarkers.size());
 						
 						
 					}

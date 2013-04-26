@@ -145,6 +145,9 @@ OnMarkerClickListener {
 	static int load_lunch = 0;
 	static int estimate_reminder = 0;
 	
+	// Events from API
+	static List<Marker> eventMarkers = new ArrayList<Marker>();
+	
 	// Update Bar
 	static boolean inversed = true;
 	
@@ -869,26 +872,43 @@ OnMarkerClickListener {
 		
 		if (clickedMarker.equals(kafMarker)){
 			addToPolyline(kafMarker);
+			return true;
 		}
 		
 		if (clickedMarker.equals(hopMarker)){
 			addToPolyline(hopMarker);
+			return true;
 		}
 		
 		if (clickedMarker.equals(lousMarker)){
 			addToPolyline(lousMarker);
+			return true;
 		}
 		
 		if (clickedMarker.equals(freeFoodRockyMarker)){
 			addToPolyline(freeFoodRockyMarker);
+			return true;
 		}
 		
 		if (clickedMarker.equals(freeFoodWilderMarker)){
 			addToPolyline(freeFoodWilderMarker);
+			return true;
 		}
 		
 		if (clickedMarker.equals(mollysMarker)){
 			addToPolyline(mollysMarker);
+			// add to the array
+		}
+		
+		// try to match the event
+		for (int i = 0; i < eventMarkers.size(); i++){
+			System.out.println("Testing " + i);
+			if (clickedMarker.equals(eventMarkers.get(i))){
+				clickedMarker.showInfoWindow();
+				
+				// show a card and schedule button
+				return true;
+			}
 		}
 		
 		
