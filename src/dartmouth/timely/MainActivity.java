@@ -223,6 +223,7 @@ OnMarkerClickListener {
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
+		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
@@ -825,6 +826,11 @@ OnMarkerClickListener {
 			case Globals.LOAD_LUNCH_OPTIONS:
 				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
 				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
+				break;
+				
+			case Globals.SCHEDULE_EVENT:
+				card_obj = (TextView) activity.findViewById(R.id.eventCard);
+				break;
 				
 			default:
 				break;
@@ -907,6 +913,9 @@ OnMarkerClickListener {
 				clickedMarker.showInfoWindow();
 				
 				// show a card and schedule button
+				String card_text = "Schedule to Calendar: " + clickedMarker.getTitle();
+				
+				updateBar(Globals.SCHEDULE_EVENT, this, card_text);
 				return true;
 			}
 		}
