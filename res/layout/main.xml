@@ -58,7 +58,7 @@
 	<dartmouth.timely.NowLayout
 	    android:id="@+id/nowlayout"
 	    android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:background="#e3e3e3"
         android:orientation="vertical" >
 	    
@@ -66,12 +66,29 @@
 		    android:id="@+id/phoneSilenceCard"
 		    style="@style/nowCardStyle"
 		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center"
-		    android:text=""
+		    android:layout_height="36dp"
+		    android:text="Hello World"
 		    android:typeface="sans"
 		    android:textSize="15sp"
-		    android:layout_margin="5dp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="2dp"
+	        android:background="@color/white"
+		    /> 
+		    
+		 <TextView
+		    android:id="@+id/assignmentCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="36dp"
+		    android:text="Hi World"
+		    android:typeface="sans"
+		    android:textSize="15sp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
 	        android:background="@color/white"
 		    /> 
 	    

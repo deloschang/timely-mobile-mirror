@@ -146,7 +146,7 @@ OnMarkerClickListener {
 	static int estimate_reminder = 0;
 	
 	// Update Bar
-	boolean inversed = true;
+	static boolean inversed = true;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -218,8 +218,8 @@ OnMarkerClickListener {
 		
 		// deflate the update bar
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
+		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
-//		findViewById(R.id.image1).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
 		sendLocation();
@@ -740,7 +740,7 @@ OnMarkerClickListener {
 			noteLatLong("Unsilencing phone", "you're out of class", getApplicationContext());
 			
 			// set status bar
-			updateBar(Globals.UNSILENCE_PHONE);
+			updateBar(Globals.UNSILENCE_PHONE, this, Globals.UNSILENCE_PHONE_TEXT);
 			
 			silence_phone = 0;
 		}
@@ -794,24 +794,26 @@ OnMarkerClickListener {
 		}
 	}
 	
-	public void updateBar(int key){
+	public static void updateBar(int key, Activity activity, String card_text){
 		
+		Context context = activity.getApplicationContext();
 		// always do
-		findViewById(R.id.nowlayout).setVisibility(View.VISIBLE);
+		activity.findViewById(R.id.nowlayout).setVisibility(View.VISIBLE);
 		
 		TextView card_obj = null;
-		String card_text = null;
 		
 		switch (key){
 			
 			case Globals.SILENCE_PHONE:
-				card_obj = (TextView) findViewById(R.id.phoneSilenceCard);
-				card_text = "Phone silenced (in class)";
+				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
 				break;
 				
 			case Globals.UNSILENCE_PHONE:
-				card_obj = (TextView) findViewById(R.id.phoneSilenceCard);
-				card_text = "Phone unsilenced (out of class)";
+				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
+				break;
+			
+			case Globals.LOAD_ESTIMATE:
+				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
 				break;
 				
 			default:
@@ -823,11 +825,11 @@ OnMarkerClickListener {
 		
 		if (!inversed) {
 			card_obj.startAnimation(
-					AnimationUtils.loadAnimation(getApplicationContext(),
+					AnimationUtils.loadAnimation(context,
 							R.anim.slide_up_left));
 		} else {
 			card_obj.startAnimation(
-					AnimationUtils.loadAnimation(getApplicationContext(),
+					AnimationUtils.loadAnimation(context,
 							R.anim.slide_up_right));
 		}
 
@@ -838,7 +840,7 @@ OnMarkerClickListener {
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
 		checkSwitches();
-		if (clickedMarker.equals(classMarker)){
+		if (clickedMarker.equals(classMarker) && class_visited == 0){
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
 				
@@ -849,9 +851,9 @@ OnMarkerClickListener {
 			
 
 			// set update bar
-			updateBar(Globals.SILENCE_PHONE);
+			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
 			
-			classMarker = null; 
+//			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
 			load_lunch = 1; // unique param that loads lunch

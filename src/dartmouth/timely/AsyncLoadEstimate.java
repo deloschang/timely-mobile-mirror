@@ -88,5 +88,6 @@ class AsyncLoadEstimate extends AsyncTask<MainActivity, Void, StringWrapper>{
 //			);
 		
 		MainActivity.noteLatLong(wrapper.assignment_name, wrapper.estimate, context, wrapper.subtext);
+		MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name);
 	}
 }

@@ -77,7 +77,7 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 				);
 		
 		if (MainActivity.class_visited == 0){
-			MainActivity.noteLatLong("Leave for class", success, context);
+			MainActivity.noteLatLong(Globals.LEAVE_FOR_CLASS_TEXT, success, context);
 //			context.this.findViewById(R.id.update1).setVisibility(View.GONE);
 		}
 	}
