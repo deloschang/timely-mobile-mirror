@@ -107,7 +107,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						
 						// add to the array
 						MainActivity.eventMarkers.add(eventMarker);
-						System.out.println(MainActivity.eventMarkers.size());
 						
 						
 					}

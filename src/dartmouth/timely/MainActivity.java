@@ -828,6 +828,7 @@ OnMarkerClickListener {
 				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
 				break;
 				
+			// when user selects an event to be scheduled
 			case Globals.SCHEDULE_EVENT:
 				card_obj = (TextView) activity.findViewById(R.id.eventCard);
 				break;
