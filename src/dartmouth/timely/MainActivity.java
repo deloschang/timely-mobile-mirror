@@ -280,7 +280,7 @@ OnMarkerClickListener {
 
 	private void pause(){
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(7000);
 		} catch (InterruptedException e){
 			e.printStackTrace();
 		}
@@ -291,6 +291,14 @@ OnMarkerClickListener {
 		if (checkGooglePlayServicesAvailable()) {
 			haveGooglePlayServices();
 		}
+	}
+	
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		// reset parameters
+		class_visited = 0;
+		estimate_reminder = 0;
 	}
 
 	/** Check that Google Play services APK is installed and up to date. */
@@ -613,7 +621,7 @@ OnMarkerClickListener {
 										|| display_name_arr[0].contains("Hall")
 										|| display_name_arr[0].contains("Webster Avenue") 
 										|| display_name_arr[0].contains("Gymnasium")){
-									poll = 10 + (int)(Math.random()*60);
+									poll = 10 + (int)(Math.random()*70);
 									pollmap.put(display_name_arr[0], poll);
 								} else {
 

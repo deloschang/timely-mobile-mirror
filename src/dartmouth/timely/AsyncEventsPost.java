@@ -29,9 +29,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 		implements OnMarkerClickListener{
 
 		// will shift lat / lng
-		// 0.005 max
-		final double POSITIVE_RANDOMIZER = 0.0020;
-		final double NEGATIVE_RANDOMIZER = 0.0020;
+		final double POSITIVE_RANDOMIZER = 0.0015;
+		final double NEGATIVE_RANDOMIZER = 0.0015;
 		
 		@Override
 		protected void onPreExecute() {
