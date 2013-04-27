@@ -107,7 +107,7 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 	}
 	
 	protected final void onPostExecute() {
-		MainActivity.noteLatLong("Scheduled ", startName, context, "");
+//		MainActivity.noteLatLong("Scheduled ", startName, context, "");
 //		MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")");
 	}
 }

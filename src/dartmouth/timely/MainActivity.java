@@ -848,12 +848,12 @@ OnMarkerClickListener {
 						
 						// remove after scheduled
 						v.setVisibility(View.GONE);
+						noteLatLong("Event Scheduled", param2, activity.getApplicationContext(), "");
 					}
 					
 				};
 				
 				card_obj.setOnClickListener(calListener);
-				noteLatLong(eventStartName, "Event Scheduled", context, "");
 				
 				break;
 				
