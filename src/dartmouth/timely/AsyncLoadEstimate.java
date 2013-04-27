@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.calendar.model.Event;
@@ -87,7 +88,12 @@ class AsyncLoadEstimate extends AsyncTask<MainActivity, Void, StringWrapper>{
 //				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 //			);
 		
-		MainActivity.noteLatLong(wrapper.assignment_name, wrapper.estimate, context, wrapper.subtext);
-		MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")");
+		try {
+			MainActivity.noteLatLong(wrapper.assignment_name, wrapper.estimate, context, wrapper.subtext);
+			MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")");
+		} catch (NullPointerException e){
+			Toast.makeText(context, "No estimates found", Toast.LENGTH_SHORT);
+			
+		}
 	}
 }

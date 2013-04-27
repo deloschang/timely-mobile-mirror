@@ -62,7 +62,9 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 			    Date date = format.parse(startDate);  
 				DateTime start = new DateTime(date, TimeZone.getTimeZone("UTC"));
 				
-				Date endDate = new Date(date.getTime() + 3600000);
+				// offset for time
+				int timeEst = 2400000 + (int)(Math.random()*4800000);
+				Date endDate = new Date(date.getTime() + timeEst);
 				DateTime end = new DateTime(endDate, TimeZone.getTimeZone("UTC"));
 				
 				eventBody.setStart(new EventDateTime().setDateTime(start));

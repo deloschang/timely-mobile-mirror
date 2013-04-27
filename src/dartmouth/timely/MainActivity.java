@@ -827,14 +827,41 @@ OnMarkerClickListener {
 			
 			case Globals.SILENCE_PHONE:
 				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
+				View.OnClickListener silenceListener = new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						v.setVisibility(View.GONE);
+					}
+				};
+				
+				card_obj.setOnClickListener(silenceListener);
 				break;
 				
 			case Globals.UNSILENCE_PHONE:
 				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
+				View.OnClickListener unsilenceListener = new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						v.setVisibility(View.GONE);
+					}
+				};
+				
+				card_obj.setOnClickListener(unsilenceListener);
 				break;
 			
 			case Globals.LOAD_ESTIMATE:
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
+				OnClickListener estOnClickListener = new estOnClickListener(card_obj) {
+					
+					@Override
+					public void onClick(View v) {
+						card_obj.append("\n Estimate thing");
+					}
+				};
+				
+				card_obj.setOnClickListener(estOnClickListener);
 				break;
 			
 			case Globals.LOAD_LUNCH_OPTIONS:
@@ -850,8 +877,7 @@ OnMarkerClickListener {
 				OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
 					@Override
 					public void onClick(View v) {
-						// do cal scheduling here
-						//// grab event time
+						// insert event into calendar
 						new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
 						
 						// remove after scheduled
