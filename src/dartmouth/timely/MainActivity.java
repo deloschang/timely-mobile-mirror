@@ -876,7 +876,7 @@ OnMarkerClickListener {
 							reset_estimate_click = 1;
 							
 						} else if (reset_estimate_click == 1){
-							card_obj.setTextColor(Color.BLACK);
+							card_obj.setTextColor(Color.parseColor("#707070"));
 							card_obj.setText(assignDueDate);
 							reset_estimate_click = 0;
 						}
