@@ -853,6 +853,7 @@ OnMarkerClickListener {
 				};
 				
 				card_obj.setOnClickListener(calListener);
+				noteLatLong(eventStartName, "Event Scheduled", context, "");
 				
 				break;
 				

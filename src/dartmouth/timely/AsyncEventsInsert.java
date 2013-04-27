@@ -104,20 +104,10 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 //			return null;
 		}
 		return null;
-		
-//		return null;
 	}
 	
-//	protected final void onPostExecute(StringWrapper wrapper) {
-		// continue
-//		MainActivity.classMarker = MainActivity.map.addMarker(new MarkerOptions()
-//				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
-//				.title(success)
-//				.snippet("from Class Scheduler")
-//				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
-//			);
-		
-//		MainActivity.noteLatLong("Scheduled ", wrapper.estimate, context, wrapper.subtext);
+	protected final void onPostExecute() {
+		MainActivity.noteLatLong("Scheduled ", startName, context, "");
 //		MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")");
-//	}
+	}
 }
