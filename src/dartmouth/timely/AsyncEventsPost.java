@@ -30,8 +30,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 		// will shift lat / lng
 		// 0.005 max
-		final double POSITIVE_RANDOMIZER = 0.0025;
-		final double NEGATIVE_RANDOMIZER = 0.0025;
+		final double POSITIVE_RANDOMIZER = 0.0020;
+		final double NEGATIVE_RANDOMIZER = 0.0020;
 		
 		@Override
 		protected void onPreExecute() {
