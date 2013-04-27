@@ -46,6 +46,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -145,6 +146,8 @@ OnMarkerClickListener {
 	static int class_visited = 0;
 	static int load_lunch = 0;
 	static int estimate_reminder = 0;
+	
+	static int reset_estimate_click = 0;
 	
 	// Events from API
 	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
@@ -299,6 +302,7 @@ OnMarkerClickListener {
 		// reset parameters
 		class_visited = 0;
 		estimate_reminder = 0;
+		reset_estimate_click = 0;
 	}
 
 	/** Check that Google Play services APK is installed and up to date. */
@@ -811,11 +815,16 @@ OnMarkerClickListener {
 	}
 	
 	public static void updateBar(int key, Activity activity, String card_text){
-		updateBar(key, activity, card_text, null, null);
+		updateBar(key, activity, card_text, null, null, null, null);
+	}
+	
+	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName){
+		updateBar(key, activity, card_text, eventStartTime, eventStartName, null, null);
 	}
 	
 	// overloaded
-	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName){
+	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName, 
+			String assignEstimate, String assignDueDate){
 		
 		Context context = activity.getApplicationContext();
 		// always do
@@ -853,11 +862,27 @@ OnMarkerClickListener {
 			
 			case Globals.LOAD_ESTIMATE:
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
-				OnClickListener estOnClickListener = new estOnClickListener(card_obj) {
+				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
 					
 					@Override
 					public void onClick(View v) {
-						card_obj.append("\n Estimate thing");
+//						LayoutParams params = card_obj.getLayoutParams();
+//						params.height = 70;
+						
+//						card_obj.setLayoutParams(params);
+						if (reset_estimate_click == 0){
+							card_obj.setTextColor(Color.BLUE);
+							card_obj.setText(assignEstimate);
+							reset_estimate_click = 1;
+							
+						} else if (reset_estimate_click == 1){
+							card_obj.setTextColor(Color.BLACK);
+							card_obj.setText(assignDueDate);
+							reset_estimate_click = 0;
+						}
+						
+//						String orig_text = card_obj.getText().toString();
+//						card_obj.setText(orig_text + "\n\n " + assignEstimate);
 					}
 				};
 				

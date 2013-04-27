@@ -90,7 +90,8 @@ class AsyncLoadEstimate extends AsyncTask<MainActivity, Void, StringWrapper>{
 		
 		try {
 			MainActivity.noteLatLong(wrapper.assignment_name, wrapper.estimate, context, wrapper.subtext);
-			MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")");
+			MainActivity.updateBar(Globals.LOAD_ESTIMATE, activity, wrapper.assignment_name + " ("+wrapper.subtext+")", 
+					null, null, wrapper.estimate, wrapper.assignment_name);
 		} catch (NullPointerException e){
 			Toast.makeText(context, "No estimates found", Toast.LENGTH_SHORT);
 			
