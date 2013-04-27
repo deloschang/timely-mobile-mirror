@@ -94,19 +94,24 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						// strip tags
 						String event_title  = jObject.getString("title").replaceAll("<[^>]*", "");
 						
+						// retrieve time
+						
 						JSONObject dateObject = jObject.getJSONObject("date");
 						String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
+						String startDate  = dateObject.getString("startDate");
 						
 						// add event marker to the map
 						Marker eventMarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
 								.title(event_title)
 								.snippet(event_concordance)
 								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color
-								
 								);
 						
 						// add to the array
-						MainActivity.eventMarkers.add(eventMarker);
+						MainActivity.eventMap.put(eventMarker, startDate); // dict with marker and startDate
+						MainActivity.eventMarkers.add(MainActivity.eventMap);
+						
+						// add some object tag
 						
 						
 					}

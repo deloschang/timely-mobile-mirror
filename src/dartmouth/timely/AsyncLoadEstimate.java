@@ -43,7 +43,7 @@ class AsyncLoadEstimate extends AsyncTask<MainActivity, Void, StringWrapper>{
 	@Override
 	protected StringWrapper doInBackground(MainActivity... params){
 		try {
-			System.out.println("Grabbing estimate listing");
+//			System.out.println("Grabbing estimate listing");
 			
 			// add class as a marker
 			Events events = activity.client.events()

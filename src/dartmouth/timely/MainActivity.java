@@ -45,6 +45,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -146,7 +147,8 @@ OnMarkerClickListener {
 	static int estimate_reminder = 0;
 	
 	// Events from API
-	static List<Marker> eventMarkers = new ArrayList<Marker>();
+	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
+	static List<Map<Marker, String>> eventMarkers = new ArrayList<Map<Marker, String>>();
 	
 	// Update Bar
 	static boolean inversed = true;
@@ -260,7 +262,7 @@ OnMarkerClickListener {
 			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
-					.snippet("from location and sleep sensors")
+					.snippet("from location and sleep sensing")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 					);
 			starting_point.showInfoWindow(); // display marker title automatically
@@ -435,7 +437,6 @@ OnMarkerClickListener {
 
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(location);
-		System.out.println("Checking new location..");
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
 
 		//new JsonFactory();
@@ -802,6 +803,11 @@ OnMarkerClickListener {
 	}
 	
 	public static void updateBar(int key, Activity activity, String card_text){
+		updateBar(key, activity, card_text, null, null);
+	}
+	
+	// overloaded
+	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName){
 		
 		Context context = activity.getApplicationContext();
 		// always do
@@ -831,6 +837,23 @@ OnMarkerClickListener {
 			// when user selects an event to be scheduled
 			case Globals.SCHEDULE_EVENT:
 				card_obj = (TextView) activity.findViewById(R.id.eventCard);
+				
+				System.out.println(eventStartTime);
+				OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
+					@Override
+					public void onClick(View v) {
+						// do cal scheduling here
+						//// grab event time
+						new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
+						
+						// remove after scheduled
+						v.setVisibility(View.GONE);
+					}
+					
+				};
+				
+				card_obj.setOnClickListener(calListener);
+				
 				break;
 				
 			default:
@@ -909,14 +932,14 @@ OnMarkerClickListener {
 		
 		// try to match the event
 		for (int i = 0; i < eventMarkers.size(); i++){
-			System.out.println("Testing " + i);
-			if (clickedMarker.equals(eventMarkers.get(i))){
+			if (eventMarkers.get(i).containsKey(clickedMarker)){
 				clickedMarker.showInfoWindow();
 				
 				// show a card and schedule button
-				String card_text = "Schedule to Calendar: " + clickedMarker.getTitle();
+				String card_text = "Schedule: " + clickedMarker.getTitle();
+				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
 				
-				updateBar(Globals.SCHEDULE_EVENT, this, card_text);
+				updateBar(Globals.SCHEDULE_EVENT, this, card_text, eventStartTime, clickedMarker.getTitle());
 				return true;
 			}
 		}
