@@ -46,8 +46,8 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AnimationUtils;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -670,6 +670,11 @@ OnMarkerClickListener {
 								.title(display_name_arr[0])
 								.snippet(Integer.toString(poll) + " Timely users"));
 						usermarker.showInfoWindow(); // display marker title automatically
+						
+						
+						closeLunchMenus();
+						
+						
 
 						// Add the point to the path  with options
 						polyline_options.add(p.point);
@@ -977,7 +982,9 @@ OnMarkerClickListener {
 	@Override
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
+		closeLunchMenus();
 		checkSwitches();
+		
 		// try to match the event
 		for (int i = 0; i < eventMarkers.size(); i++){
 			if (eventMarkers.get(i).containsKey(clickedMarker)){
@@ -1050,6 +1057,16 @@ OnMarkerClickListener {
 		
 		
 		return false;
+	}
+	
+	// checks all the lunch menus and closes them
+	public void closeLunchMenus(){
+		ListView focoMenuCard = (ListView) findViewById(R.id.focoMenuCard);
+		if (focoMenuCard.getVisibility() == View.VISIBLE) {
+			focoMenuCard.setVisibility(View.GONE);
+			TextView focoGeneralCard = (TextView) findViewById(R.id.focoCard);
+			focoGeneralCard.setVisibility(View.VISIBLE);
+		} 
 	}
 	
 }

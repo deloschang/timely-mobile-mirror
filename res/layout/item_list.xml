@@ -29,6 +29,7 @@
             android:textColor="#707070"
             android:textSize="14sp"
             android:paddingTop="2dip"
+			android:paddingLeft="6dip"
             android:paddingBottom="2dip" />
     </LinearLayout>
 
