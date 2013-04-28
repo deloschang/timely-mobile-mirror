@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,13 +17,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.ParseException;
 import android.os.AsyncTask;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -38,6 +44,101 @@ import android.widget.TextView;
 		public Activity activity;
 	}
 
+		 class SeparatedListAdapter extends BaseAdapter {
+			
+			public final Map<String,Adapter> sections = new LinkedHashMap<String,Adapter>();
+			public final ArrayAdapter<String> headers;
+			public final static int TYPE_SECTION_HEADER = 0;
+			
+			public SeparatedListAdapter(Context context) {
+				headers = new ArrayAdapter<String>(context, R.layout.list_header);
+			}
+			
+			public void addSection(String section, Adapter adapter) {
+				this.headers.add(section);
+				this.sections.put(section, adapter);
+			}
+			
+			public Object getItem(int position) {
+				for(Object section : this.sections.keySet()) {
+					Adapter adapter = sections.get(section);
+					int size = adapter.getCount() + 1;
+					
+					// check if position inside this section 
+					if(position == 0) return section;
+					if(position < size) return adapter.getItem(position - 1);
+
+					// otherwise jump into next section
+					position -= size;
+				}
+				return null;
+			}
+
+			public int getCount() {
+				// total together all sections, plus one for each section header
+				int total = 0;
+				for(Adapter adapter : this.sections.values())
+					total += adapter.getCount() + 1;
+				return total;
+			}
+
+			public int getViewTypeCount() {
+				// assume that headers count as one, then total all sections
+				int total = 1;
+				for(Adapter adapter : this.sections.values())
+					total += adapter.getViewTypeCount();
+				return total;
+			}
+			
+			public int getItemViewType(int position) {
+				int type = 1;
+				for(Object section : this.sections.keySet()) {
+					Adapter adapter = sections.get(section);
+					int size = adapter.getCount() + 1;
+					
+					// check if position inside this section 
+					if(position == 0) return TYPE_SECTION_HEADER;
+					if(position < size) return type + adapter.getItemViewType(position - 1);
+
+					// otherwise jump into next section
+					position -= size;
+					type += adapter.getViewTypeCount();
+				}
+				return -1;
+			}
+			
+			public boolean areAllItemsSelectable() {
+				return false;
+			}
+
+			public boolean isEnabled(int position) {
+				return (getItemViewType(position) != TYPE_SECTION_HEADER);
+			}
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				int sectionnum = 0;
+				for(Object section : this.sections.keySet()) {
+					Adapter adapter = sections.get(section);
+					int size = adapter.getCount() + 1;
+					
+					// check if position inside this section 
+					if(position == 0) return headers.getView(sectionnum, convertView, parent);
+					if(position < size) return adapter.getView(position - 1, convertView, parent);
+
+					// otherwise jump into next section
+					position -= size;
+					sectionnum++;
+				}
+				return null;
+			}
+
+			@Override
+			public long getItemId(int position) {
+				return position;
+			}
+
+		}
 	class AsyncMenuPost extends AsyncTask<String, Void, Wrapper>{
 		
 		TextView card_obj;
@@ -104,23 +205,40 @@ import android.widget.TextView;
 					};
 					card_obj.setOnClickListener(listener);
 					
-					// Hashmap for ListView
-			        ArrayList<HashMap<String, String>> itemList = new ArrayList<HashMap<String, String>>();
+					
+					// initialize adapter
+					SeparatedListAdapter adapter = new SeparatedListAdapter(activity.getApplicationContext());
 
+					// Hashmap for ListView
+					ArrayList<ArrayList<HashMap<String, String>>> containerList = new ArrayList<ArrayList<HashMap<String, String>>>(); 
+					
+			        ArrayList<HashMap<String, String>> itemList = new ArrayList<HashMap<String, String>>();
+			        ArrayList<HashMap<String, String>> itemList2 = new ArrayList<HashMap<String, String>>();
+			        ArrayList<HashMap<String, String>> itemList3 = new ArrayList<HashMap<String, String>>();
+			        ArrayList<HashMap<String, String>> itemList4 = new ArrayList<HashMap<String, String>>();
+			        ArrayList<HashMap<String, String>> itemList5 = new ArrayList<HashMap<String, String>>();
+			        ArrayList<HashMap<String, String>> itemList6 = new ArrayList<HashMap<String, String>>();
+			        
+			        containerList.add(itemList);
+			        containerList.add(itemList2);
+			        containerList.add(itemList3);
+			        containerList.add(itemList4);
+			        containerList.add(itemList5);
+			        containerList.add(itemList6);
+			        
+			        
+			        int j = 0;
+			        
 					// construct menu contents from JSON
 					Iterator focoObjectKeys = focoObject.keys();
 					while ( focoObjectKeys.hasNext()) {
 						String key = (String) focoObjectKeys.next();
 						
-						System.out.println("reached " + key);
-						System.out.println("reached " + focoObjectKeys.hasNext());
-						
 						JSONArray focoArray = focoObject.getJSONArray(key);
-						System.out.println("reached array " + focoArray);
 						
-						HashMap<String, String> header = new HashMap<String, String>();
-						header.put(TAG_NAME, key);
-						itemList.add(header);
+//						HashMap<String, String> header = new HashMap<String, String>();
+//						header.put(TAG_NAME, key);
+//						itemList.add(header);
 						
 						for (int i = 0; i < focoArray.length(); i++){
 							
@@ -129,15 +247,21 @@ import android.widget.TextView;
 			                HashMap<String, String> map = new HashMap<String, String>();
 			                map.put(TAG_ID, item);
 			                
-			                itemList.add(map);
+			                containerList.get(j).add(map);
 						}
+						adapter.addSection(key, new SimpleAdapter(activity.getApplicationContext(), 
+								containerList.get(j), R.layout.item_list, 
+								new String[] { TAG_ID }, new int[] { R.id.itemName }));
 						
+//						itemList.clear();
+						j++; // increment search within the container list
 					}
 					
-				 ListAdapter adapter = new SimpleAdapter(activity.getApplicationContext(), itemList,
-			                R.layout.item_list,
-			                new String[] { TAG_ID, TAG_NAME }, new int[] {
-			                        R.id.itemName, R.id.itemHeader});
+					
+//				 ListAdapter adapter = new SimpleAdapter(activity.getApplicationContext(), itemList,
+//			                R.layout.item_list,
+//			                new String[] { TAG_ID, TAG_NAME }, new int[] {
+//			                        R.id.itemName, R.id.itemHeader});
 			 
 			        scrollMenu.setAdapter(adapter);
 					System.out.println("reached done");
@@ -151,5 +275,7 @@ import android.widget.TextView;
 				e.printStackTrace();
 			}
 		}
+		
+
 
 	}

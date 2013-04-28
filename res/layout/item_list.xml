@@ -9,21 +9,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         
+        <!-- 
         <TextView
             android:id="@+id/itemHeader"
-            android:gravity="center"
+            android:gravity="left"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="18sp"
             android:paddingTop="2dip"
             android:paddingBottom="2dip" />
+            -->
         
 		<!-- Name Label -->
         <TextView
             android:id="@+id/itemName"
-            android:gravity="center"
+            android:gravity="left"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textColor="#707070"

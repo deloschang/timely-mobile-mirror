@@ -511,9 +511,9 @@ OnMarkerClickListener {
 //					view.setText(location);
 					
 					// Parse JSON from the API response
-					JSONObject jObject = new JSONObject(location);
-					String header = jObject.getString("message");
-					String snippet = "This is a test snippet";
+//					JSONObject jObject = new JSONObject(location);
+//					String header = jObject.getString("message");
+//					String snippet = "This is a test snippet";
 					
 					// test send notification
 //					noteLatLong(header, snippet, getApplicationContext());
@@ -522,9 +522,6 @@ OnMarkerClickListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
