@@ -194,6 +194,12 @@ import android.widget.Toast;
 					} else if (card_obj.getId() == R.id.kafCard){
 						menuObject = jObject.getJSONObject("kaf");
 						scrollMenu = (ListView) activity.findViewById(R.id.kafMenuCard);
+					} else if (card_obj.getId() == R.id.hopCard){
+						menuObject = jObject.getJSONObject("hop");
+						scrollMenu = (ListView) activity.findViewById(R.id.hopMenuCard);
+					} else if (card_obj.getId() == R.id.bolocoCard){
+						menuObject = jObject.getJSONObject("boloco");
+						scrollMenu = (ListView) activity.findViewById(R.id.bolocoMenuCard);
 					} else {
 						Toast.makeText(activity.getApplicationContext(), "No menu data found!", Toast.LENGTH_SHORT);
 						return;

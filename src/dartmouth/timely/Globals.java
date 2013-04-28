@@ -30,5 +30,11 @@ public abstract class Globals {
 	public static final int KAF_MENU = 8;
 	public static final String KAF_TEXT = "King Arthur's Cafe Lunch Menu";
 	
+	public static final int HOP_MENU = 9;
+	public static final String HOP_TEXT = "Hop's Lunch Menu";
+	
+	public static final int BOLOCO_MENU = 10;
+	public static final String BOLOCO_TEXT = "Boloco's Lunch Menu";
+	
 
 }

@@ -152,6 +152,48 @@
                 android:background="@android:color/white"
 		        android:layout_width="fill_parent"
 		        android:layout_height="204dp"/>
+            
+		 <TextView
+		    android:id="@+id/hopCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="34dp"
+		    android:text="Hop's Lunch Menu"
+		    android:typeface="sans"
+		    android:textSize="15sp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
+	        android:background="@color/white"
+		    /> 
+		    
+            <ListView
+                android:id="@+id/hopMenuCard"
+                android:background="@android:color/white"
+		        android:layout_width="fill_parent"
+		        android:layout_height="204dp"/>
+            
+		 <TextView
+		    android:id="@+id/bolocoCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="34dp"
+		    android:text="Boloco's Lunch Menu"
+		    android:typeface="sans"
+		    android:textSize="15sp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
+	        android:background="@color/white"
+		    /> 
+		    
+            <ListView
+                android:id="@+id/bolocoMenuCard"
+                android:background="@android:color/white"
+		        android:layout_width="fill_parent"
+		        android:layout_height="204dp"/>
 		    
 		 <TextView
 		    android:id="@+id/phoneSilenceCard"

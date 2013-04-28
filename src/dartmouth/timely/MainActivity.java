@@ -102,8 +102,8 @@ OnMarkerClickListener {
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
 	static final LatLng HOP_LOCATION = new LatLng(43.70209,-72.28788); // Hop
 	static final LatLng KAF = new LatLng(43.705239,-72.288503); // KAF
-	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
-	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
+//	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
+//	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
 	
 	static final LatLng FREE_FOOD_ROCKY = new LatLng(43.70575,-72.289966); // Free Food Rocky
 	static final LatLng FREE_FOOD_WILDER = new LatLng(43.705099,-72.286439); // Free Food Wilder
@@ -238,6 +238,12 @@ OnMarkerClickListener {
 		
 		findViewById(R.id.kafCard).setVisibility(View.GONE);
 		findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+		
+		findViewById(R.id.hopCard).setVisibility(View.GONE);
+		findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
+		
+		findViewById(R.id.bolocoCard).setVisibility(View.GONE);
+		findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
 		
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
@@ -535,6 +541,8 @@ OnMarkerClickListener {
 	public static void closeLunchMenus(Activity activity){
 		ListView focoMenuCard = (ListView) activity.findViewById(R.id.focoMenuCard);
 		ListView kafMenuCard = (ListView) activity.findViewById(R.id.kafMenuCard);
+		ListView hopMenuCard = (ListView) activity.findViewById(R.id.hopMenuCard);
+		ListView bolocoMenuCard = (ListView) activity.findViewById(R.id.bolocoMenuCard);
 		
 		if (focoMenuCard.getVisibility() == View.VISIBLE) {
 			focoMenuCard.setVisibility(View.GONE);
@@ -546,6 +554,18 @@ OnMarkerClickListener {
 			kafMenuCard.setVisibility(View.GONE);
 			TextView kafGeneralCard = (TextView) activity.findViewById(R.id.kafCard);
 			kafGeneralCard.setVisibility(View.VISIBLE);
+		} 
+		
+		if (hopMenuCard.getVisibility() == View.VISIBLE) {
+			hopMenuCard.setVisibility(View.GONE);
+			TextView hopGeneralCard = (TextView) activity.findViewById(R.id.hopCard);
+			hopGeneralCard.setVisibility(View.VISIBLE);
+		} 
+		
+		if (bolocoMenuCard.getVisibility() == View.VISIBLE) {
+			bolocoMenuCard.setVisibility(View.GONE);
+			TextView bolocoGeneralCard = (TextView) activity.findViewById(R.id.bolocoCard);
+			bolocoGeneralCard.setVisibility(View.VISIBLE);
 		} 
 	}
 	
@@ -818,16 +838,6 @@ OnMarkerClickListener {
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			mollysMarker = map.addMarker(new MarkerOptions().position(MOLLYS)
-					.title("Eat at Molly's")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("Lunch menu loaded"));
-			
-			lousMarker = map.addMarker(new MarkerOptions().position(LOUS)
-					.title("Eat at Lou's")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("Lunch menu loaded"));
-			
 			kafMarker = map.addMarker(new MarkerOptions().position(KAF)
 					.title("Eat at King Arthur's Flour")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
@@ -948,6 +958,8 @@ OnMarkerClickListener {
 						// open Foco card
 						updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
 						updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
+						updateBar(Globals.HOP_MENU, activity, Globals.HOP_TEXT);
+						updateBar(Globals.BOLOCO_MENU, activity, Globals.BOLOCO_TEXT);
 					}
 					
 				};
@@ -987,6 +999,20 @@ OnMarkerClickListener {
 				
 				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				break;
+				
+			case Globals.HOP_MENU:
+				card_obj = (TextView) activity.findViewById(R.id.hopCard);
+				
+				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+				break;
+				
+			case Globals.BOLOCO_MENU:
+				card_obj = (TextView) activity.findViewById(R.id.bolocoCard);
+				
+				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+				break;
+				
+			
 				
 				
 				
