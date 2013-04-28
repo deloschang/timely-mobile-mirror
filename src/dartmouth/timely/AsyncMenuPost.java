@@ -30,6 +30,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 	/**
 	 * Asynchronously grabs event listings from the Timely events API
@@ -182,21 +183,31 @@ import android.widget.TextView;
 					
 					// Parse JSON from the API response
 					JSONObject jObject = new JSONObject(response);
-					JSONObject focoObject = jObject.getJSONObject("foco");
 					
-					// parse for object and place in intent
 					
-					System.out.println(focoObject);
+					JSONObject menuObject = null;
+					ListView scrollMenu = null;
+					if (card_obj.getId() == R.id.focoCard){
+						menuObject = jObject.getJSONObject("foco");
+						scrollMenu = (ListView) activity.findViewById(R.id.focoMenuCard);
+						
+					} else if (card_obj.getId() == R.id.kafCard){
+						menuObject = jObject.getJSONObject("kaf");
+						scrollMenu = (ListView) activity.findViewById(R.id.kafMenuCard);
+					} else {
+						Toast.makeText(activity.getApplicationContext(), "No menu data found!", Toast.LENGTH_SHORT);
+						return;
+					}
 					
-					ListView scrollMenu = (ListView) activity.findViewById(R.id.focoMenuCard);
-//					TextView innerTextMenu = (TextView) activity.findViewById(R.id.focoInner);
-					
+					System.out.println("Activity " + activity);
 					// when FoCo menu is clicked
-					OnClickListener listener = new lunchOnclickListener(resultWrapper.activity, scrollMenu){
+					OnClickListener listener = new lunchOnclickListener(activity, scrollMenu){
 						@Override
 						public void onClick(View v) {
 							// hide after scheduled
 							v.setVisibility(View.GONE);
+							MainActivity.closeLunchMenus(activity);
+							
 							
 							// set inner menu to visible
 							scrollMenu.setVisibility(View.VISIBLE);
@@ -230,11 +241,11 @@ import android.widget.TextView;
 			        int j = 0;
 			        
 					// construct menu contents from JSON
-					Iterator focoObjectKeys = focoObject.keys();
+					Iterator focoObjectKeys = menuObject.keys();
 					while ( focoObjectKeys.hasNext()) {
 						String key = (String) focoObjectKeys.next();
 						
-						JSONArray focoArray = focoObject.getJSONArray(key);
+						JSONArray focoArray = menuObject.getJSONArray(key);
 						
 //						HashMap<String, String> header = new HashMap<String, String>();
 //						header.put(TAG_NAME, key);
@@ -253,16 +264,10 @@ import android.widget.TextView;
 								containerList.get(j), R.layout.item_list, 
 								new String[] { TAG_ID }, new int[] { R.id.itemName }));
 						
-//						itemList.clear();
 						j++; // increment search within the container list
 					}
 					
 					
-//				 ListAdapter adapter = new SimpleAdapter(activity.getApplicationContext(), itemList,
-//			                R.layout.item_list,
-//			                new String[] { TAG_ID, TAG_NAME }, new int[] {
-//			                        R.id.itemName, R.id.itemHeader});
-			 
 			        scrollMenu.setAdapter(adapter);
 					System.out.println("reached done");
 				}

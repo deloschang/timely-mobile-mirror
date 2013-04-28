@@ -237,6 +237,8 @@ OnMarkerClickListener {
 		findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
 		
 		findViewById(R.id.kafCard).setVisibility(View.GONE);
+		findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+		
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
@@ -411,7 +413,7 @@ OnMarkerClickListener {
 			
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-			new NetworkGet().execute(url);
+			new NetworkGet(this).execute(url);
 
 		}
 
@@ -529,10 +531,29 @@ OnMarkerClickListener {
 		}
 	}
 
+	// checks all the lunch menus and closes them
+	public static void closeLunchMenus(Activity activity){
+		ListView focoMenuCard = (ListView) activity.findViewById(R.id.focoMenuCard);
+		ListView kafMenuCard = (ListView) activity.findViewById(R.id.kafMenuCard);
+		
+		if (focoMenuCard.getVisibility() == View.VISIBLE) {
+			focoMenuCard.setVisibility(View.GONE);
+			TextView focoGeneralCard = (TextView) activity.findViewById(R.id.focoCard);
+			focoGeneralCard.setVisibility(View.VISIBLE);
+		} 
+		
+		if (kafMenuCard.getVisibility() == View.VISIBLE) {
+			kafMenuCard.setVisibility(View.GONE);
+			TextView kafGeneralCard = (TextView) activity.findViewById(R.id.kafCard);
+			kafGeneralCard.setVisibility(View.VISIBLE);
+		} 
+	}
+	
 	// wrapper class
 	public class Wrapper {
 		public HttpResponse result;
 		public LatLng point;
+		public Activity activity;
 	}
 	
 
@@ -540,6 +561,11 @@ OnMarkerClickListener {
 	// Wrapper class enables multiple type parameters
 	private class NetworkGet extends AsyncTask<Object, Void, Wrapper>  {
 
+		Activity activity;
+		NetworkGet(Activity activity){
+			this.activity = activity;
+		}
+		
 		@Override
 		// use Object type for different type parameters
 		protected Wrapper doInBackground(Object... params) {
@@ -550,6 +576,7 @@ OnMarkerClickListener {
 			// If so, a LatLng point object will be passed
 			try {
 				p.point = (LatLng) params[1];
+				p.activity = activity;
 			} catch (Exception e){
 				// not a map click, continue
 			}
@@ -672,7 +699,7 @@ OnMarkerClickListener {
 						usermarker.showInfoWindow(); // display marker title automatically
 						
 						
-						closeLunchMenus();
+						closeLunchMenus(activity);
 						
 						
 
@@ -748,7 +775,7 @@ OnMarkerClickListener {
 		String url = MAPQUEST_API+"&lat="+point.latitude+"&lon="+point.longitude;
 
 		// Send lat/lng in parameters to draw a marker on the map with the title 
-		new NetworkGet().execute(url, point); // reverse-geocode
+		new NetworkGet(this).execute(url, point); // reverse-geocode
 	}
 
 	public void addToPolyline(Marker marker){
@@ -844,6 +871,21 @@ OnMarkerClickListener {
 		
 		TextView card_obj = null;
 		
+		ListView focoMenuCard = (ListView) activity.findViewById(R.id.focoMenuCard);
+		ListView kafMenuCard = (ListView) activity.findViewById(R.id.kafMenuCard);
+		
+		if (focoMenuCard.getVisibility() == View.VISIBLE) {
+			focoMenuCard.setVisibility(View.GONE);
+			TextView focoGeneralCard = (TextView) activity.findViewById(R.id.focoCard);
+			focoGeneralCard.setVisibility(View.VISIBLE);
+		} 
+		
+		if (kafMenuCard.getVisibility() == View.VISIBLE) {
+			kafMenuCard.setVisibility(View.GONE);
+			TextView kafGeneralCard = (TextView) activity.findViewById(R.id.kafCard);
+			kafGeneralCard.setVisibility(View.VISIBLE);
+		} 
+		
 		switch (key){
 			
 			case Globals.SILENCE_PHONE:
@@ -878,10 +920,6 @@ OnMarkerClickListener {
 					
 					@Override
 					public void onClick(View v) {
-//						LayoutParams params = card_obj.getLayoutParams();
-//						params.height = 70;
-						
-//						card_obj.setLayoutParams(params);
 						if (reset_estimate_click == 0){
 							card_obj.setTextColor(Color.BLUE);
 							card_obj.setText(assignEstimate);
@@ -892,9 +930,6 @@ OnMarkerClickListener {
 							card_obj.setText(assignDueDate);
 							reset_estimate_click = 0;
 						}
-						
-//						String orig_text = card_obj.getText().toString();
-//						card_obj.setText(orig_text + "\n\n " + assignEstimate);
 					}
 				};
 				
@@ -945,16 +980,12 @@ OnMarkerClickListener {
 				
 				// GET request for the Foco Menu and set listener
 				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				
 				break;
 			
-			case Globals.FOCO_MENU_LOAD:
-				card_obj = (TextView) activity.findViewById(R.id.focoMenuCard);
-				break;
-				
-				
 			case Globals.KAF_MENU:
 				card_obj = (TextView) activity.findViewById(R.id.kafCard);
+				
+				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				break;
 				
 				
@@ -982,7 +1013,7 @@ OnMarkerClickListener {
 	@Override
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
-		closeLunchMenus();
+		closeLunchMenus(this);
 		checkSwitches();
 		
 		// try to match the event
@@ -1059,14 +1090,5 @@ OnMarkerClickListener {
 		return false;
 	}
 	
-	// checks all the lunch menus and closes them
-	public void closeLunchMenus(){
-		ListView focoMenuCard = (ListView) findViewById(R.id.focoMenuCard);
-		if (focoMenuCard.getVisibility() == View.VISIBLE) {
-			focoMenuCard.setVisibility(View.GONE);
-			TextView focoGeneralCard = (TextView) findViewById(R.id.focoCard);
-			focoGeneralCard.setVisibility(View.VISIBLE);
-		} 
-	}
 	
 }

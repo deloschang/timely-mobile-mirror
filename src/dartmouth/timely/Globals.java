@@ -18,7 +18,7 @@ public abstract class Globals {
 	public static final int LOAD_ESTIMATE = 3;
 	
 	public static final int LOAD_LUNCH_OPTIONS = 4;
-	public static final String LOAD_LUNCH_TEXT= "Lunch Menus Found (Free Food, The Hop.. 4 more)";
+	public static final String LOAD_LUNCH_TEXT= "Lunch Menus Found (Free Food, Food Court, .. 2 more)";
 	
 	public static final int SCHEDULE_EVENT = 5;
 	
