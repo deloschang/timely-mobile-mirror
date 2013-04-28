@@ -86,6 +86,9 @@ OnMarkerClickListener {
 	
 	// Events API 
 	final String TIMELY_EVENTS_API = "http://timely-api.herokuapp.com/events";
+	
+	// Menu API
+	static final String TIMELY_MENU_API = "http://timely-api.herokuapp.com/menus";
 
 	
 	// Mapquest API
@@ -226,8 +229,14 @@ OnMarkerClickListener {
 		
 		// deflate the update bar
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
+		
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
+		
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
+		findViewById(R.id.focoCard).setVisibility(View.GONE);
+		findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
+		
+		findViewById(R.id.kafCard).setVisibility(View.GONE);
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
@@ -892,6 +901,19 @@ OnMarkerClickListener {
 			case Globals.LOAD_LUNCH_OPTIONS:
 				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
 				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
+				
+				
+				OnClickListener lunchListener = new lunchOnclickListener(activity){
+					@Override
+					public void onClick(View v) {
+						v.setVisibility(View.GONE);
+						// open Foco card
+						updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
+						updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
+					}
+					
+				};
+				card_obj.setOnClickListener(lunchListener);
 				break;
 				
 			// when user selects an event to be scheduled
@@ -913,8 +935,26 @@ OnMarkerClickListener {
 				};
 				
 				card_obj.setOnClickListener(calListener);
+				break;
+			
+			case Globals.FOCO_MENU:
+				card_obj = (TextView) activity.findViewById(R.id.focoCard);
+				
+				// GET request for the Foco Menu and set listener
+				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				
 				break;
+			
+			case Globals.FOCO_MENU_LOAD:
+				card_obj = (TextView) activity.findViewById(R.id.focoMenuCard);
+				break;
+				
+				
+			case Globals.KAF_MENU:
+				card_obj = (TextView) activity.findViewById(R.id.kafCard);
+				break;
+				
+				
 				
 			default:
 				break;

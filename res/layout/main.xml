@@ -89,6 +89,63 @@
 		    /> 
 		    
 		 <TextView
+		    android:id="@+id/focoCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="34dp"
+		    android:text="FoCo Menu Item"
+		    android:typeface="sans"
+		    android:textSize="15sp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
+	        android:background="@color/white"
+		    /> 
+		    
+		 <!--
+		 <ScrollView
+		    android:id="@+id/focoMenuCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="204dp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
+	        android:background="@color/white" > 
+	        -->
+	        
+		     <!-- Old -->
+           <!-- <TextView android:id="@+id/focoInner"
+		        android:layout_width="wrap_content" 
+		        android:layout_height="wrap_content"
+		        android:gravity="left"                          
+		        android:text="" >
+	        </TextView> -->
+            <ListView
+                android:id="@+id/focoMenuCard"
+		        android:layout_width="fill_parent"
+		        android:layout_height="204dp"/>
+	        
+        <!--  </ScrollView>-->
+		    
+		 <TextView
+		    android:id="@+id/kafCard"
+		    style="@style/nowCardStyle"
+		    android:layout_width="match_parent"
+		    android:layout_height="34dp"
+		    android:text="King Arthur's Cafe Lunch Menu"
+		    android:typeface="sans"
+		    android:textSize="15sp"
+		    android:layout_marginTop="2dp"
+		    android:layout_marginLeft="5dp"
+		    android:layout_marginRight="5dp"
+		    android:layout_marginBottom="3dp"
+	        android:background="@color/white"
+		    /> 
+		    
+		 <TextView
 		    android:id="@+id/phoneSilenceCard"
 		    style="@style/nowCardStyle"
 		    android:layout_width="match_parent"

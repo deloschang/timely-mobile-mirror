@@ -22,5 +22,13 @@ public abstract class Globals {
 	
 	public static final int SCHEDULE_EVENT = 5;
 	
+	public static final int FOCO_MENU = 6;
+	public static final String FOCO_TEXT = "FoCo Lunch Menu";
+	
+	public static final int FOCO_MENU_LOAD = 7;
+	
+	public static final int KAF_MENU = 8;
+	public static final String KAF_TEXT = "King Arthur's Cafe Lunch Menu";
+	
 
 }
