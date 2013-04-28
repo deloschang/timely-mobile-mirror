@@ -125,6 +125,7 @@
 	        </TextView> -->
             <ListView
                 android:id="@+id/focoMenuCard"
+                android:background="@android:color/white"
 		        android:layout_width="fill_parent"
 		        android:layout_height="204dp"/>
 	        

@@ -303,6 +303,7 @@ OnMarkerClickListener {
 		if (checkGooglePlayServicesAvailable()) {
 			haveGooglePlayServices();
 		}
+		class_visited = 0;
 	}
 	
 	protected void onDestroy() {
@@ -980,6 +981,25 @@ OnMarkerClickListener {
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
 		checkSwitches();
+		// try to match the event
+		for (int i = 0; i < eventMarkers.size(); i++){
+			if (eventMarkers.get(i).containsKey(clickedMarker)){
+				clickedMarker.showInfoWindow();
+				
+				// show a card and schedule button
+				String card_text = "Schedule: " + clickedMarker.getTitle();
+				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
+				
+				updateBar(Globals.SCHEDULE_EVENT, this, card_text, eventStartTime, clickedMarker.getTitle());
+				return true;
+			}
+		}
+		
+		// if not hide
+		TextView card_obj = (TextView) findViewById(R.id.eventCard);
+		card_obj.setVisibility(View.GONE);
+		
+		
 		if (clickedMarker.equals(classMarker) && class_visited == 0){
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
@@ -1030,19 +1050,6 @@ OnMarkerClickListener {
 			// add to the array
 		}
 		
-		// try to match the event
-		for (int i = 0; i < eventMarkers.size(); i++){
-			if (eventMarkers.get(i).containsKey(clickedMarker)){
-				clickedMarker.showInfoWindow();
-				
-				// show a card and schedule button
-				String card_text = "Schedule: " + clickedMarker.getTitle();
-				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
-				
-				updateBar(Globals.SCHEDULE_EVENT, this, card_text, eventStartTime, clickedMarker.getTitle());
-				return true;
-			}
-		}
 		
 		
 		return false;
