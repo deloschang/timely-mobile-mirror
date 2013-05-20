@@ -62,7 +62,7 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"
 	    android:textStyle="bold"
-	    android:text="@string/demo_location"
+	    android:text=""
 	    />
 	
 	<!--  Update Bar -->

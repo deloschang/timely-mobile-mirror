@@ -78,9 +78,6 @@ OnMarkerClickListener {
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
-	// Test API for now; to be replaced
-//	final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
-	
 	// Places API 
 	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
 	
@@ -89,11 +86,9 @@ OnMarkerClickListener {
 	
 	// Menu API
 	static final String TIMELY_MENU_API = "http://timely-api.herokuapp.com/menus";
-
 	
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
-	
 
 	// Google Maps API lat/lng for Hanover
 	public static GoogleMap map;
@@ -102,22 +97,11 @@ OnMarkerClickListener {
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
 	static final LatLng HOP_LOCATION = new LatLng(43.70209,-72.28788); // Hop
 	static final LatLng KAF = new LatLng(43.705239,-72.288503); // KAF
-//	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
-//	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
-	
-	static final LatLng FREE_FOOD_ROCKY = new LatLng(43.70575,-72.289966); // Free Food Rocky
-	static final LatLng FREE_FOOD_WILDER = new LatLng(43.705099,-72.286439); // Free Food Wilder
-	
 	
 	static final int ZOOM_LEVEL = 17;
 
-
 	// main options object
 	PolylineOptions polyline_options;
-
-
-	// polling
-	Map<String, Integer> pollmap = new HashMap<String, Integer>();
 
 	// oAuth2
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
@@ -140,9 +124,6 @@ OnMarkerClickListener {
 	static Marker mollysMarker;
 	static Marker kafMarker;
 	static Marker hopMarker;
-	static Marker freeFoodRockyMarker;
-	static Marker freeFoodWilderMarker;
-	static Marker lousMarker;
 	
 	// switches
 	int silence_phone = 0;
@@ -156,51 +137,18 @@ OnMarkerClickListener {
 	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
 	static List<Map<Marker, String>> eventMarkers = new ArrayList<Map<Marker, String>>();
 	
-	// Update Bar
+	// For the Google Now layout -- update bar
 	static boolean inversed = true;
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
-		// Old oAuth Code
-		//		AccountManager accountManager = AccountManager.get(MainActivity.this);    	
-		//		Account[] accounts = accountManager.getAccountsByType("com.google");
-		//
-		//		Account account = accounts[0];
-		//		//Log.d("Timely","started");
-		//
-		//
-		//		accountManager.invalidateAuthToken(account.type, accountManager.KEY_AUTHTOKEN);
-		//
-		//		accountManager.getAuthToken(account,
-		//				"oauth2:https://www.googleapis.com/auth/calendar", null,
-		//				this,
-		//				new AccountManagerCallback<Bundle>(){ 
-		//			public void run(AccountManagerFuture<Bundle> future) {
-		//				try{
-		//					Bundle bundle = future.getResult();
-		//					if(bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
-		//						String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-		//						sendLocation (token);
-		//					}else {
-		//
-		//					}
-		//				}
-		//				catch(Exception e){
-		//					e.printStackTrace();
-		//				}  
-		//			}
-		//		}, null);        
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
 		// Dynamically update the location
-		final Handler offMainHandler = new Handler();
-		
 		final TextView current_location = (TextView) findViewById(R.id.current_location);
-		
+		final Handler offMainHandler = new Handler();
 		Runnable runnableOffMain = new Runnable(){
 			@Override
 			public void run(){
@@ -210,7 +158,8 @@ OnMarkerClickListener {
 						@Override
 						public void run(){
 							if (isUpdating){
-								current_location.setText(R.string.demo_location);
+								// You can change the top header text here
+//								current_location.setText(R.string.demo_location);
 								isUpdating = false;
 								
 								// check switches by time
@@ -228,6 +177,7 @@ OnMarkerClickListener {
 		// end
 		
 		// deflate the update bar
+		// Hide all the cards first
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
@@ -300,7 +250,7 @@ OnMarkerClickListener {
 
 	private void pause(){
 		try {
-			Thread.sleep(7000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e){
 			e.printStackTrace();
 		}
@@ -357,7 +307,6 @@ OnMarkerClickListener {
 	private void chooseAccount() {
 		startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
 	}
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -420,7 +369,6 @@ OnMarkerClickListener {
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 			new NetworkGet(this).execute(url);
-
 		}
 
 		final LocationListener locationListener = new LocationListener() {
@@ -468,12 +416,6 @@ OnMarkerClickListener {
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(location);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-
-		//new JsonFactory();
-
-		//service.accessKey = "zwe7TX17stsEOnB7FeAqQN7E";
-		//service.setApplicationName("Timely");
-
 	}
 
 
@@ -639,90 +581,14 @@ OnMarkerClickListener {
 
 					String[] display_name_arr = display_name_obj.split(",");
 
-					// Check if user clicked on map
-					if (p.point != null){
-						// Generate some interesting stats
-						JSONObject addressObject = jObject.getJSONObject("address");
-						String city = addressObject.getString("city");
-
-						int poll;
-						if (!pollmap.containsKey(display_name_arr[0])){
-							poll = 0;
-							if (display_name_arr[0].contains("Cemetery") ||
-									display_name_arr[0].contains("St") || 
-									display_name_arr[0].contains("Street") ||
-									display_name_arr[0].contains("River") || 
-									display_name_arr[0].contains("Road") ||
-									display_name_arr[0].contains("Rd") ||
-									display_name_arr[0].contains("Lane") ||
-									display_name_arr[0].contains("Ln") ||
-									display_name_arr[0].contains("High School") ||
-									display_name_arr[0].contains("Catholic") ||
-									display_name_arr[0].contains("Avenue") ||
-									display_name_arr[0].contains("Trail") ||
-									display_name_arr[0].contains("Park") ||
-									display_name_arr[0].contains("Route") ||
-									display_name_arr[0].contains("President") ||
-									display_name_arr[0].contains("Emergency") ||
-									display_name_arr[0].contains("Pond") ||
-									display_name_arr[0].contains("Ridge") ||
-									display_name_arr[0].contains("Church") ||
-									display_name_arr[0].contains("Terrace") ||
-									display_name_arr[0].contains("Alumni Center") ||
-									display_name_arr[0].contains("Esker")){
-								poll = 0;
-								pollmap.put(display_name_arr[0], poll);
-							} else if (city.contains("Hanover")){
-								double first_step = Math.random();
-
-								if (display_name_arr[0].contains("Library")
-										|| display_name_arr[0].contains("Hall")
-										|| display_name_arr[0].contains("Webster Avenue") 
-										|| display_name_arr[0].contains("Gymnasium")){
-									poll = 10 + (int)(Math.random()*70);
-									pollmap.put(display_name_arr[0], poll);
-								} else {
-
-									// check other conditions
-									if (first_step < 0.3){
-										poll = (int)(Math.random()*40);
-										pollmap.put(display_name_arr[0], poll);
-									} else {
-										double second_step = Math.random();
-										if (second_step < 0.5){
-											poll = (int)(Math.random()*20);
-											pollmap.put(display_name_arr[0], poll);
-										} else {
-											double third_step = Math.random();
-											if (third_step < 0.8){
-												poll = (int)(Math.random()*10);
-												pollmap.put(display_name_arr[0], poll);
-											} else {
-												poll = (int)(Math.random()*5);
-												pollmap.put(display_name_arr[0], poll);
-											}
-										}
-									}
-								}
-
-							}
-						} else {
-							// contains
-							poll = pollmap.get(display_name_arr[0]);
-						}
-
-
 						// Create marker at user's point
 						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
-								.title(display_name_arr[0])
-								.snippet(Integer.toString(poll) + " Timely users"));
+								.title(display_name_arr[0]));
 						usermarker.showInfoWindow(); // display marker title automatically
-						
 						
 						closeLunchMenus(activity);
 						
 						
-
 						// Add the point to the path  with options
 						polyline_options.add(p.point);
 						polyline_options.width(10);
@@ -735,7 +601,6 @@ OnMarkerClickListener {
 						checkSwitches();
 					}
 
-				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -767,7 +632,6 @@ OnMarkerClickListener {
 		.setSubText(subtext);
 
 		builder
-//		.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
 		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely_icon))
 		.setTicker(header)
@@ -842,16 +706,6 @@ OnMarkerClickListener {
 					.title("Eat at King Arthur's Flour")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
-			
-			freeFoodRockyMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_ROCKY)
-					.title("Free Food @ Lunch with Folt")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("scraped from listserv"));
-			
-			freeFoodWilderMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_WILDER)
-					.title("Free Food @ Mathematics Society")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("scraped from listserv"));
 			
 			kafMarker.showInfoWindow();
 		}
@@ -1012,10 +866,6 @@ OnMarkerClickListener {
 				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				break;
 				
-			
-				
-				
-				
 			default:
 				break;
 		}
@@ -1023,6 +873,7 @@ OnMarkerClickListener {
 		card_obj.setVisibility(View.VISIBLE);
 		card_obj.setText(card_text);
 		
+		// for the animation to start
 		if (!inversed) {
 			card_obj.startAnimation(
 					AnimationUtils.loadAnimation(context,
@@ -1070,11 +921,9 @@ OnMarkerClickListener {
 		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
 			
-
 			// set update bar
 			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
 			
-//			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
 			
@@ -1090,28 +939,6 @@ OnMarkerClickListener {
 			addToPolyline(hopMarker);
 			return true;
 		}
-		
-		if (clickedMarker.equals(lousMarker)){
-			addToPolyline(lousMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(freeFoodRockyMarker)){
-			addToPolyline(freeFoodRockyMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(freeFoodWilderMarker)){
-			addToPolyline(freeFoodWilderMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(mollysMarker)){
-			addToPolyline(mollysMarker);
-			// add to the array
-		}
-		
-		
 		
 		return false;
 	}
