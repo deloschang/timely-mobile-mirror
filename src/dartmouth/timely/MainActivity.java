@@ -73,14 +73,9 @@ import com.google.api.services.calendar.CalendarScopes;
 
 public class MainActivity extends FragmentActivity implements OnMapClickListener,
 OnMarkerClickListener {
-	
-
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
-	// Test API for now; to be replaced
-//	final String TIMELY_API_URL = "http://pure-retreat-6606.herokuapp.com/api/v1/locations";
-	
 	// Places API 
 	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
 	
@@ -89,11 +84,9 @@ OnMarkerClickListener {
 	
 	// Menu API
 	static final String TIMELY_MENU_API = "http://timely-api.herokuapp.com/menus";
-
 	
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
-	
 
 	// Google Maps API lat/lng for Hanover
 	public static GoogleMap map;
@@ -102,24 +95,13 @@ OnMarkerClickListener {
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
 	static final LatLng HOP_LOCATION = new LatLng(43.70209,-72.28788); // Hop
 	static final LatLng KAF = new LatLng(43.705239,-72.288503); // KAF
-//	static final LatLng MOLLYS = new LatLng(43.701127,-72.289845); // Mollys
-//	static final LatLng LOUS = new LatLng(43.701475,-72.289186); // Lous
-	
-	static final LatLng FREE_FOOD_ROCKY = new LatLng(43.70575,-72.289966); // Free Food Rocky
-	static final LatLng FREE_FOOD_WILDER = new LatLng(43.705099,-72.286439); // Free Food Wilder
-	
 	
 	static final int ZOOM_LEVEL = 17;
 
-
-	// main options object
+	// main options object for drawing the Google Map
 	PolylineOptions polyline_options;
 
-
-	// polling
-	Map<String, Integer> pollmap = new HashMap<String, Integer>();
-
-	// oAuth2
+	// oAuth2 -- including Google Calendar API
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
 	static final int REQUEST_AUTHORIZATION = 1;
 	static final int REQUEST_ACCOUNT_PICKER = 2;
@@ -128,92 +110,69 @@ OnMarkerClickListener {
 
 	final JsonFactory jsonFactory = new GsonFactory();
 	private static final String PREF_ACCOUNT_NAME = "accountName";
-
 	com.google.api.services.calendar.Calendar client;
 	
 	// Dynamic updating location
+	// This is a boolean flag that is assigned to update the shown location every X sec (under the pause function)
 	boolean isUpdating = true;
 	
-	// Routing
+	// These are the markers that will be shown on the Map. 
+	// e.g. hopMarker will be the marker for the Hop at the specified coordinate
 	static Marker routeMarker;
-	static Marker classMarker; // class marker (e.g. COSC 51)
+	static Marker classMarker; // class marker (e.g. COSC 51) [demo feature]
 	static Marker mollysMarker;
 	static Marker kafMarker;
 	static Marker hopMarker;
-	static Marker freeFoodRockyMarker;
-	static Marker freeFoodWilderMarker;
-	static Marker lousMarker;
 	
-	// switches
+	// switches that activate different demo features 
+	// We will need to clear these out once we have the smartphone sensing boilerplate set up.
+	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 	static int class_visited = 0;
 	static int load_lunch = 0;
 	static int estimate_reminder = 0;
-	
 	static int reset_estimate_click = 0;
 	
-	// Events from API
+	// These are for Events API. 
+	// The list is used to iterate through the markers and add them onto the map.
+	// The event map is used to pass a Marker and a String around.
 	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
 	static List<Map<Marker, String>> eventMarkers = new ArrayList<Map<Marker, String>>();
 	
-	// Update Bar
+	// For the Google Now layout -- update bar
+	// Basically, when inversed is true, the Google Now card will come from one direction. 
+	// When it is false, it will come from another direction
 	static boolean inversed = true;
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
-		// Old oAuth Code
-		//		AccountManager accountManager = AccountManager.get(MainActivity.this);    	
-		//		Account[] accounts = accountManager.getAccountsByType("com.google");
-		//
-		//		Account account = accounts[0];
-		//		//Log.d("Timely","started");
-		//
-		//
-		//		accountManager.invalidateAuthToken(account.type, accountManager.KEY_AUTHTOKEN);
-		//
-		//		accountManager.getAuthToken(account,
-		//				"oauth2:https://www.googleapis.com/auth/calendar", null,
-		//				this,
-		//				new AccountManagerCallback<Bundle>(){ 
-		//			public void run(AccountManagerFuture<Bundle> future) {
-		//				try{
-		//					Bundle bundle = future.getResult();
-		//					if(bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
-		//						String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-		//						sendLocation (token);
-		//					}else {
-		//
-		//					}
-		//				}
-		//				catch(Exception e){
-		//					e.printStackTrace();
-		//				}  
-		//			}
-		//		}, null);        
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		// Dynamically update the location
-		final Handler offMainHandler = new Handler();
-		
+		// This section enables a different thread that can do something every X sec 
+		// depending on the pause function below
+		// Everything here is asynchronous
 		final TextView current_location = (TextView) findViewById(R.id.current_location);
-		
+		final Handler offMainHandler = new Handler();
 		Runnable runnableOffMain = new Runnable(){
 			@Override
 			public void run(){
 				while(true){
-					pause();
+					pause();  // pauses the function for X sec. Then continues. 
 					offMainHandler.post(new Runnable(){
 						@Override
 						public void run(){
 							if (isUpdating){
-								current_location.setText(R.string.demo_location);
+								// You can change the top header text here
+//								current_location.setText(R.string.demo_location);
 								isUpdating = false;
 								
 								// check switches by time
+								// [demo feature] Checks for flags in this asynchronous thread.
+								// If certain flags are up, it will display cards.
+								// We COULD adapt this to our smartphone sensing. Maybe it would be 
+								// better to have GCM push the data on the phone though.
 								delayedCheck();
 							} else {
 								current_location.setText("Updating location..");
@@ -228,30 +187,26 @@ OnMarkerClickListener {
 		// end
 		
 		// deflate the update bar
+		// Hide all the cards first
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
 		findViewById(R.id.focoCard).setVisibility(View.GONE);
 		findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.kafCard).setVisibility(View.GONE);
 		findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.hopCard).setVisibility(View.GONE);
 		findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.bolocoCard).setVisibility(View.GONE);
 		findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
 		sendLocation();
 		
-		// Google Accounts
+		// These are for the Google OAuth 2 stuff.
+		// This includes the Google Calendar API. 
 		credential = GoogleAccountCredential.usingOAuth2(this, CalendarScopes.CALENDAR);
 		SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
 		credential.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
@@ -262,6 +217,7 @@ OnMarkerClickListener {
 
 
 		// Google Maps API v2 dance
+		// It first checks if Google Play Services is available on the phoen
 		if (checkGooglePlayServicesAvailable()){
 			map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
 					.getMap(); // generate the map
@@ -271,14 +227,16 @@ OnMarkerClickListener {
 			map.setOnMapClickListener(this);
 
 			// Scrape campus events and load onto map as markers
+			// This loads the events from the API via the URL. Then it will populate the map with
+			// markers
 			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
 			
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
 			
 			// 1st marker: User starts here 
-			// 2nd marker: Class added from AsyncLoadEvent
-			// 3rd marker: Lunch options
+			// 2nd marker: Class added from AsyncLoadEvent  [demo feature]
+			// 3rd marker: Lunch options 
 			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
@@ -300,7 +258,7 @@ OnMarkerClickListener {
 
 	private void pause(){
 		try {
-			Thread.sleep(7000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e){
 			e.printStackTrace();
 		}
@@ -323,6 +281,7 @@ OnMarkerClickListener {
 		reset_estimate_click = 0;
 	}
 
+	/** GOOGLE PLAY OAUTH2 STUFF **/
 	/** Check that Google Play services APK is installed and up to date. */
 	private boolean checkGooglePlayServicesAvailable() {
 		final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -357,7 +316,6 @@ OnMarkerClickListener {
 	private void chooseAccount() {
 		startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
 	}
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -400,8 +358,13 @@ OnMarkerClickListener {
 			break;
 		}
 	}
+	/** END GOOGLE PLAY OAUTH2 STUFF **/
 
 
+	/**
+	 * Location tracking stuff. All this stuff needs to be changed to the foreground service 
+	 *  ( Justice should handle this stuff )
+	 */
 	/** Grab location coordinates and do something **/
 	public void sendLocation() {    	
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
@@ -414,13 +377,11 @@ OnMarkerClickListener {
 			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
 
 			// Post to API with latitude and longitude
-			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
-
+//			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
 			
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
 			new NetworkGet(this).execute(url);
-
 		}
 
 		final LocationListener locationListener = new LocationListener() {
@@ -431,7 +392,7 @@ OnMarkerClickListener {
 				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
 
 				// POST to API with latitude and longitude
-				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
+//				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
 
 				// GET request to MapQuest with latitude longitude
 //				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
@@ -468,74 +429,68 @@ OnMarkerClickListener {
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(location);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-
-		//new JsonFactory();
-
-		//service.accessKey = "zwe7TX17stsEOnB7FeAqQN7E";
-		//service.setApplicationName("Timely");
-
 	}
 
 
 	// POST request to the Timely API
-	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
-		@Override
-		protected HttpResponse doInBackground(String... params) {
-			String link = params[0];
-
-			HttpPost httppost = new HttpPost(link);
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
-			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
-
-			try {
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}            
-
-			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-			try {
-				return client.execute(httppost);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			} finally {
-				client.close();
-			}
-		}
-
-		@Override
-		protected void onPostExecute(HttpResponse result) {
-			if (result != null) {
-				String location;
-				try {
-					location = EntityUtils.toString(result.getEntity());
-					System.out.println ("Info from server " + location);
-					
-					// Test the JSON (uncomment id.text from main.xml)
-//					TextView view = (TextView) findViewById(R.id.text);
-//					view.setText(location);
-					
-					// Parse JSON from the API response
-//					JSONObject jObject = new JSONObject(location);
-//					String header = jObject.getString("message");
-//					String snippet = "This is a test snippet";
-					
-					// test send notification
-//					noteLatLong(header, snippet, getApplicationContext());
-					
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+//	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
+//		@Override
+//		protected HttpResponse doInBackground(String... params) {
+//			String link = params[0];
+//
+//			HttpPost httppost = new HttpPost(link);
+//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+//			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
+//			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
+//
+//			try {
+//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//			} catch (UnsupportedEncodingException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}            
+//
+//			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+//			try {
+//				return client.execute(httppost);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				return null;
+//			} finally {
+//				client.close();
+//			}
+//		}
+//
+//		@Override
+//		protected void onPostExecute(HttpResponse result) {
+//			if (result != null) {
+//				String location;
+//				try {
+//					location = EntityUtils.toString(result.getEntity());
+//					System.out.println ("Info from server " + location);
+//					
+//					// Test the JSON (uncomment id.text from main.xml)
+////					TextView view = (TextView) findViewById(R.id.text);
+////					view.setText(location);
+//					
+//					// Parse JSON from the API response
+////					JSONObject jObject = new JSONObject(location);
+////					String header = jObject.getString("message");
+////					String snippet = "This is a test snippet";
+//					
+//					// test send notification
+////					noteLatLong(header, snippet, getApplicationContext());
+//					
+//				} catch (ParseException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 
 	// checks all the lunch menus and closes them
 	public static void closeLunchMenus(Activity activity){
@@ -639,90 +594,14 @@ OnMarkerClickListener {
 
 					String[] display_name_arr = display_name_obj.split(",");
 
-					// Check if user clicked on map
-					if (p.point != null){
-						// Generate some interesting stats
-						JSONObject addressObject = jObject.getJSONObject("address");
-						String city = addressObject.getString("city");
-
-						int poll;
-						if (!pollmap.containsKey(display_name_arr[0])){
-							poll = 0;
-							if (display_name_arr[0].contains("Cemetery") ||
-									display_name_arr[0].contains("St") || 
-									display_name_arr[0].contains("Street") ||
-									display_name_arr[0].contains("River") || 
-									display_name_arr[0].contains("Road") ||
-									display_name_arr[0].contains("Rd") ||
-									display_name_arr[0].contains("Lane") ||
-									display_name_arr[0].contains("Ln") ||
-									display_name_arr[0].contains("High School") ||
-									display_name_arr[0].contains("Catholic") ||
-									display_name_arr[0].contains("Avenue") ||
-									display_name_arr[0].contains("Trail") ||
-									display_name_arr[0].contains("Park") ||
-									display_name_arr[0].contains("Route") ||
-									display_name_arr[0].contains("President") ||
-									display_name_arr[0].contains("Emergency") ||
-									display_name_arr[0].contains("Pond") ||
-									display_name_arr[0].contains("Ridge") ||
-									display_name_arr[0].contains("Church") ||
-									display_name_arr[0].contains("Terrace") ||
-									display_name_arr[0].contains("Alumni Center") ||
-									display_name_arr[0].contains("Esker")){
-								poll = 0;
-								pollmap.put(display_name_arr[0], poll);
-							} else if (city.contains("Hanover")){
-								double first_step = Math.random();
-
-								if (display_name_arr[0].contains("Library")
-										|| display_name_arr[0].contains("Hall")
-										|| display_name_arr[0].contains("Webster Avenue") 
-										|| display_name_arr[0].contains("Gymnasium")){
-									poll = 10 + (int)(Math.random()*70);
-									pollmap.put(display_name_arr[0], poll);
-								} else {
-
-									// check other conditions
-									if (first_step < 0.3){
-										poll = (int)(Math.random()*40);
-										pollmap.put(display_name_arr[0], poll);
-									} else {
-										double second_step = Math.random();
-										if (second_step < 0.5){
-											poll = (int)(Math.random()*20);
-											pollmap.put(display_name_arr[0], poll);
-										} else {
-											double third_step = Math.random();
-											if (third_step < 0.8){
-												poll = (int)(Math.random()*10);
-												pollmap.put(display_name_arr[0], poll);
-											} else {
-												poll = (int)(Math.random()*5);
-												pollmap.put(display_name_arr[0], poll);
-											}
-										}
-									}
-								}
-
-							}
-						} else {
-							// contains
-							poll = pollmap.get(display_name_arr[0]);
-						}
-
-
 						// Create marker at user's point
 						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
-								.title(display_name_arr[0])
-								.snippet(Integer.toString(poll) + " Timely users"));
+								.title(display_name_arr[0]));
 						usermarker.showInfoWindow(); // display marker title automatically
-						
 						
 						closeLunchMenus(activity);
 						
 						
-
 						// Add the point to the path  with options
 						polyline_options.add(p.point);
 						polyline_options.width(10);
@@ -735,7 +614,6 @@ OnMarkerClickListener {
 						checkSwitches();
 					}
 
-				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -767,7 +645,6 @@ OnMarkerClickListener {
 		.setSubText(subtext);
 
 		builder
-//		.setContentIntent(contentIntent)
 		.setSmallIcon(R.drawable.timely)
 		.setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(), R.drawable.timely_icon))
 		.setTicker(header)
@@ -843,16 +720,6 @@ OnMarkerClickListener {
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
 			
-			freeFoodRockyMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_ROCKY)
-					.title("Free Food @ Lunch with Folt")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("scraped from listserv"));
-			
-			freeFoodWilderMarker = map.addMarker(new MarkerOptions().position(FREE_FOOD_WILDER)
-					.title("Free Food @ Mathematics Society")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
-					.snippet("scraped from listserv"));
-			
 			kafMarker.showInfoWindow();
 		}
 		
@@ -863,6 +730,10 @@ OnMarkerClickListener {
 		}
 	}
 	
+	
+	// overloaded
+	// These are the primary methods to update the Google Now Card bars. We will need to shift this UI onto the bottom
+	// so that it is more like Google Now. The premise could still be the same though. 
 	public static void updateBar(int key, Activity activity, String card_text){
 		updateBar(key, activity, card_text, null, null, null, null);
 	}
@@ -871,7 +742,6 @@ OnMarkerClickListener {
 		updateBar(key, activity, card_text, eventStartTime, eventStartName, null, null);
 	}
 	
-	// overloaded
 	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName, 
 			String assignEstimate, String assignDueDate){
 		
@@ -924,6 +794,8 @@ OnMarkerClickListener {
 				card_obj.setOnClickListener(unsilenceListener);
 				break;
 			
+			// Load estimate Card.  [Demo feature]
+			// This card would load a "time estimate" from the Google Calnedar
 			case Globals.LOAD_ESTIMATE:
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
 				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
@@ -946,6 +818,8 @@ OnMarkerClickListener {
 				card_obj.setOnClickListener(estOnClickListener);
 				break;
 			
+			// These load all the lunch options at once.
+			// In the real app, we will need to trigger this when it is typically the user's lunch time
 			case Globals.LOAD_LUNCH_OPTIONS:
 				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
 				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
@@ -1012,10 +886,6 @@ OnMarkerClickListener {
 				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				break;
 				
-			
-				
-				
-				
 			default:
 				break;
 		}
@@ -1023,6 +893,8 @@ OnMarkerClickListener {
 		card_obj.setVisibility(View.VISIBLE);
 		card_obj.setText(card_text);
 		
+		// These handle the Google Now card animations
+		// for the animation to start
 		if (!inversed) {
 			card_obj.startAnimation(
 					AnimationUtils.loadAnimation(context,
@@ -1037,6 +909,10 @@ OnMarkerClickListener {
 	}
 	
 	@Override
+	/**
+	 * This function handles when a marker is clicked. 
+	 * Generally, Aaditya will need to implement this for the Maps Card
+	 */
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
 		closeLunchMenus(this);
@@ -1061,6 +937,8 @@ OnMarkerClickListener {
 		card_obj.setVisibility(View.GONE);
 		
 		
+		// DEMO FEATURE FOR WHEN A CLASS MARKER IS CLICKED
+		// We don't need this but you guys can see how easy it is to silence the phone.
 		if (clickedMarker.equals(classMarker) && class_visited == 0){
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
@@ -1070,11 +948,9 @@ OnMarkerClickListener {
 		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
 			
-
 			// set update bar
 			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
 			
-//			classMarker = null; 
 			silence_phone = 1;
 			class_visited = 1;
 			
@@ -1090,28 +966,6 @@ OnMarkerClickListener {
 			addToPolyline(hopMarker);
 			return true;
 		}
-		
-		if (clickedMarker.equals(lousMarker)){
-			addToPolyline(lousMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(freeFoodRockyMarker)){
-			addToPolyline(freeFoodRockyMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(freeFoodWilderMarker)){
-			addToPolyline(freeFoodWilderMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(mollysMarker)){
-			addToPolyline(mollysMarker);
-			// add to the array
-		}
-		
-		
 		
 		return false;
 	}

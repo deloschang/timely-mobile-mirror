@@ -1,12 +1,12 @@
 Introduction
 -----------
 
-Android project for Timely, a smart app to help people use their time efficiently
+Android project for Timely, a Google Now for college students.
 
 Build
 -----
-
 Requires ant builder, and the Android Base SDK. All .jar add-ons go in libs/
+All dependencies are found in libs/. Change your filepath accordingly. 
 
 Build using
 ```
