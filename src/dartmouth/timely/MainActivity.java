@@ -73,8 +73,6 @@ import com.google.api.services.calendar.CalendarScopes;
 
 public class MainActivity extends FragmentActivity implements OnMapClickListener,
 OnMarkerClickListener {
-	
-
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
@@ -100,10 +98,10 @@ OnMarkerClickListener {
 	
 	static final int ZOOM_LEVEL = 17;
 
-	// main options object
+	// main options object for drawing the Google Map
 	PolylineOptions polyline_options;
 
-	// oAuth2
+	// oAuth2 -- including Google Calendar API
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
 	static final int REQUEST_AUTHORIZATION = 1;
 	static final int REQUEST_ACCOUNT_PICKER = 2;
@@ -112,32 +110,38 @@ OnMarkerClickListener {
 
 	final JsonFactory jsonFactory = new GsonFactory();
 	private static final String PREF_ACCOUNT_NAME = "accountName";
-
 	com.google.api.services.calendar.Calendar client;
 	
 	// Dynamic updating location
+	// This is a boolean flag that is assigned to update the shown location every X sec (under the pause function)
 	boolean isUpdating = true;
 	
-	// Routing
+	// These are the markers that will be shown on the Map. 
+	// e.g. hopMarker will be the marker for the Hop at the specified coordinate
 	static Marker routeMarker;
-	static Marker classMarker; // class marker (e.g. COSC 51)
+	static Marker classMarker; // class marker (e.g. COSC 51) [demo feature]
 	static Marker mollysMarker;
 	static Marker kafMarker;
 	static Marker hopMarker;
 	
-	// switches
+	// switches that activate different demo features 
+	// We will need to clear these out once we have the smartphone sensing boilerplate set up.
+	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 	static int class_visited = 0;
 	static int load_lunch = 0;
 	static int estimate_reminder = 0;
-	
 	static int reset_estimate_click = 0;
 	
-	// Events from API
+	// These are for Events API. 
+	// The list is used to iterate through the markers and add them onto the map.
+	// The event map is used to pass a Marker and a String around.
 	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
 	static List<Map<Marker, String>> eventMarkers = new ArrayList<Map<Marker, String>>();
 	
 	// For the Google Now layout -- update bar
+	// Basically, when inversed is true, the Google Now card will come from one direction. 
+	// When it is false, it will come from another direction
 	static boolean inversed = true;
 	
 	/** Called when the activity is first created. */
@@ -146,14 +150,16 @@ OnMarkerClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		// Dynamically update the location
+		// This section enables a different thread that can do something every X sec 
+		// depending on the pause function below
+		// Everything here is asynchronous
 		final TextView current_location = (TextView) findViewById(R.id.current_location);
 		final Handler offMainHandler = new Handler();
 		Runnable runnableOffMain = new Runnable(){
 			@Override
 			public void run(){
 				while(true){
-					pause();
+					pause();  // pauses the function for X sec. Then continues. 
 					offMainHandler.post(new Runnable(){
 						@Override
 						public void run(){
@@ -163,6 +169,10 @@ OnMarkerClickListener {
 								isUpdating = false;
 								
 								// check switches by time
+								// [demo feature] Checks for flags in this asynchronous thread.
+								// If certain flags are up, it will display cards.
+								// We COULD adapt this to our smartphone sensing. Maybe it would be 
+								// better to have GCM push the data on the phone though.
 								delayedCheck();
 							} else {
 								current_location.setText("Updating location..");
@@ -179,29 +189,24 @@ OnMarkerClickListener {
 		// deflate the update bar
 		// Hide all the cards first
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
 		findViewById(R.id.focoCard).setVisibility(View.GONE);
 		findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.kafCard).setVisibility(View.GONE);
 		findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.hopCard).setVisibility(View.GONE);
 		findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.bolocoCard).setVisibility(View.GONE);
 		findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
-		
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
 		sendLocation();
 		
-		// Google Accounts
+		// These are for the Google OAuth 2 stuff.
+		// This includes the Google Calendar API. 
 		credential = GoogleAccountCredential.usingOAuth2(this, CalendarScopes.CALENDAR);
 		SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
 		credential.setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
@@ -212,6 +217,7 @@ OnMarkerClickListener {
 
 
 		// Google Maps API v2 dance
+		// It first checks if Google Play Services is available on the phoen
 		if (checkGooglePlayServicesAvailable()){
 			map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
 					.getMap(); // generate the map
@@ -221,14 +227,16 @@ OnMarkerClickListener {
 			map.setOnMapClickListener(this);
 
 			// Scrape campus events and load onto map as markers
+			// This loads the events from the API via the URL. Then it will populate the map with
+			// markers
 			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
 			
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
 			
 			// 1st marker: User starts here 
-			// 2nd marker: Class added from AsyncLoadEvent
-			// 3rd marker: Lunch options
+			// 2nd marker: Class added from AsyncLoadEvent  [demo feature]
+			// 3rd marker: Lunch options 
 			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
 			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
 					.title("Home")
@@ -273,6 +281,7 @@ OnMarkerClickListener {
 		reset_estimate_click = 0;
 	}
 
+	/** GOOGLE PLAY OAUTH2 STUFF **/
 	/** Check that Google Play services APK is installed and up to date. */
 	private boolean checkGooglePlayServicesAvailable() {
 		final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -349,6 +358,7 @@ OnMarkerClickListener {
 			break;
 		}
 	}
+	/** END GOOGLE PLAY OAUTH2 STUFF **/
 
 
 	/** Grab location coordinates and do something **/
