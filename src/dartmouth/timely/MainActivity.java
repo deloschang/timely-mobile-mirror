@@ -361,6 +361,10 @@ OnMarkerClickListener {
 	/** END GOOGLE PLAY OAUTH2 STUFF **/
 
 
+	/**
+	 * Location tracking stuff. All this stuff needs to be changed to the foreground service 
+	 *  ( Justice should handle this stuff )
+	 */
 	/** Grab location coordinates and do something **/
 	public void sendLocation() {    	
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
@@ -373,8 +377,7 @@ OnMarkerClickListener {
 			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
 
 			// Post to API with latitude and longitude
-			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
-
+//			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
 			
 			// GET request to MapQuest with latitude longitude
 			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
@@ -389,7 +392,7 @@ OnMarkerClickListener {
 				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
 
 				// POST to API with latitude and longitude
-				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
+//				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
 
 				// GET request to MapQuest with latitude longitude
 //				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
@@ -430,64 +433,64 @@ OnMarkerClickListener {
 
 
 	// POST request to the Timely API
-	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
-		@Override
-		protected HttpResponse doInBackground(String... params) {
-			String link = params[0];
-
-			HttpPost httppost = new HttpPost(link);
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
-			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
-
-			try {
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}            
-
-			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-			try {
-				return client.execute(httppost);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			} finally {
-				client.close();
-			}
-		}
-
-		@Override
-		protected void onPostExecute(HttpResponse result) {
-			if (result != null) {
-				String location;
-				try {
-					location = EntityUtils.toString(result.getEntity());
-					System.out.println ("Info from server " + location);
-					
-					// Test the JSON (uncomment id.text from main.xml)
-//					TextView view = (TextView) findViewById(R.id.text);
-//					view.setText(location);
-					
-					// Parse JSON from the API response
-//					JSONObject jObject = new JSONObject(location);
-//					String header = jObject.getString("message");
-//					String snippet = "This is a test snippet";
-					
-					// test send notification
-//					noteLatLong(header, snippet, getApplicationContext());
-					
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+//	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
+//		@Override
+//		protected HttpResponse doInBackground(String... params) {
+//			String link = params[0];
+//
+//			HttpPost httppost = new HttpPost(link);
+//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+//			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
+//			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
+//
+//			try {
+//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//			} catch (UnsupportedEncodingException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}            
+//
+//			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+//			try {
+//				return client.execute(httppost);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				return null;
+//			} finally {
+//				client.close();
+//			}
+//		}
+//
+//		@Override
+//		protected void onPostExecute(HttpResponse result) {
+//			if (result != null) {
+//				String location;
+//				try {
+//					location = EntityUtils.toString(result.getEntity());
+//					System.out.println ("Info from server " + location);
+//					
+//					// Test the JSON (uncomment id.text from main.xml)
+////					TextView view = (TextView) findViewById(R.id.text);
+////					view.setText(location);
+//					
+//					// Parse JSON from the API response
+////					JSONObject jObject = new JSONObject(location);
+////					String header = jObject.getString("message");
+////					String snippet = "This is a test snippet";
+//					
+//					// test send notification
+////					noteLatLong(header, snippet, getApplicationContext());
+//					
+//				} catch (ParseException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 
 	// checks all the lunch menus and closes them
 	public static void closeLunchMenus(Activity activity){
@@ -727,6 +730,10 @@ OnMarkerClickListener {
 		}
 	}
 	
+	
+	// overloaded
+	// These are the primary methods to update the Google Now Card bars. We will need to shift this UI onto the bottom
+	// so that it is more like Google Now. The premise could still be the same though. 
 	public static void updateBar(int key, Activity activity, String card_text){
 		updateBar(key, activity, card_text, null, null, null, null);
 	}
@@ -735,7 +742,6 @@ OnMarkerClickListener {
 		updateBar(key, activity, card_text, eventStartTime, eventStartName, null, null);
 	}
 	
-	// overloaded
 	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName, 
 			String assignEstimate, String assignDueDate){
 		
@@ -788,6 +794,8 @@ OnMarkerClickListener {
 				card_obj.setOnClickListener(unsilenceListener);
 				break;
 			
+			// Load estimate Card.  [Demo feature]
+			// This card would load a "time estimate" from the Google Calnedar
 			case Globals.LOAD_ESTIMATE:
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
 				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
@@ -810,6 +818,8 @@ OnMarkerClickListener {
 				card_obj.setOnClickListener(estOnClickListener);
 				break;
 			
+			// These load all the lunch options at once.
+			// In the real app, we will need to trigger this when it is typically the user's lunch time
 			case Globals.LOAD_LUNCH_OPTIONS:
 				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
 				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
@@ -883,6 +893,7 @@ OnMarkerClickListener {
 		card_obj.setVisibility(View.VISIBLE);
 		card_obj.setText(card_text);
 		
+		// These handle the Google Now card animations
 		// for the animation to start
 		if (!inversed) {
 			card_obj.startAnimation(
@@ -898,6 +909,10 @@ OnMarkerClickListener {
 	}
 	
 	@Override
+	/**
+	 * This function handles when a marker is clicked. 
+	 * Generally, Aaditya will need to implement this for the Maps Card
+	 */
 	public boolean onMarkerClick(Marker clickedMarker) {
 		
 		closeLunchMenus(this);
@@ -922,6 +937,8 @@ OnMarkerClickListener {
 		card_obj.setVisibility(View.GONE);
 		
 		
+		// DEMO FEATURE FOR WHEN A CLASS MARKER IS CLICKED
+		// We don't need this but you guys can see how easy it is to silence the phone.
 		if (clickedMarker.equals(classMarker) && class_visited == 0){
 			// Add the point to the path  with options
 			addToPolyline(classMarker);
