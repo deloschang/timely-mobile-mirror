@@ -129,7 +129,7 @@ OnMarkerClickListener {
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 	static int class_visited = 0;
-	static int load_lunch = 0;
+	static int load_lunch = 1;
 	static int estimate_reminder = 0;
 	static int reset_estimate_click = 0;
 	
@@ -309,7 +309,7 @@ OnMarkerClickListener {
 			chooseAccount();
 		} else {
 			// If already chosen, this fires
-			new AsyncLoadEvent(this).execute();
+//			new AsyncLoadEvent(this).execute();
 		}
 	}
 
@@ -332,7 +332,7 @@ OnMarkerClickListener {
 		case REQUEST_AUTHORIZATION:
 			if (resultCode == Activity.RESULT_OK) {
 				// Pull upcoming event 
-				new AsyncLoadEvent(this).execute();
+//				new AsyncLoadEvent(this).execute();
 				
 				// do something
 			} else {
@@ -352,7 +352,7 @@ OnMarkerClickListener {
 					
 					
 					// Pull upcoming event 
-					new AsyncLoadEvent(this).execute();
+//					new AsyncLoadEvent(this).execute();
 				}
 			}
 			break;
@@ -595,20 +595,20 @@ OnMarkerClickListener {
 					String[] display_name_arr = display_name_obj.split(",");
 
 						// Create marker at user's point
-						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
-								.title(display_name_arr[0]));
-						usermarker.showInfoWindow(); // display marker title automatically
+//						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
+//								.title(display_name_arr[0]));
+//						usermarker.showInfoWindow(); // display marker title automatically
 						
 						closeLunchMenus(activity);
 						
 						
 						// Add the point to the path  with options
-						polyline_options.add(p.point);
-						polyline_options.width(10);
-						polyline_options.color(Color.CYAN);
-						map.addPolyline(polyline_options);
-
-						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
+//						polyline_options.add(p.point);
+//						polyline_options.width(10);
+//						polyline_options.color(Color.CYAN);
+//						map.addPolyline(polyline_options);
+//
+//						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 						
 						// check switches delayed
 						checkSwitches();
@@ -690,7 +690,7 @@ OnMarkerClickListener {
 		if (silence_phone == 1){
 			// Unsilence phone 
 			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			noteLatLong("Unsilencing phone", "you're out of class", getApplicationContext());
 			
 			// set status bar
@@ -704,7 +704,7 @@ OnMarkerClickListener {
 	}
 	
 	public void delayedCheck(){
-		if (class_visited == 1 && load_lunch == 1){
+		if (load_lunch == 1){
 			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
 			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
 			load_lunch = 0;
@@ -724,7 +724,7 @@ OnMarkerClickListener {
 		}
 		
 		if (estimate_reminder == 0 ){
-			new AsyncLoadEstimate(this).execute();
+//			new AsyncLoadEstimate(this).execute();
 			
 			estimate_reminder = 1;
 		}
