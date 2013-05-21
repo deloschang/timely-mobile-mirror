@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+      android:layout_gravity="center_horizontal"
     >
+    
+     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" 
+          android:layout_gravity="center_horizontal">
     
     <!-- Header Strip -->
 
@@ -64,6 +71,40 @@
 	    android:textStyle="bold"
 	    android:text=""
 	    />
+	
+	 <LinearLayout
+	     android:layout_width="fill_parent"
+	     android:layout_height="fill_parent"
+	     android:layout_gravity="center_horizontal"
+	     android:orientation="vertical" >
+
+	     <TextView
+	         android:id="@+id/mapCard"
+	         style="@style/nowCardStyle"
+	         android:layout_width="match_parent"
+	         android:layout_height="34dp"
+	         android:layout_marginBottom="3dp"
+	         android:layout_marginLeft="5dp"
+	         android:layout_marginRight="5dp"
+	         android:layout_marginTop="2dp"
+	         android:background="@color/white"
+	         android:text="Map"
+	         android:textSize="15sp"
+	         android:typeface="sans" />
+
+	     <fragment
+	         android:id="@+id/map"
+	         android:layout_width="match_parent"
+	         android:layout_height="240dp"
+	         android:layout_gravity="center_horizontal"
+	         android:layout_marginBottom="3dp"
+	         android:layout_marginLeft="5dp"
+	         android:layout_marginRight="5dp"
+	         android:layout_marginTop="2dp"
+	         android:layout_weight="0.95"
+	         class="com.google.android.gms.maps.SupportMapFragment" />
+
+	 </LinearLayout>
 	
 	<!--  Update Bar -->
 	<dartmouth.timely.NowLayout
@@ -271,12 +312,6 @@
 		    />
 	</LinearLayout> -->
 	
-   <fragment
-       xmlns:android="http://schemas.android.com/apk/res/android"
-       android:id="@+id/map"
-       android:layout_width="match_parent"
-       android:layout_height="516dp"
-       class="com.google.android.gms.maps.SupportMapFragment" />
 
-</LinearLayout>
-
+  </LinearLayout>
+</ScrollView>
