@@ -186,6 +186,9 @@ OnMarkerClickListener {
 		new Thread(runnableOffMain).start();
 		// end
 		
+		/*
+		 * Deflate all Cards here!
+		 */
 		// deflate the update bar
 		// Hide all the cards first
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);

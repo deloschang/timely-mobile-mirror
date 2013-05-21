@@ -66,6 +66,7 @@
 	    />
 	
 	<!--  Update Bar -->
+	<!--  New cards here -->
 	<dartmouth.timely.NowLayout
 	    android:id="@+id/nowlayout"
 	    android:layout_width="match_parent"
