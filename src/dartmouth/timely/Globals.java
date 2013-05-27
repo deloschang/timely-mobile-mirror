@@ -36,5 +36,7 @@ public abstract class Globals {
 	public static final int BOLOCO_MENU = 10;
 	public static final String BOLOCO_TEXT = "Boloco's Lunch Menu";
 	
+    public static final int TIME_USAGE = 11;
+    public static final String TIME_USAGE_TEXT = "Your Time Usage";
 
 }
