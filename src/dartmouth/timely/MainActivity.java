@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -281,6 +282,18 @@ OnMarkerClickListener {
 		mServiceIntent = new Intent(this, SensorService.class);
 		startService(mServiceIntent);
 		doBindService();	
+		
+		// ProximityReceiver Setup
+		double lat=43.705816, lng=-72.288712;
+		float radius=8;
+		LocationManager lm;
+		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+		Intent i= new Intent("dartmouth.timely.proximityalert");         
+		PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), -1, i, 0);
+		lm.addProximityAlert(lat, lng, radius, -1, pi);
+
+		IntentFilter filter = new IntentFilter("dartmouth.timely.proximityalert"); 
+		registerReceiver(new ProximityReceiver(), filter);
 	}
 
 	private void pause(){

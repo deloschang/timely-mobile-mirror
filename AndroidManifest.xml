@@ -42,6 +42,7 @@
         <activity android:name="NotificationReceiverActivity"></activity>
         
         <service android:name="dartmouth.timely.SensorService" />
+        <activity android:name="ProximityReceiver"></activity>
         
 		<meta-data
 		   android:name="com.google.android.maps.v2.API_KEY"
