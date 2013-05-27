@@ -56,10 +56,10 @@ public class PieChart extends Drawable implements OnTouchListener {
 
 		//chart area rectangle
 		arc_bounds = new RectF(
+				((view_w)/2) - 20,
 				10,
-				10,
-				250,
-				250
+				(view_w))/2) + 150,
+				180
 				);
 
 		//sum of data values
