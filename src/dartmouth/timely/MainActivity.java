@@ -214,7 +214,7 @@ OnMarkerClickListener {
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
-		sendLocation();
+//		sendLocation();
 		
 		// These are for the Google OAuth 2 stuff.
 		// This includes the Google Calendar API. 
@@ -266,19 +266,21 @@ OnMarkerClickListener {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
 		}
 		
+//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
+		
 		//Register GPS sensor to receive location update
-				mLocationUpdateFilter = new IntentFilter();
-				mLocationUpdateFilter.addAction("LOCATION_UPDATED");
+		mLocationUpdateFilter = new IntentFilter();
+		mLocationUpdateFilter.addAction("LOCATION_UPDATED");
 
-				//Register Motion sensor to receive motion updates
-				mMotionUpdateFilter = new IntentFilter();
-				mMotionUpdateFilter.addAction("MOTION_UPDATED");
+		//Register Motion sensor to receive motion updates
+		mMotionUpdateFilter = new IntentFilter();
+		mMotionUpdateFilter.addAction("MOTION_UPDATED");
 
 
-				// Start and bind the tracking service
-				mServiceIntent = new Intent(this, SensorService.class);
-				startService(mServiceIntent);
-				doBindService();	
+		// Start and bind the tracking service
+		mServiceIntent = new Intent(this, SensorService.class);
+		startService(mServiceIntent);
+		doBindService();	
 	}
 
 	private void pause(){
@@ -297,8 +299,8 @@ OnMarkerClickListener {
 		class_visited = 0;
 		
 		//Register receivers for location and motion updates
-				registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
-				registerReceiver(mMotionUpdateReceiver, mMotionUpdateFilter);
+		registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
+		registerReceiver(mMotionUpdateReceiver, mMotionUpdateFilter);
 	}
 	
 	@Override
@@ -407,70 +409,70 @@ OnMarkerClickListener {
 	 *  ( Justice should handle this stuff )
 	 */
 	/** Grab location coordinates and do something **/
-	public void sendLocation() {    	
-		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
-		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-		if (location != null) {
-			// LatLng object and Strings of coordinates
-			String latitude = Double.toString(location.getLatitude());
-			String longitude = Double.toString(location.getLongitude());
-			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
-
-			// Post to API with latitude and longitude
-//			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
-			
-			// GET request to MapQuest with latitude longitude
-			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-			new NetworkGet(this).execute(url);
-		}
-
-		final LocationListener locationListener = new LocationListener() {
-			// Once location has changed
-			public void onLocationChanged(Location location) {
-				String latitude = Double.toString(location.getLatitude());
-				String longitude = Double.toString(location.getLongitude());
-				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
-
-				// POST to API with latitude and longitude
-//				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
-
-				// GET request to MapQuest with latitude longitude
-//				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-
-				// creates a marker at current user location // 
-				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
-				//				new NetworkGet().execute(url, user_coord);
-//				new NetworkGet().execute(url);
-
-				// test send notification
-//				noteLatLong(latitude, longitude);
-			}
-
-			@Override
-			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				// TODO Auto-generated method stub
-
-			}
-		};
+//	public void sendLocation() {    	
+//		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
+//		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//		if (location != null) {
+//			// LatLng object and Strings of coordinates
+//			String latitude = Double.toString(location.getLatitude());
+//			String longitude = Double.toString(location.getLongitude());
+//			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
+//
+//			// Post to API with latitude and longitude
+////			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
+//			
+//			// GET request to MapQuest with latitude longitude
+//			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+//			new NetworkGet(this).execute(url);
+//		}
+//
+//		final LocationListener locationListener = new LocationListener() {
+//			// Once location has changed
+//			public void onLocationChanged(Location location) {
+//				String latitude = Double.toString(location.getLatitude());
+//				String longitude = Double.toString(location.getLongitude());
+//				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
+//
+//				// POST to API with latitude and longitude
+////				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
+//
+//				// GET request to MapQuest with latitude longitude
+////				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+//
+//				// creates a marker at current user location // 
+//				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+//				//				new NetworkGet().execute(url, user_coord);
+////				new NetworkGet().execute(url);
+//
+//				// test send notification
+////				noteLatLong(latitude, longitude);
+//			}
+//
+//			@Override
+//			public void onProviderDisabled(String provider) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void onProviderEnabled(String provider) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void onStatusChanged(String provider, int status,
+//					Bundle extras) {
+//				// TODO Auto-generated method stub
+//
+//			}
+//		};
 
 //					TextView view = (TextView) findViewById(R.id.text);
 //					view.setText(location);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-	}
+//		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+//	}
 
 
 	// POST request to the Timely API
@@ -1027,12 +1029,11 @@ OnMarkerClickListener {
 				// Initialization
 				if (mLocationList == null || mLocationList.isEmpty())
 					return;
-				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -2));	
+				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
 				//TODO Robin do something with current location
 			}				
 		}		
 	};
-
 	private BroadcastReceiver mMotionUpdateReceiver = new BroadcastReceiver() {
 
 		@Override

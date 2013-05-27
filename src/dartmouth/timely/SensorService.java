@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.Toast;
 
 @SuppressLint("UseValueOf")
 public class SensorService extends Service implements LocationListener,
@@ -61,6 +62,8 @@ public class SensorService extends Service implements LocationListener,
 	
 	@Override 
 	public void onCreate() {
+		
+		Toast.makeText(this, "SENSOR SERVICE REACHED", Toast.LENGTH_LONG).show();
 		
 		//Initializations
 		mContext = this;
