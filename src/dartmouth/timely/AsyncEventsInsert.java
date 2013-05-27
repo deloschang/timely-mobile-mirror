@@ -24,14 +24,10 @@ import com.google.api.services.calendar.model.EventDateTime;
 
 
 
-// Insert wrapper class
-//class AsyncEventsInsertWrapper {
-//	public String startDate;
-//}
 		
 class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 
-	final String CLASS_CALENDAR_FROM_API = "5glrh8ja4ee6vgl4ghnluo4bmk@group.calendar.google.com";
+	final String CLASS_CALENDAR_FROM_API = "primary"; // Use the user's primary calendar
 	
 	private final MainActivity activity;
 	private final String startDate;
@@ -63,7 +59,7 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 				DateTime start = new DateTime(date, TimeZone.getTimeZone("UTC"));
 				
 				// offset for time
-				int timeEst = 2400000 + (int)(Math.random()*4800000);
+				int timeEst = 2400000 + (int)(Math.random());
 				Date endDate = new Date(date.getTime() + timeEst);
 				DateTime end = new DateTime(endDate, TimeZone.getTimeZone("UTC"));
 				
