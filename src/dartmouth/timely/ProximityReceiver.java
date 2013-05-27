@@ -29,6 +29,9 @@ public class ProximityReceiver extends BroadcastReceiver {
   //Gives whether the user is entering or leaving in boolean form
   
   if(state){
+	  // If in this geofence, turn on the FoCo card
+	  MainActivity.load_lunch = 1;
+	  
    // Call the Notification Service or anything else that you would like to do here
    Toast.makeText(context, "Welcome to my Area", Toast.LENGTH_LONG).show();
   }else{
