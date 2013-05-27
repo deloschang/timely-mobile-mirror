@@ -86,6 +86,11 @@ OnMarkerClickListener {
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 
 	// Google Maps API lat/lng for Hanover
+	
+	
+	private SupportMapFragment mMapFragment;
+	public static boolean menuUp;
+	public boolean mapOn;
 	public static GoogleMap map;
 	static final LatLng DARTMOUTH_COORD = new LatLng(43.705105,-72.289582);
 	static final LatLng DORM_LOCATION = new LatLng(43.703779,-72.290617);  // starting point
@@ -126,7 +131,7 @@ OnMarkerClickListener {
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 //	static int class_visited = 0;
-	static int load_lunch = 1;
+	static int load_lunch = 0;
 //	static int estimate_reminder = 0;
 //	static int reset_estimate_click = 0;
 	
@@ -149,9 +154,20 @@ OnMarkerClickListener {
 	private IntentFilter mLocationUpdateFilter;
 	public ArrayList<Location> mLocationList;
 	
+	
 	// Use to set flags
 	public LatLng curLatLng;
 	public int curMotion;
+	
+	// Proximity Declarations
+	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
+	private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
+
+	private static final long POINT_RADIUS = 1000; // in Meters
+	private static final long PROX_ALERT_EXPIRATION = -1;
+
+	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
+	public LocationManager mLocationManager;
 		
 	/** Called when the activity is first created. */
 	@Override
@@ -226,49 +242,12 @@ OnMarkerClickListener {
 		client = new com.google.api.services.calendar.Calendar.Builder(
 				transport, jsonFactory, credential).setApplicationName("Timely")
 				.build();
-
-
-		// Google Maps API v2 dance
-		// It first checks if Google Play Services is available on the phoen
-		if (checkGooglePlayServicesAvailable()){
-			map = ((SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map))
-					.getMap(); // generate the map
-
-			// set camera to Dartmouth
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD, ZOOM_LEVEL));
-			map.setOnMapClickListener(this);
-
-			// Scrape campus events and load onto map as markers
-			// This loads the events from the API via the URL. Then it will populate the map with
-			// markers
-			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
-			
-			// Load routes: path of the user with clicks (shortest distance)
-			polyline_options = new PolylineOptions();
-			
-			// 1st marker: User starts here 
-			// 2nd marker: Class added from AsyncLoadEvent  [demo feature]
-			// 3rd marker: Lunch options 
-			MainActivity.map.setOnMarkerClickListener(this); // for marker clicks
-			Marker starting_point = map.addMarker(new MarkerOptions().position(DORM_LOCATION)
-					.title("Home")
-					.snippet("from location and sleep sensing")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
-					);
-			starting_point.showInfoWindow(); // display marker title automatically
-			
-			polyline_options.add(DORM_LOCATION);
-			polyline_options.width(10);
-			polyline_options.color(Color.CYAN);
-			
-			Polyline path_from_clicks = map.addPolyline(polyline_options);
-
-		} else {
-			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
-		}
+		
+		menuUp=false;
+mapStuff();
 		
 //		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
-		
+
 		//Register GPS sensor to receive location update
 		mLocationUpdateFilter = new IntentFilter();
 		mLocationUpdateFilter.addAction("LOCATION_UPDATED");
@@ -281,21 +260,113 @@ OnMarkerClickListener {
 		// Start and bind the tracking service
 		mServiceIntent = new Intent(this, SensorService.class);
 		startService(mServiceIntent);
-		doBindService();	
+		doBindService();			
 		
-		// ProximityReceiver Setup
-		double lat=43.705816, lng=-72.288712;
-		float radius=8;
-		LocationManager lm;
-		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-		Intent i= new Intent("dartmouth.timely.proximityalert");         
-		PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), -1, i, 0);
-		lm.addProximityAlert(lat, lng, radius, -1, pi);
-
-		IntentFilter filter = new IntentFilter("dartmouth.timely.proximityalert"); 
-		registerReceiver(new ProximityReceiver(), filter);
+		//LocationManager Initializer
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		
+		//Add ProximityReceiver for Novack
+		double lat=43.705816, lng=-72.288712;		
+		addProximityAlert(lat,lng);
+		
 	}
 
+	private void addProximityAlert(double latitude, double longitude) {
+	    
+	    Intent intent = new Intent(PROX_ALERT_INTENT);
+	    PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+	    
+	    mLocationManager.addProximityAlert(
+	        latitude, // the latitude of the central point of the alert region
+	        longitude, // the longitude of the central point of the alert region
+	        POINT_RADIUS, // the radius of the central point of the alert region, in meters
+	        PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
+	        proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+	   );
+	    
+	   IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
+	   registerReceiver(new ProximityReceiver(), filter);	   
+	}
+	
+	public void mapStuff() {
+		// Google Maps API v2 dance
+		// It first checks if Google Play Services is available on the phoen
+		if (checkGooglePlayServicesAvailable()) {
+
+			mMapFragment = ((SupportMapFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.map));
+			map = mMapFragment.getMap();
+
+			// set camera to Dartmouth
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(DARTMOUTH_COORD,
+					ZOOM_LEVEL));
+
+			map.setOnMapClickListener(this);
+
+			mapOn = true;
+
+			// Scrape campus events and load onto map as markers
+			// This loads the events from the API via the URL. Then it will
+			// populate the map with
+			// markers
+			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
+
+			// Load routes: path of the user with clicks (shortest distance)
+			polyline_options = new PolylineOptions();
+
+			// 1st marker: User starts here
+			// 2nd marker: Class added from AsyncLoadEvent [demo feature]
+			// 3rd marker: Lunch options
+			MainActivity.map.setOnMarkerClickListener(this); // for marker
+																// clicks
+			Marker starting_point = map.addMarker(new MarkerOptions()
+					.position(DORM_LOCATION)
+					.title("Home")
+					.snippet("from location and sleep sensing")
+					.icon(BitmapDescriptorFactory
+							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event
+																				// color
+					);
+			starting_point.showInfoWindow(); // display marker title
+												// automatically
+
+			polyline_options.add(DORM_LOCATION);
+			polyline_options.width(10);
+			polyline_options.color(Color.CYAN);
+
+			Polyline path_from_clicks = map.addPolyline(polyline_options);
+
+		} else {
+			Toast.makeText(getApplicationContext(), "No Google Play found",
+					Toast.LENGTH_LONG).show();
+		}
+
+		
+		
+		final TextView mappview = (TextView) findViewById(R.id.mapCard);
+		mappview.setOnClickListener(new View.OnClickListener() {
+	
+			@Override
+			public void onClick(View v) {
+				
+				if (mapOn == true) {
+					getSupportFragmentManager().beginTransaction()
+							.hide(mMapFragment).commit();
+					
+					mapOn = false;
+				} else {
+					getSupportFragmentManager().beginTransaction()
+							.show(mMapFragment).commit();
+					mapOn = true;
+
+				}
+			}
+
+		});
+
+	}
+
+	
 	private void pause(){
 		try {
 			Thread.sleep(2000);

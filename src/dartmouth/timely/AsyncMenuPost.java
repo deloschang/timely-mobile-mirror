@@ -219,7 +219,15 @@ class AsyncMenuPost extends AsyncTask<String, Void, Wrapper>{
 
 
 						// set inner menu to visible
+						
+						if(MainActivity.menuUp == false){
 						scrollMenu.setVisibility(View.VISIBLE);
+						MainActivity.menuUp = true;
+						}
+						else{
+							scrollMenu.setVisibility(View.GONE);
+							MainActivity.menuUp=false;
+					}
 					}
 
 				};
