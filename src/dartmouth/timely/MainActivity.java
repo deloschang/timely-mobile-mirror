@@ -32,8 +32,6 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -1030,6 +1028,8 @@ OnMarkerClickListener {
 				if (mLocationList == null || mLocationList.isEmpty())
 					return;
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
+				
+				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 				//TODO Robin do something with current location
 			}				
 		}		
