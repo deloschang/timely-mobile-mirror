@@ -76,9 +76,9 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
 				);
 		
-		if (MainActivity.class_visited == 0){
-			MainActivity.noteLatLong(Globals.LEAVE_FOR_CLASS_TEXT, success, context);
+//		if (MainActivity.class_visited == 0){
+//			MainActivity.noteLatLong(Globals.LEAVE_FOR_CLASS_TEXT, success, context);
 //			context.this.findViewById(R.id.update1).setVisibility(View.GONE);
-		}
+//		}
 	}
 }

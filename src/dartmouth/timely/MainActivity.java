@@ -124,10 +124,10 @@ OnMarkerClickListener {
 	// We will need to clear these out once we have the smartphone sensing boilerplate set up.
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
-	static int class_visited = 0;
+//	static int class_visited = 0;
 	static int load_lunch = 1;
-	static int estimate_reminder = 0;
-	static int reset_estimate_click = 0;
+//	static int estimate_reminder = 0;
+//	static int reset_estimate_click = 0;
 	
 	// These are for Events API. 
 	// The list is used to iterate through the markers and add them onto the map.
@@ -141,14 +141,16 @@ OnMarkerClickListener {
 	static boolean inversed = true;
 	
 	//SensorService Declarations
-		public SensorService mSensorService;
-		public boolean mIsBound;
-		public Intent mServiceIntent;
-		private IntentFilter mMotionUpdateFilter;
-		private IntentFilter mLocationUpdateFilter;
-		public ArrayList<Location> mLocationList;
-		public LatLng curLatLng;
-		public int curMotion;
+	public SensorService mSensorService;
+	public boolean mIsBound;
+	public Intent mServiceIntent;
+	private IntentFilter mMotionUpdateFilter;
+	private IntentFilter mLocationUpdateFilter;
+	public ArrayList<Location> mLocationList;
+	
+	// Use to set flags
+	public LatLng curLatLng;
+	public int curMotion;
 		
 	/** Called when the activity is first created. */
 	@Override
@@ -294,7 +296,7 @@ OnMarkerClickListener {
 		if (checkGooglePlayServicesAvailable()) {
 			haveGooglePlayServices();
 		}
-		class_visited = 0;
+//		class_visited = 0;
 		
 		//Register receivers for location and motion updates
 		registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
@@ -317,9 +319,9 @@ OnMarkerClickListener {
 		
 		
 		// reset parameters
-		class_visited = 0;
-		estimate_reminder = 0;
-		reset_estimate_click = 0;
+//		class_visited = 0;
+//		estimate_reminder = 0;
+//		reset_estimate_click = 0;
 	}
 
 	/** GOOGLE PLAY OAUTH2 STUFF **/
@@ -745,6 +747,7 @@ OnMarkerClickListener {
 	}
 	
 	public void delayedCheck(){
+		// Runs in a separate thread. 
 		if (load_lunch == 1){
 			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
 			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
@@ -764,11 +767,11 @@ OnMarkerClickListener {
 			kafMarker.showInfoWindow();
 		}
 		
-		if (estimate_reminder == 0 ){
+//		if (estimate_reminder == 0 ){
 //			new AsyncLoadEstimate(this).execute();
 			
-			estimate_reminder = 1;
-		}
+//			estimate_reminder = 1;
+//		}
 	}
 	
 	
@@ -841,19 +844,19 @@ OnMarkerClickListener {
 				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
 				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
 					
-					@Override
-					public void onClick(View v) {
-						if (reset_estimate_click == 0){
-							card_obj.setTextColor(Color.BLUE);
-							card_obj.setText(assignEstimate);
-							reset_estimate_click = 1;
-							
-						} else if (reset_estimate_click == 1){
-							card_obj.setTextColor(Color.parseColor("#707070"));
-							card_obj.setText(assignDueDate);
-							reset_estimate_click = 0;
-						}
-					}
+//					@Override
+//					public void onClick(View v) {
+//						if (reset_estimate_click == 0){
+//							card_obj.setTextColor(Color.BLUE);
+//							card_obj.setText(assignEstimate);
+//							reset_estimate_click = 1;
+//							
+//						} else if (reset_estimate_click == 1){
+//							card_obj.setTextColor(Color.parseColor("#707070"));
+//							card_obj.setText(assignDueDate);
+//							reset_estimate_click = 0;
+//						}
+//					}
 				};
 				
 				card_obj.setOnClickListener(estOnClickListener);
@@ -906,6 +909,7 @@ OnMarkerClickListener {
 				card_obj = (TextView) activity.findViewById(R.id.focoCard);
 				
 				// GET request for the Foco Menu and set listener
+				System.out.println("Reached async, about to execute");
 				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
 				break;
 			
@@ -980,23 +984,23 @@ OnMarkerClickListener {
 		
 		// DEMO FEATURE FOR WHEN A CLASS MARKER IS CLICKED
 		// We don't need this but you guys can see how easy it is to silence the phone.
-		if (clickedMarker.equals(classMarker) && class_visited == 0){
-			// Add the point to the path  with options
-			addToPolyline(classMarker);
-				
-			// Silence phone in class
-			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
-			
-			// set update bar
-			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
-			
-			silence_phone = 1;
-			class_visited = 1;
-			
-			return true;
-		}
+//		if (clickedMarker.equals(classMarker) && class_visited == 0){
+//			// Add the point to the path  with options
+//			addToPolyline(classMarker);
+//				
+//			// Silence phone in class
+//			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+//		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+//			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
+//			
+//			// set update bar
+//			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
+//			
+//			silence_phone = 1;
+//			class_visited = 1;
+//			
+//			return true;
+//		}
 		
 		if (clickedMarker.equals(kafMarker)){
 			addToPolyline(kafMarker);
@@ -1045,9 +1049,6 @@ OnMarkerClickListener {
 		}		
 
 	};
-
-
-
 
 	//Methods for Sensor Services - Justice
 	private ServiceConnection connection = new ServiceConnection() {
