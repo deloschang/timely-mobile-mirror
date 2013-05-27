@@ -36,5 +36,8 @@ public abstract class Globals {
 	public static final int BOLOCO_MENU = 10;
 	public static final String BOLOCO_TEXT = "Boloco's Lunch Menu";
 	
+	// Constants for sensor services
+	public static int GPS_CACHE_SIZE=100;
+	public static int ACC_CACHE_SIZE=64;
 
 }

@@ -2,7 +2,6 @@ package dartmouth.timely;
 
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +9,9 @@ import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +22,12 @@ import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -39,10 +37,10 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -144,6 +142,16 @@ OnMarkerClickListener {
 	// When it is false, it will come from another direction
 	static boolean inversed = true;
 	
+	//SensorService Declarations
+		public SensorService mSensorService;
+		public boolean mIsBound;
+		public Intent mServiceIntent;
+		private IntentFilter mMotionUpdateFilter;
+		private IntentFilter mLocationUpdateFilter;
+		public ArrayList<Location> mLocationList;
+		public LatLng curLatLng;
+		public int curMotion;
+		
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -257,6 +265,20 @@ OnMarkerClickListener {
 		} else {
 			Toast.makeText(getApplicationContext(), "No Google Play found", Toast.LENGTH_LONG).show();
 		}
+		
+		//Register GPS sensor to receive location update
+				mLocationUpdateFilter = new IntentFilter();
+				mLocationUpdateFilter.addAction("LOCATION_UPDATED");
+
+				//Register Motion sensor to receive motion updates
+				mMotionUpdateFilter = new IntentFilter();
+				mMotionUpdateFilter.addAction("MOTION_UPDATED");
+
+
+				// Start and bind the tracking service
+				mServiceIntent = new Intent(this, SensorService.class);
+				startService(mServiceIntent);
+				doBindService();	
 	}
 
 	private void pause(){
@@ -273,10 +295,26 @@ OnMarkerClickListener {
 			haveGooglePlayServices();
 		}
 		class_visited = 0;
+		
+		//Register receivers for location and motion updates
+				registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
+				registerReceiver(mMotionUpdateReceiver, mMotionUpdateFilter);
+	}
+	
+	@Override
+	protected void onPause(){
+		unregisterReceiver(mLocationUpdateReceiver);
+		unregisterReceiver(mMotionUpdateReceiver);
+		super.onPause();
 	}
 	
 	protected void onDestroy() {
+		if (mSensorService != null) {
+			mSensorService.stopForeground(true);
+			doUnbindService();
+		}		
 		super.onDestroy();
+		
 		
 		// reset parameters
 		class_visited = 0;
@@ -972,6 +1010,79 @@ OnMarkerClickListener {
 		
 		return false;
 	}
+	
+	/**
+	 * Location tracking stuff. All this stuff needs to be changed to the foreground service 
+	 *  ( Justice should handle this stuff )
+	 */
+	/** Grab location coordinates and do something **/
+	//TODO Make Broadcast receivers for both location and motion updates
+
+	// mLocationUpdateFilter = new IntentFilter();
+	//mLocationUpdateFilter.addAction("LOCATION_UPDATED");
+	private BroadcastReceiver mLocationUpdateReceiver = new BroadcastReceiver(){
+		@Override
+		public void onReceive(Context context, Intent intent){
+			synchronized(mLocationList) {
+				// Initialization
+				if (mLocationList == null || mLocationList.isEmpty())
+					return;
+				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -2));	
+				//TODO Robin do something with current location
+			}				
+		}		
+	};
+
+	private BroadcastReceiver mMotionUpdateReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			curMotion = intent.getIntExtra("CLASSIFICATION_RESULT", -1);
+
+			Toast.makeText(getApplicationContext(), 
+					"Current Motion: " + String.valueOf(curMotion), Toast.LENGTH_SHORT).show();
+		}		
+
+	};
+
+
+
+
+	//Methods for Sensor Services - Justice
+	private ServiceConnection connection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			//Initialize service from SensorService
+			mSensorService = ((SensorService.SensorServiceBinder)service).getService();
+
+			// Get list of locations from Sensor Service
+			mLocationList = mSensorService.mLocationList;
+
+
+		}
+
+		public void onServiceDisconnected(ComponentName name){
+			stopService(mServiceIntent);
+			mSensorService=null;
+		}
+	};
+
+	// Bind service and set binding flag.
+	private void doBindService() {
+		if (!mIsBound) {
+			bindService(mServiceIntent, connection, Context.BIND_AUTO_CREATE);
+			mIsBound = true;
+		}
+
+	}
+
+	// Unbind service and set binding flag.
+	private void doUnbindService() {
+		if (mIsBound) {
+			unbindService(connection);
+			mIsBound = false;
+		}
+	}	
 	
 	
 }
