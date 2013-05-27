@@ -1040,9 +1040,8 @@ OnMarkerClickListener {
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			curMotion = intent.getIntExtra("CLASSIFICATION_RESULT", -1);
-
-			Toast.makeText(getApplicationContext(), 
-					"Current Motion: " + String.valueOf(curMotion), Toast.LENGTH_SHORT).show();
+			
+			System.out.println("Current Motion: " + curMotion);
 		}		
 
 	};

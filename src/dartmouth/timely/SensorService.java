@@ -204,6 +204,8 @@ public class SensorService extends Service implements LocationListener,
 						//TODO
 						int classifiedValue = (int) WekaClassifier.classify(featVect.toArray());											
 						mMotionUpdateBroadcast.putExtra("CLASSIFICATION_RESULT", classifiedValue);
+						
+						
 						sendBroadcast(mMotionUpdateBroadcast);
 						featVect.clear();
 					}
