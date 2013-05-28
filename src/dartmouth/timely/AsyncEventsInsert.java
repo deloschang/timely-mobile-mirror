@@ -24,14 +24,10 @@ import com.google.api.services.calendar.model.EventDateTime;
 
 
 
-// Insert wrapper class
-//class AsyncEventsInsertWrapper {
-//	public String startDate;
-//}
 		
 class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 
-	final String CLASS_CALENDAR_FROM_API = "5glrh8ja4ee6vgl4ghnluo4bmk@group.calendar.google.com";
+	final String CLASS_CALENDAR_FROM_API = "primary"; // Use the user's primary calendar
 	
 	private final MainActivity activity;
 	private final String startDate;
@@ -63,7 +59,7 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 				DateTime start = new DateTime(date, TimeZone.getTimeZone("UTC"));
 				
 				// offset for time
-				int timeEst = 2400000 + (int)(Math.random()*4800000);
+				int timeEst = 2400000 + (int)(Math.random());
 				Date endDate = new Date(date.getTime() + timeEst);
 				DateTime end = new DateTime(endDate, TimeZone.getTimeZone("UTC"));
 				
@@ -85,19 +81,6 @@ class AsyncEventsInsert extends AsyncTask<MainActivity, String, Void>{
 			
 			System.out.println("Event Checkpoint: " + events);
 			
-			// Grab first event's name
-//			List<Event> event_list = events.getItems();
-//			String assignment_name = event_list.get(0).getSummary();
-//			String estimate = event_list.get(0).getDescription();
-//			String class_name = event_list.get(0).getLocation();
-//			
-//			System.out.println("Summary: " + assignment_name);
-//			System.out.println("Estimate: " + estimate);
-			
-//			InsertWrapper wrapper = new InsertWrapper();
-//			wrapper.assignment_name = assignment_name;
-			
-//			return wrapper;
 		} catch (UserRecoverableAuthIOException e) {
 	          activity.startActivityForResult(e.getIntent(), activity.REQUEST_AUTHORIZATION);
 		} catch (IOException e) {

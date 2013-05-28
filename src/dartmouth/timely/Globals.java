@@ -8,6 +8,9 @@ public abstract class Globals {
 	// notification text
 	public static final String LEAVE_FOR_CLASS_TEXT = "Time to leave for class";
 	
+    public static final int NO_DATA_FOUND = -1;
+
+
 	// keys for updateBar
 	public static final int SILENCE_PHONE = 1;
 	public static final String SILENCE_PHONE_TEXT = "Phone silenced (in class)";
@@ -36,5 +39,12 @@ public abstract class Globals {
 	public static final int BOLOCO_MENU = 10;
 	public static final String BOLOCO_TEXT = "Boloco's Lunch Menu";
 	
+    public static final String TIME_USAGE_TEXT = "Your Time Usage";
+    public static final String NOT_ENOUGH_DATA_TEXT = "NOT ENOUGH DATA";
+
+
+	// Constants for sensor services
+	public static int GPS_CACHE_SIZE=100;
+	public static int ACC_CACHE_SIZE=64;
 
 }

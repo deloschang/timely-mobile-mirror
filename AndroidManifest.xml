@@ -41,6 +41,12 @@
         </activity>
         <activity android:name="NotificationReceiverActivity"></activity>
         
+        <activity android:name="PieChartActivity"></activity>
+        
+        
+        <service android:name="SensorService" />
+        <activity android:name="ProximityReceiver"></activity>
+        
 		<meta-data
 		   android:name="com.google.android.maps.v2.API_KEY"
 		   android:value="AIzaSyBsais966g3zo0IlXiy5GHUb3A4Og9w43E"/>
