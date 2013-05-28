@@ -214,7 +214,7 @@ class AsyncMenuPost extends AsyncTask<String, Void, Wrapper>{
 					@Override
 					public void onClick(View v) {
 						// hide after scheduled
-						v.setVisibility(View.GONE);
+						//v.setVisibility(View.GONE);
 						MainActivity.closeLunchMenus(activity);
 
 
