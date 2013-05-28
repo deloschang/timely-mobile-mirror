@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/Users/deloschang/Documents/eclipseworkspace/de.vogella.android.notificationmanager/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robin Wang/Desktop/65p/MainActivity/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Robin Wang/Desktop/65p/MainActivity/libs/google-http-client-gson-1.13.1-beta.jar"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="/Users/deloschang/Downloads/google-api-java-client-samples/calendar-android-sample/libs/google-http-client-gson-1.13.1-beta.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

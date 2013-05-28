@@ -1,282 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-    
-    <!-- Header Strip -->
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical" >
 
-    <RelativeLayout
-        android:id="@+id/header"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="34dp"
-        android:orientation="horizontal"
-        android:background="@color/white">
-        
-	    <!-- Top Icon -->
-	    <ImageView
-	        android:id="@+id/timely_header"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentTop="true"
-	        android:layout_centerHorizontal="true"
-	        android:src="@drawable/timely_new_font" />
-
-    </RelativeLayout>
-    
-	<!--  Top testing header with full JSON -->
-<!-- <TextView
-	    android:id="@+id/text"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:text=""
-	    /> -->
-	    
-	<!-- Location information -->
-	<!--  Deprecated with marker information -->
-<!--    <LinearLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_margin="5dp" >
-       
-		<TextView
-		    android:id="@+id/building"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    />
-	</LinearLayout> -->
-	
-	<!--  Separator -->
-	<View
-	    android:layout_width="fill_parent"
-	    android:layout_height="1dp"
-	    android:background="@android:color/darker_gray"/>
-	
-	
-	<!--  Demo Location -->
-	<TextView
-	    android:id="@+id/current_location"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center"
-	    android:textStyle="bold"
-	    android:text=""
-	    />
-	
-	<!--  Update Bar -->
-	<dartmouth.timely.NowLayout
-	    android:id="@+id/nowlayout"
-	    android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#e3e3e3"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical" >
-	    
-		 <TextView
-		    android:id="@+id/lunchCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Lunch Card"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white"
-		    /> 
-		    
-		 <TextView
-		    android:id="@+id/focoCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="FoCo Menu Item"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white"
-		    /> 
-		    
-		 <!--
-		 <ScrollView
-		    android:id="@+id/focoMenuCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="204dp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white" > 
-	        -->
-	        
-		     <!-- Old -->
-           <!-- <TextView android:id="@+id/focoInner"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content"
-		        android:gravity="left"                          
-		        android:text="" >
-	        </TextView> -->
-	       
-            <ListView
-                android:id="@+id/focoMenuCard"
-                android:background="@android:color/white"
-		        android:layout_width="fill_parent"
-		        android:layout_height="204dp"/>
-	        
-        <!--  </ScrollView>-->
-		    
-		 <TextView
-		    android:id="@+id/kafCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="King Arthur's Cafe Lunch Menu"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white"
-		    /> 
-		    
-            <ListView
-                android:id="@+id/kafMenuCard"
-                android:background="@android:color/white"
-		        android:layout_width="fill_parent"
-		        android:layout_height="204dp"/>
-            
-		 <TextView
-		    android:id="@+id/hopCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Hop's Lunch Menu"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white"
-		    /> 
-		    
-            <ListView
-                android:id="@+id/hopMenuCard"
-                android:background="@android:color/white"
-		        android:layout_width="fill_parent"
-		        android:layout_height="204dp"/>
-            
-		 <TextView
-		    android:id="@+id/bolocoCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Boloco's Lunch Menu"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="3dp"
-	        android:background="@color/white"
-		    /> 
-		    
-            <ListView
-                android:id="@+id/bolocoMenuCard"
-                android:background="@android:color/white"
-		        android:layout_width="fill_parent"
-		        android:layout_height="204dp"/>
-		    
-		 <TextView
-		    android:id="@+id/phoneSilenceCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Phone Ringtone Card"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="2dp"
-	        android:background="@color/white"
-		    /> 
-		    
-		 <TextView
-		    android:id="@+id/assignmentCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Assignment Card"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="2dp"
-	        android:background="@color/white"
-		    /> 
-		    
-		 <TextView
-		    android:id="@+id/eventCard"
-		    style="@style/nowCardStyle"
-		    android:layout_width="match_parent"
-		    android:layout_height="34dp"
-		    android:text="Event Card"
-		    android:typeface="sans"
-		    android:textSize="15sp"
-		    android:layout_marginTop="2dp"
-		    android:layout_marginLeft="5dp"
-		    android:layout_marginRight="5dp"
-		    android:layout_marginBottom="2dp"
-	        android:background="@color/white"
-		    /> 
-		    
-	    
-    </dartmouth.timely.NowLayout>
-    <!--  <ImageView
-        android:id="@+id/image1">
-    </ImageView> -->
-	        
-	
-	
 
+        <!-- Header Strip -->
 
-	
-   <!-- Footway and city information -->
-   <!--  
-   <LinearLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_margin="5dp" >
-		<TextView
-		    android:id="@+id/address_extra_title"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:text="Location: "
-		    />
-		
-		<TextView
-		    android:id="@+id/address_extra"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    />
-	</LinearLayout> -->
-	
-   <fragment
-       xmlns:android="http://schemas.android.com/apk/res/android"
-       android:id="@+id/map"
-       android:layout_width="match_parent"
-       android:layout_height="516dp"
-       class="com.google.android.gms.maps.SupportMapFragment" />
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="fill_parent"
+            android:layout_height="34dp"
+            android:background="@color/white"
+            android:orientation="horizontal" >
+
+            <!-- Top Icon -->
+
+            <ImageView
+                android:id="@+id/timely_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/timely_new_font" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <!-- Demo Location -->
+
+        <TextView
+            android:id="@+id/current_location"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="#454545"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/mapCard"
+                style="@style/nowCardStyle"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="2dp"
+                android:background="@color/white"
+                android:text="Map"
+                android:textSize="25sp"
+                android:textColor="#454545" />
+
+            <fragment
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="0.95"
+                class="com.google.android.gms.maps.SupportMapFragment" />
+        </LinearLayout>
+
+        <!-- Update Bar -->
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <dartmouth.timely.NowLayout
+                android:id="@+id/nowlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#e3e3e3"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/lunchCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Lunch Card"
+                    android:textSize="15sp"
+                    android:textColor="#454545" />
+
+                <TextView
+                    android:id="@+id/focoCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="FoCo Menu Item"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <ListView
+                    android:id="@+id/focoMenuCard"
+                    android:layout_width="fill_parent"
+                    android:layout_height="204dp"
+                    android:background="@android:color/white" />
+
+                <!-- </ScrollView> -->
+
+                <TextView
+                    android:id="@+id/kafCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="King Arthur&apos;s Cafe Lunch Menu"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <ListView
+                    android:id="@+id/kafMenuCard"
+                    android:layout_width="fill_parent"
+                    android:layout_height="204dp"
+                    android:background="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/hopCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Hop&apos;s Lunch Menu"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <ListView
+                    android:id="@+id/hopMenuCard"
+                    android:layout_width="fill_parent"
+                    android:layout_height="204dp"
+                    android:background="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/bolocoCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Boloco&apos;s Lunch Menu"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <ListView
+                    android:id="@+id/bolocoMenuCard"
+                    android:layout_width="fill_parent"
+                    android:layout_height="204dp"
+                    android:background="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/phoneSilenceCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Phone Ringtone Card"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <TextView
+                    android:id="@+id/assignmentCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Assignment Card"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+
+                <TextView
+                    android:id="@+id/eventCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Event Card"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+            </dartmouth.timely.NowLayout>
+        </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>
-

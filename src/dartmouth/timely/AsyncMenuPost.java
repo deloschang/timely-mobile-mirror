@@ -211,12 +211,21 @@ import android.widget.Toast;
 						@Override
 						public void onClick(View v) {
 							// hide after scheduled
-							v.setVisibility(View.GONE);
+							//v.setVisibility(View.GONE);
 							MainActivity.closeLunchMenus(activity);
 							
 							
 							// set inner menu to visible
+							
+							if(MainActivity.menuUp == false){
 							scrollMenu.setVisibility(View.VISIBLE);
+							MainActivity.menuUp = true;
+							}
+							else{
+								scrollMenu.setVisibility(View.GONE);
+								MainActivity.menuUp=false;
+						}
+							
 						}
 						
 					};
