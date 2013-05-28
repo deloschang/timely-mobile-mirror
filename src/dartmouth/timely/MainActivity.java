@@ -75,19 +75,19 @@ OnMarkerClickListener {
 
 	// Places API 
 	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
-	
+
 	// Events API 
 	final String TIMELY_EVENTS_API = "http://timely-api.herokuapp.com/events";
-	
+
 	// Menu API
 	static final String TIMELY_MENU_API = "http://timely-api.herokuapp.com/menus";
-	
+
 	// Mapquest API
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 
 	// Google Maps API lat/lng for Hanover
-	
-	
+
+
 	private SupportMapFragment mMapFragment;
 	public static boolean menuUp;
 	public boolean mapOn;
@@ -97,7 +97,7 @@ OnMarkerClickListener {
 	static final LatLng CLASS_AT_KEMENY_LOCATION = new LatLng(43.706121,-72.289105); // Kemeny Loc
 	static final LatLng HOP_LOCATION = new LatLng(43.70209,-72.28788); // Hop
 	static final LatLng KAF = new LatLng(43.705239,-72.288503); // KAF
-	
+
 	static final int ZOOM_LEVEL = 17;
 
 	// main options object for drawing the Google Map
@@ -113,11 +113,11 @@ OnMarkerClickListener {
 	final JsonFactory jsonFactory = new GsonFactory();
 	private static final String PREF_ACCOUNT_NAME = "accountName";
 	com.google.api.services.calendar.Calendar client;
-	
+
 	// Dynamic updating location
 	// This is a boolean flag that is assigned to update the shown location every X sec (under the pause function)
 	boolean isUpdating = true;
-	
+
 	// These are the markers that will be shown on the Map. 
 	// e.g. hopMarker will be the marker for the Hop at the specified coordinate
 	static Marker routeMarker;
@@ -125,27 +125,27 @@ OnMarkerClickListener {
 	static Marker mollysMarker;
 	static Marker kafMarker;
 	static Marker hopMarker;
-	
+
 	// switches that activate different demo features 
 	// We will need to clear these out once we have the smartphone sensing boilerplate set up.
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
-//	static int class_visited = 0;
+	//	static int class_visited = 0;
 	static int load_lunch = 1;
-//	static int estimate_reminder = 0;
-//	static int reset_estimate_click = 0;
-	
+	//	static int estimate_reminder = 0;
+	//	static int reset_estimate_click = 0;
+
 	// These are for Events API. 
 	// The list is used to iterate through the markers and add them onto the map.
 	// The event map is used to pass a Marker and a String around.
 	static HashMap<Marker, String> eventMap = new HashMap<Marker,String>();
 	static List<Map<Marker, String>> eventMarkers = new ArrayList<Map<Marker, String>>();
-	
+
 	// For the Google Now layout -- update bar
 	// Basically, when inversed is true, the Google Now card will come from one direction. 
 	// When it is false, it will come from another direction
 	static boolean inversed = true;
-	
+
 	//SensorService Declarations
 	public SensorService mSensorService;
 	public boolean mIsBound;
@@ -153,12 +153,12 @@ OnMarkerClickListener {
 	private IntentFilter mMotionUpdateFilter;
 	private IntentFilter mLocationUpdateFilter;
 	public ArrayList<Location> mLocationList;
-	
-	
+
+
 	// Use to set flags
 	public LatLng curLatLng;
 	public int curMotion;
-	
+
 	// Proximity Declarations
 	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
 	private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
@@ -168,13 +168,13 @@ OnMarkerClickListener {
 
 	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
-		
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		// This section enables a different thread that can do something every X sec 
 		// depending on the pause function below
 		// Everything here is asynchronous
@@ -190,9 +190,9 @@ OnMarkerClickListener {
 						public void run(){
 							if (isUpdating){
 								// You can change the top header text here
-//								current_location.setText(R.string.demo_location);
+								//								current_location.setText(R.string.demo_location);
 								isUpdating = false;
-								
+
 								// check switches by time
 								// [demo feature] Checks for flags in this asynchronous thread.
 								// If certain flags are up, it will display cards.
@@ -210,7 +210,7 @@ OnMarkerClickListener {
 		};
 		new Thread(runnableOffMain).start();
 		// end
-		
+
 		/*
 		 * Deflate all Cards here!
 		 */
@@ -231,8 +231,8 @@ OnMarkerClickListener {
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 
 		// POST the lat/lng to API first
-//		sendLocation();
-		
+		//		sendLocation();
+
 		// These are for the Google OAuth 2 stuff.
 		// This includes the Google Calendar API. 
 		credential = GoogleAccountCredential.usingOAuth2(this, CalendarScopes.CALENDAR);
@@ -242,11 +242,11 @@ OnMarkerClickListener {
 		client = new com.google.api.services.calendar.Calendar.Builder(
 				transport, jsonFactory, credential).setApplicationName("Timely")
 				.build();
-		
+
 		menuUp=false;
-mapStuff();
-		
-//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
+		mapStuff();
+
+		//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
 
 		//Register GPS sensor to receive location update
 		mLocationUpdateFilter = new IntentFilter();
@@ -261,33 +261,33 @@ mapStuff();
 		mServiceIntent = new Intent(this, SensorService.class);
 		startService(mServiceIntent);
 		doBindService();			
-		
+
 		//LocationManager Initializer
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		
+		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
 		addProximityAlert(lat,lng);
-		
+
 	}
 
 	private void addProximityAlert(double latitude, double longitude) {
-	    
-	    Intent intent = new Intent(PROX_ALERT_INTENT);
-	    PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-	    
-	    mLocationManager.addProximityAlert(
-	        latitude, // the latitude of the central point of the alert region
-	        longitude, // the longitude of the central point of the alert region
-	        POINT_RADIUS, // the radius of the central point of the alert region, in meters
-	        PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
-	        proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
-	   );
-	    
-	   IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
-	   registerReceiver(new ProximityReceiver(), filter);	   
+
+		Intent intent = new Intent(PROX_ALERT_INTENT);
+		PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+		mLocationManager.addProximityAlert(
+				latitude, // the latitude of the central point of the alert region
+				longitude, // the longitude of the central point of the alert region
+				POINT_RADIUS, // the radius of the central point of the alert region, in meters
+				PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
+				proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+				);
+
+		IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
+		registerReceiver(new ProximityReceiver(), filter);	   
 	}
-	
+
 	public void mapStuff() {
 		// Google Maps API v2 dance
 		// It first checks if Google Play Services is available on the phoen
@@ -318,17 +318,17 @@ mapStuff();
 			// 2nd marker: Class added from AsyncLoadEvent [demo feature]
 			// 3rd marker: Lunch options
 			MainActivity.map.setOnMarkerClickListener(this); // for marker
-																// clicks
+			// clicks
 			Marker starting_point = map.addMarker(new MarkerOptions()
-					.position(DORM_LOCATION)
-					.title("Home")
-					.snippet("from location and sleep sensing")
-					.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event
-																				// color
+			.position(DORM_LOCATION)
+			.title("Home")
+			.snippet("from location and sleep sensing")
+			.icon(BitmapDescriptorFactory
+					.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event
+					// color
 					);
 			starting_point.showInfoWindow(); // display marker title
-												// automatically
+			// automatically
 
 			polyline_options.add(DORM_LOCATION);
 			polyline_options.width(10);
@@ -341,22 +341,22 @@ mapStuff();
 					Toast.LENGTH_LONG).show();
 		}
 
-		
-		
+
+
 		final TextView mappview = (TextView) findViewById(R.id.mapCard);
 		mappview.setOnClickListener(new View.OnClickListener() {
-	
+
 			@Override
 			public void onClick(View v) {
-				
+
 				if (mapOn == true) {
 					getSupportFragmentManager().beginTransaction()
-							.hide(mMapFragment).commit();
-					
+					.hide(mMapFragment).commit();
+
 					mapOn = false;
 				} else {
 					getSupportFragmentManager().beginTransaction()
-							.show(mMapFragment).commit();
+					.show(mMapFragment).commit();
 					mapOn = true;
 
 				}
@@ -366,7 +366,7 @@ mapStuff();
 
 	}
 
-	
+
 	private void pause(){
 		try {
 			Thread.sleep(2000);
@@ -380,32 +380,32 @@ mapStuff();
 		if (checkGooglePlayServicesAvailable()) {
 			haveGooglePlayServices();
 		}
-//		class_visited = 0;
-		
+		//		class_visited = 0;
+
 		//Register receivers for location and motion updates
 		registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
 		registerReceiver(mMotionUpdateReceiver, mMotionUpdateFilter);
 	}
-	
+
 	@Override
 	protected void onPause(){
 		unregisterReceiver(mLocationUpdateReceiver);
 		unregisterReceiver(mMotionUpdateReceiver);
 		super.onPause();
 	}
-	
+
 	protected void onDestroy() {
 		if (mSensorService != null) {
 			mSensorService.stopForeground(true);
 			doUnbindService();
 		}		
 		super.onDestroy();
-		
-		
+
+
 		// reset parameters
-//		class_visited = 0;
-//		estimate_reminder = 0;
-//		reset_estimate_click = 0;
+		//		class_visited = 0;
+		//		estimate_reminder = 0;
+		//		reset_estimate_click = 0;
 	}
 
 	/** GOOGLE PLAY OAUTH2 STUFF **/
@@ -436,7 +436,7 @@ mapStuff();
 			chooseAccount();
 		} else {
 			// If already chosen, this fires
-//			new AsyncLoadEvent(this).execute();
+			//			new AsyncLoadEvent(this).execute();
 		}
 	}
 
@@ -455,18 +455,18 @@ mapStuff();
 				checkGooglePlayServicesAvailable();
 			}
 			break;
-			
+
 		case REQUEST_AUTHORIZATION:
 			if (resultCode == Activity.RESULT_OK) {
 				// Pull upcoming event 
-//				new AsyncLoadEvent(this).execute();
-				
+				//				new AsyncLoadEvent(this).execute();
+
 				// do something
 			} else {
 				chooseAccount();
 			}
 			break;
-			
+
 		case REQUEST_ACCOUNT_PICKER:
 			if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
 				String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
@@ -476,10 +476,10 @@ mapStuff();
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putString(PREF_ACCOUNT_NAME, accountName);
 					editor.commit();
-					
-					
+
+
 					// Pull upcoming event 
-//					new AsyncLoadEvent(this).execute();
+					//					new AsyncLoadEvent(this).execute();
 				}
 			}
 			break;
@@ -493,131 +493,131 @@ mapStuff();
 	 *  ( Justice should handle this stuff )
 	 */
 	/** Grab location coordinates and do something **/
-//	public void sendLocation() {    	
-//		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
-//		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//
-//		if (location != null) {
-//			// LatLng object and Strings of coordinates
-//			String latitude = Double.toString(location.getLatitude());
-//			String longitude = Double.toString(location.getLongitude());
-//			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
-//
-//			// Post to API with latitude and longitude
-////			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
-//			
-//			// GET request to MapQuest with latitude longitude
-//			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-//			new NetworkGet(this).execute(url);
-//		}
-//
-//		final LocationListener locationListener = new LocationListener() {
-//			// Once location has changed
-//			public void onLocationChanged(Location location) {
-//				String latitude = Double.toString(location.getLatitude());
-//				String longitude = Double.toString(location.getLongitude());
-//				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
-//
-//				// POST to API with latitude and longitude
-////				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
-//
-//				// GET request to MapQuest with latitude longitude
-////				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-//
-//				// creates a marker at current user location // 
-//				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
-//				//				new NetworkGet().execute(url, user_coord);
-////				new NetworkGet().execute(url);
-//
-//				// test send notification
-////				noteLatLong(latitude, longitude);
-//			}
-//
-//			@Override
-//			public void onProviderDisabled(String provider) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void onProviderEnabled(String provider) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void onStatusChanged(String provider, int status,
-//					Bundle extras) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//		};
+	//	public void sendLocation() {    	
+	//		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE); 
+	//		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	//
+	//		if (location != null) {
+	//			// LatLng object and Strings of coordinates
+	//			String latitude = Double.toString(location.getLatitude());
+	//			String longitude = Double.toString(location.getLongitude());
+	//			System.out.println ("Latitude: " + latitude + " Longitude: " + longitude);
+	//
+	//			// Post to API with latitude and longitude
+	////			new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
+	//			
+	//			// GET request to MapQuest with latitude longitude
+	//			String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+	//			new NetworkGet(this).execute(url);
+	//		}
+	//
+	//		final LocationListener locationListener = new LocationListener() {
+	//			// Once location has changed
+	//			public void onLocationChanged(Location location) {
+	//				String latitude = Double.toString(location.getLatitude());
+	//				String longitude = Double.toString(location.getLongitude());
+	//				System.out.println("Latitude_new: "+latitude + "; Longitude " + longitude);
+	//
+	//				// POST to API with latitude and longitude
+	////				new NetworkPost().execute(TIMELY_DEMO_URL, latitude, longitude);
+	//
+	//				// GET request to MapQuest with latitude longitude
+	////				String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
+	//
+	//				// creates a marker at current user location // 
+	//				//				LatLng user_coord = new LatLng(location.getLatitude(), location.getLongitude());
+	//				//				new NetworkGet().execute(url, user_coord);
+	////				new NetworkGet().execute(url);
+	//
+	//				// test send notification
+	////				noteLatLong(latitude, longitude);
+	//			}
+	//
+	//			@Override
+	//			public void onProviderDisabled(String provider) {
+	//				// TODO Auto-generated method stub
+	//
+	//			}
+	//
+	//			@Override
+	//			public void onProviderEnabled(String provider) {
+	//				// TODO Auto-generated method stub
+	//
+	//			}
+	//
+	//			@Override
+	//			public void onStatusChanged(String provider, int status,
+	//					Bundle extras) {
+	//				// TODO Auto-generated method stub
+	//
+	//			}
+	//		};
 
-//					TextView view = (TextView) findViewById(R.id.text);
-//					view.setText(location);
-//		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
-//	}
+	//					TextView view = (TextView) findViewById(R.id.text);
+	//					view.setText(location);
+	//		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+	//	}
 
 
 	// POST request to the Timely API
-//	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
-//		@Override
-//		protected HttpResponse doInBackground(String... params) {
-//			String link = params[0];
-//
-//			HttpPost httppost = new HttpPost(link);
-//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
-//			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
-//
-//			try {
-//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//			} catch (UnsupportedEncodingException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}            
-//
-//			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-//			try {
-//				return client.execute(httppost);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				return null;
-//			} finally {
-//				client.close();
-//			}
-//		}
-//
-//		@Override
-//		protected void onPostExecute(HttpResponse result) {
-//			if (result != null) {
-//				String location;
-//				try {
-//					location = EntityUtils.toString(result.getEntity());
-//					System.out.println ("Info from server " + location);
-//					
-//					// Test the JSON (uncomment id.text from main.xml)
-////					TextView view = (TextView) findViewById(R.id.text);
-////					view.setText(location);
-//					
-//					// Parse JSON from the API response
-////					JSONObject jObject = new JSONObject(location);
-////					String header = jObject.getString("message");
-////					String snippet = "This is a test snippet";
-//					
-//					// test send notification
-////					noteLatLong(header, snippet, getApplicationContext());
-//					
-//				} catch (ParseException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
+	//	private class NetworkPost extends AsyncTask<String, Void, HttpResponse>  {
+	//		@Override
+	//		protected HttpResponse doInBackground(String... params) {
+	//			String link = params[0];
+	//
+	//			HttpPost httppost = new HttpPost(link);
+	//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+	//			nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
+	//			nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
+	//
+	//			try {
+	//				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	//			} catch (UnsupportedEncodingException e1) {
+	//				// TODO Auto-generated catch block
+	//				e1.printStackTrace();
+	//			}            
+	//
+	//			AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+	//			try {
+	//				return client.execute(httppost);
+	//			} catch (IOException e) {
+	//				e.printStackTrace();
+	//				return null;
+	//			} finally {
+	//				client.close();
+	//			}
+	//		}
+	//
+	//		@Override
+	//		protected void onPostExecute(HttpResponse result) {
+	//			if (result != null) {
+	//				String location;
+	//				try {
+	//					location = EntityUtils.toString(result.getEntity());
+	//					System.out.println ("Info from server " + location);
+	//					
+	//					// Test the JSON (uncomment id.text from main.xml)
+	////					TextView view = (TextView) findViewById(R.id.text);
+	////					view.setText(location);
+	//					
+	//					// Parse JSON from the API response
+	////					JSONObject jObject = new JSONObject(location);
+	////					String header = jObject.getString("message");
+	////					String snippet = "This is a test snippet";
+	//					
+	//					// test send notification
+	////					noteLatLong(header, snippet, getApplicationContext());
+	//					
+	//				} catch (ParseException e) {
+	//					// TODO Auto-generated catch block
+	//					e.printStackTrace();
+	//				} catch (IOException e) {
+	//					// TODO Auto-generated catch block
+	//					e.printStackTrace();
+	//				}
+	//			}
+	//		}
+	//	}
 
 	// checks all the lunch menus and closes them
 	public static void closeLunchMenus(Activity activity){
@@ -625,39 +625,39 @@ mapStuff();
 		ListView kafMenuCard = (ListView) activity.findViewById(R.id.kafMenuCard);
 		ListView hopMenuCard = (ListView) activity.findViewById(R.id.hopMenuCard);
 		ListView bolocoMenuCard = (ListView) activity.findViewById(R.id.bolocoMenuCard);
-		
+
 		if (focoMenuCard.getVisibility() == View.VISIBLE) {
 			focoMenuCard.setVisibility(View.GONE);
 			TextView focoGeneralCard = (TextView) activity.findViewById(R.id.focoCard);
 			focoGeneralCard.setVisibility(View.VISIBLE);
 		} 
-		
+
 		if (kafMenuCard.getVisibility() == View.VISIBLE) {
 			kafMenuCard.setVisibility(View.GONE);
 			TextView kafGeneralCard = (TextView) activity.findViewById(R.id.kafCard);
 			kafGeneralCard.setVisibility(View.VISIBLE);
 		} 
-		
+
 		if (hopMenuCard.getVisibility() == View.VISIBLE) {
 			hopMenuCard.setVisibility(View.GONE);
 			TextView hopGeneralCard = (TextView) activity.findViewById(R.id.hopCard);
 			hopGeneralCard.setVisibility(View.VISIBLE);
 		} 
-		
+
 		if (bolocoMenuCard.getVisibility() == View.VISIBLE) {
 			bolocoMenuCard.setVisibility(View.GONE);
 			TextView bolocoGeneralCard = (TextView) activity.findViewById(R.id.bolocoCard);
 			bolocoGeneralCard.setVisibility(View.VISIBLE);
 		} 
 	}
-	
+
 	// wrapper class
 	public class Wrapper {
 		public HttpResponse result;
 		public LatLng point;
 		public Activity activity;
 	}
-	
+
 
 	// GET request for the Mapquest API
 	// Wrapper class enables multiple type parameters
@@ -667,7 +667,7 @@ mapStuff();
 		NetworkGet(Activity activity){
 			this.activity = activity;
 		}
-		
+
 		@Override
 		// use Object type for different type parameters
 		protected Wrapper doInBackground(Object... params) {
@@ -711,8 +711,8 @@ mapStuff();
 
 					// Set full JSON text (enable this and uncomment in main.xml to view full JSON)
 					// Or just use curl on the MAPQUEST_API URL
-//					TextView view = (TextView) findViewById(R.id.text);
-//					view.setText(response);
+					//					TextView view = (TextView) findViewById(R.id.text);
+					//					view.setText(response);
 					/////// end ///////
 
 					// Parse JSON
@@ -721,25 +721,25 @@ mapStuff();
 
 					String[] display_name_arr = display_name_obj.split(",");
 
-						// Create marker at user's point
-//						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
-//								.title(display_name_arr[0]));
-//						usermarker.showInfoWindow(); // display marker title automatically
-						
-						closeLunchMenus(activity);
-						
-						
-						// Add the point to the path  with options
-//						polyline_options.add(p.point);
-//						polyline_options.width(10);
-//						polyline_options.color(Color.CYAN);
-//						map.addPolyline(polyline_options);
-//
-//						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
-						
-						// check switches delayed
-						checkSwitches();
-					}
+					// Create marker at user's point
+					//						Marker usermarker = map.addMarker(new MarkerOptions().position(p.point)
+					//								.title(display_name_arr[0]));
+					//						usermarker.showInfoWindow(); // display marker title automatically
+
+					closeLunchMenus(activity);
+
+
+					// Add the point to the path  with options
+					//						polyline_options.add(p.point);
+					//						polyline_options.width(10);
+					//						polyline_options.color(Color.CYAN);
+					//						map.addPolyline(polyline_options);
+					//
+					//						map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
+
+					// check switches delayed
+					checkSwitches();
+				}
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -750,14 +750,14 @@ mapStuff();
 			}
 		}
 	}
-	
+
 
 
 	// Pops a notification for user
 	public static void noteLatLong(String header, String inner_info, Context ctx, String subtext){
 		// sound
 		Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-		
+
 		// fix intent
 		Intent notificationIntent = new Intent(ctx, NotificationReceiverActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(ctx,
@@ -784,7 +784,7 @@ mapStuff();
 		final int YOUR_NOTIF_ID = 0;
 		nm.notify(YOUR_NOTIF_ID, n);
 	}
-	
+
 	public static void noteLatLong(String header, String inner_info, Context ctx){
 		noteLatLong(header, inner_info, ctx, "");
 	}
@@ -812,216 +812,216 @@ mapStuff();
 
 		map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 	}
-	
+
 	public void checkSwitches(){
 		if (silence_phone == 1){
 			// Unsilence phone 
 			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-//		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+			//		    audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 			noteLatLong("Unsilencing phone", "you're out of class", getApplicationContext());
-			
+
 			// set status bar
 			updateBar(Globals.UNSILENCE_PHONE, this, Globals.UNSILENCE_PHONE_TEXT);
-			
+
 			silence_phone = 0;
 			load_lunch = 1; // unique param that loads lunch
 		}
-		
-		
+
+
 	}
-	
+
 	public void delayedCheck(){
 		// Runs in a separate thread. 
 		if (load_lunch == 1){
 			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
 			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
 			load_lunch = 0;
-			
+
 			// Add food options
 			hopMarker = map.addMarker(new MarkerOptions().position(HOP_LOCATION)
 					.title("Eat at the Hop")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
-			
+
 			kafMarker = map.addMarker(new MarkerOptions().position(KAF)
 					.title("Eat at King Arthur's Flour")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event color
 					.snippet("Lunch menu loaded"));
-			
+
 			kafMarker.showInfoWindow();
 		}
-		
-//		if (estimate_reminder == 0 ){
-//			new AsyncLoadEstimate(this).execute();
-			
-//			estimate_reminder = 1;
-//		}
+
+		//		if (estimate_reminder == 0 ){
+		//			new AsyncLoadEstimate(this).execute();
+
+		//			estimate_reminder = 1;
+		//		}
 	}
-	
-	
+
+
 	// overloaded
 	// These are the primary methods to update the Google Now Card bars. We will need to shift this UI onto the bottom
 	// so that it is more like Google Now. The premise could still be the same though. 
 	public static void updateBar(int key, Activity activity, String card_text){
 		updateBar(key, activity, card_text, null, null, null, null);
 	}
-	
+
 	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName){
 		updateBar(key, activity, card_text, eventStartTime, eventStartName, null, null);
 	}
-	
+
 	public static void updateBar(int key, Activity activity, String card_text, String eventStartTime, String eventStartName, 
 			String assignEstimate, String assignDueDate){
-		
+
 		Context context = activity.getApplicationContext();
 		// always do
 		activity.findViewById(R.id.nowlayout).setVisibility(View.VISIBLE);
-		
+
 		TextView card_obj = null;
-		
+
 		ListView focoMenuCard = (ListView) activity.findViewById(R.id.focoMenuCard);
 		ListView kafMenuCard = (ListView) activity.findViewById(R.id.kafMenuCard);
-		
+
 		if (focoMenuCard.getVisibility() == View.VISIBLE) {
 			focoMenuCard.setVisibility(View.GONE);
 			TextView focoGeneralCard = (TextView) activity.findViewById(R.id.focoCard);
 			focoGeneralCard.setVisibility(View.VISIBLE);
 		} 
-		
+
 		if (kafMenuCard.getVisibility() == View.VISIBLE) {
 			kafMenuCard.setVisibility(View.GONE);
 			TextView kafGeneralCard = (TextView) activity.findViewById(R.id.kafCard);
 			kafGeneralCard.setVisibility(View.VISIBLE);
 		} 
-		
+
 		switch (key){
-			
-			case Globals.SILENCE_PHONE:
-				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
-				View.OnClickListener silenceListener = new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						v.setVisibility(View.GONE);
-					}
-				};
-				
-				card_obj.setOnClickListener(silenceListener);
-				break;
-				
-			case Globals.UNSILENCE_PHONE:
-				card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
-				View.OnClickListener unsilenceListener = new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						v.setVisibility(View.GONE);
-					}
-				};
-				
-				card_obj.setOnClickListener(unsilenceListener);
-				break;
-			
+
+		case Globals.SILENCE_PHONE:
+			card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
+			View.OnClickListener silenceListener = new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					v.setVisibility(View.GONE);
+				}
+			};
+
+			card_obj.setOnClickListener(silenceListener);
+			break;
+
+		case Globals.UNSILENCE_PHONE:
+			card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
+			View.OnClickListener unsilenceListener = new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					v.setVisibility(View.GONE);
+				}
+			};
+
+			card_obj.setOnClickListener(unsilenceListener);
+			break;
+
 			// Load estimate Card.  [Demo feature]
 			// This card would load a "time estimate" from the Google Calnedar
-			case Globals.LOAD_ESTIMATE:
-				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
-				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
-					
-//					@Override
-//					public void onClick(View v) {
-//						if (reset_estimate_click == 0){
-//							card_obj.setTextColor(Color.BLUE);
-//							card_obj.setText(assignEstimate);
-//							reset_estimate_click = 1;
-//							
-//						} else if (reset_estimate_click == 1){
-//							card_obj.setTextColor(Color.parseColor("#707070"));
-//							card_obj.setText(assignDueDate);
-//							reset_estimate_click = 0;
-//						}
-//					}
-				};
-				
-				card_obj.setOnClickListener(estOnClickListener);
-				break;
-			
+		case Globals.LOAD_ESTIMATE:
+			card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
+			OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
+
+				//					@Override
+				//					public void onClick(View v) {
+				//						if (reset_estimate_click == 0){
+				//							card_obj.setTextColor(Color.BLUE);
+				//							card_obj.setText(assignEstimate);
+				//							reset_estimate_click = 1;
+				//							
+				//						} else if (reset_estimate_click == 1){
+				//							card_obj.setTextColor(Color.parseColor("#707070"));
+				//							card_obj.setText(assignDueDate);
+				//							reset_estimate_click = 0;
+				//						}
+				//					}
+			};
+
+			card_obj.setOnClickListener(estOnClickListener);
+			break;
+
 			// These load all the lunch options at once.
 			// In the real app, we will need to trigger this when it is typically the user's lunch time
-			case Globals.LOAD_LUNCH_OPTIONS:
-				card_obj = (TextView) activity.findViewById(R.id.lunchCard);
-				activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
-				
-				
-				OnClickListener lunchListener = new lunchOnclickListener(activity){
-					@Override
-					public void onClick(View v) {
-						v.setVisibility(View.GONE);
-						// open Foco card
-						updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
-						updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
-						updateBar(Globals.HOP_MENU, activity, Globals.HOP_TEXT);
-						updateBar(Globals.BOLOCO_MENU, activity, Globals.BOLOCO_TEXT);
-					}
-					
-				};
-				card_obj.setOnClickListener(lunchListener);
-				break;
-				
+		case Globals.LOAD_LUNCH_OPTIONS:
+			card_obj = (TextView) activity.findViewById(R.id.lunchCard);
+			activity.findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE); // close
+
+
+			OnClickListener lunchListener = new lunchOnclickListener(activity){
+				@Override
+				public void onClick(View v) {
+					v.setVisibility(View.GONE);
+					// open Foco card
+					updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
+					updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
+					updateBar(Globals.HOP_MENU, activity, Globals.HOP_TEXT);
+					updateBar(Globals.BOLOCO_MENU, activity, Globals.BOLOCO_TEXT);
+				}
+
+			};
+			card_obj.setOnClickListener(lunchListener);
+			break;
+
 			// when user selects an event to be scheduled
-			case Globals.SCHEDULE_EVENT:
-				card_obj = (TextView) activity.findViewById(R.id.eventCard);
-				
-				System.out.println(eventStartTime);
-				OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
-					@Override
-					public void onClick(View v) {
-						// insert event into calendar
-						new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
-						
-						// remove after scheduled
-						v.setVisibility(View.GONE);
-						noteLatLong("Event Scheduled", param2, activity.getApplicationContext(), "");
-					}
-					
-				};
-				
-				card_obj.setOnClickListener(calListener);
-				break;
-			
-			case Globals.FOCO_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.focoCard);
-				
-				// GET request for the Foco Menu and set listener
-				System.out.println("Reached async, about to execute");
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-			
-			case Globals.KAF_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.kafCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			case Globals.HOP_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.hopCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			case Globals.BOLOCO_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.bolocoCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			default:
-				break;
+		case Globals.SCHEDULE_EVENT:
+			card_obj = (TextView) activity.findViewById(R.id.eventCard);
+
+			System.out.println(eventStartTime);
+			OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
+				@Override
+				public void onClick(View v) {
+					// insert event into calendar
+					new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
+
+					// remove after scheduled
+					v.setVisibility(View.GONE);
+					noteLatLong("Event Scheduled", param2, activity.getApplicationContext(), "");
+				}
+
+			};
+
+			card_obj.setOnClickListener(calListener);
+			break;
+
+		case Globals.FOCO_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.focoCard);
+
+			// GET request for the Foco Menu and set listener
+			System.out.println("Reached async, about to execute");
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.KAF_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.kafCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.HOP_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.hopCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.BOLOCO_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.bolocoCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		default:
+			break;
 		}
-				
+
 		card_obj.setVisibility(View.VISIBLE);
 		card_obj.setText(card_text);
-		
+
 		// These handle the Google Now card animations
 		// for the animation to start
 		if (!inversed) {
@@ -1034,71 +1034,61 @@ mapStuff();
 							R.anim.slide_up_right));
 		}
 
-	   inversed = !inversed;
+		inversed = !inversed;
 	}
-	
+
 	@Override
 	/**
 	 * This function handles when a marker is clicked. 
 	 * Generally, Aaditya will need to implement this for the Maps Card
 	 */
 	public boolean onMarkerClick(Marker clickedMarker) {
-		
+
 		closeLunchMenus(this);
 		checkSwitches();
-		
+
 		// try to match the event
 		for (int i = 0; i < eventMarkers.size(); i++){
 			if (eventMarkers.get(i).containsKey(clickedMarker)){
 				clickedMarker.showInfoWindow();
-				
+
 				// show a card and schedule button
 				String card_text = "Schedule: " + clickedMarker.getTitle();
 				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
-				
+
 				updateBar(Globals.SCHEDULE_EVENT, this, card_text, eventStartTime, clickedMarker.getTitle());
 				return true;
 			}
 		}
-		
+
 		// if not hide
 		TextView card_obj = (TextView) findViewById(R.id.eventCard);
 		card_obj.setVisibility(View.GONE);
-		
-		
+
+
 		// DEMO FEATURE FOR WHEN A CLASS MARKER IS CLICKED
 		// We don't need this but you guys can see how easy it is to silence the phone.
-//		if (clickedMarker.equals(classMarker) && class_visited == 0){
-//			// Add the point to the path  with options
-//			addToPolyline(classMarker);
-//				
-//			// Silence phone in class
-//			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-//		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-//			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
-//			
-//			// set update bar
-//			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
-//			
-//			silence_phone = 1;
-//			class_visited = 1;
-//			
-//			return true;
-//		}
-		
-		if (clickedMarker.equals(kafMarker)){
-			addToPolyline(kafMarker);
-			return true;
-		}
-		
-		if (clickedMarker.equals(hopMarker)){
-			addToPolyline(hopMarker);
-			return true;
-		}
-		
+		//		if (clickedMarker.equals(classMarker) && class_visited == 0){
+		//			// Add the point to the path  with options
+		//			addToPolyline(classMarker);
+		//				
+		//			// Silence phone in class
+		//			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		//		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		//			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
+		//			
+		//			// set update bar
+		//			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
+		//			
+		//			silence_phone = 1;
+		//			class_visited = 1;
+		//			
+		//			return true;
+		//		}
+
 		return false;
 	}
-	
+
 	/**
 	 * Location tracking stuff. All this stuff needs to be changed to the foreground service 
 	 *  ( Justice should handle this stuff )
@@ -1116,7 +1106,7 @@ mapStuff();
 				if (mLocationList == null || mLocationList.isEmpty())
 					return;
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
-				
+
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 				//TODO Robin do something with current location
 			}				
@@ -1167,6 +1157,6 @@ mapStuff();
 			mIsBound = false;
 		}
 	}	
-	
-	
+
+
 }
