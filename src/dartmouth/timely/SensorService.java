@@ -65,7 +65,7 @@ public class SensorService extends Service implements LocationListener,
 	@Override 
 	public void onCreate() {
 
-		Toast.makeText(this, "SENSOR SERVICE REACHED", Toast.LENGTH_LONG).show();
+//		Toast.makeText(this, "SENSOR SERVICE REACHED", Toast.LENGTH_LONG).show();
 
 		//Initializations
 		mContext = this;

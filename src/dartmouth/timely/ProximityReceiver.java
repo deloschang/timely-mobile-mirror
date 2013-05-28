@@ -60,7 +60,7 @@ public class ProximityReceiver extends BroadcastReceiver {
 
 			// User is leaving because of the state
 			//Other custom Notification 
-			Toast.makeText(context, "Thank you for visiting my Area,come back again !!", Toast.LENGTH_LONG).show();
+//			Toast.makeText(context, "Thank you for visiting my Area,come back again !!", Toast.LENGTH_LONG).show();
 
 		}
 

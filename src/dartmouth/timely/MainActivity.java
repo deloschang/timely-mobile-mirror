@@ -133,7 +133,7 @@ OnMarkerClickListener {
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 	//	static int class_visited = 0;
-	static int load_lunch = 1;
+	static int load_lunch = 0;
 	//	static int estimate_reminder = 0;
 	//	static int reset_estimate_click = 0;
 
@@ -264,7 +264,7 @@ OnMarkerClickListener {
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		//Add ProximityReceiver for Novack
-		// Uncomment after
+		// Uncomment afte
 //		double lat=43.705816, lng=-72.288712;		
 //		addProximityAlert(lat,lng, Globals.PROX_LUNCH);
 
