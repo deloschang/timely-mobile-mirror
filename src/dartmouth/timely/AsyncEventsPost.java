@@ -181,6 +181,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 			addProximityAlert(latitude, longitude, key, null);
 		}
 		
+		
 		/**
 		 * addProximityAlert
 		 * @param latitude
