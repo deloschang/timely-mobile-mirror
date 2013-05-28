@@ -105,6 +105,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						MainActivity.eventMarkers.add(MainActivity.eventMap);
 						
 						// add some object tag
+						MainActivity.done_loading_event = 1;
 						
 						
 					}
