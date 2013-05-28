@@ -25,7 +25,9 @@ public class PieChartActivity extends Activity {
         //String data_values = getDataValues(LiveDataProvider)
         
         //pie chart parameters
-        int data_values[] = { 20,10,25,5,15,25};
+        //int data_values[] = { 20,10,25,5,15,25};
+        
+        int data_values[] = getDataFromBio();
         int color_values[] = {Color.MAGENTA, Color.RED, Color.GREEN,Color.BLUE,Color.YELLOW,Color.CYAN};
         
         String labels[] = { "Study", "Sleep", "Class", "Gym", "Relax","Party"};
@@ -37,5 +39,10 @@ public class PieChartActivity extends Activity {
         PieChart pieChart = new PieChart(this, imgView, labels, data_values, color_values);
         imgView.setImageDrawable(pieChart);
 
+    }
+    private int[] getDataFromBio() {
+
+        int[] arrayToReturn = { 20,10,25,5,15,25 };
+        return arrayToReturn;
     }
 }
