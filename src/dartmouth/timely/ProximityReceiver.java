@@ -19,8 +19,9 @@ public class ProximityReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Toast.makeText(context, "register prox loaded", Toast.LENGTH_LONG).show();
+		
 		// The receiver gets the Context & the Intent that fired the broadcast as arg0 & agr1 
-
 		String k=LocationManager.KEY_PROXIMITY_ENTERING;
 
 		// Key for determining whether user is leaving or entering 
@@ -29,10 +30,12 @@ public class ProximityReceiver extends BroadcastReceiver {
 
 		// Unpack the extras
 		Bundle extras = intent.getExtras();
-
+		
 		// User is entering because state is true
 		if(state){
-			int key = extras.getInt(Globals.PROX_TYPE_INDIC);
+			int key = extras.getInt(Globals.PROX_TYPE_INDIC, -1);
+			// key appears to be -1!
+			Toast.makeText(context, "key "+key, Toast.LENGTH_LONG).show();
 
 			// Entering geofence: check the different keys to see
 			// what type of trigger this is 
@@ -47,6 +50,7 @@ public class ProximityReceiver extends BroadcastReceiver {
 					break;
 					
 				case Globals.PROX_LUNCH:
+					Toast.makeText(context, "lunch here", Toast.LENGTH_LONG).show();
 					// If in this geofence, turn on the FoCo card
 					MainActivity.load_lunch = 1;
 					break;

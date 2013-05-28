@@ -267,7 +267,6 @@ OnMarkerClickListener {
 		// Uncomment afte
 //		double lat=43.705816, lng=-72.288712;		
 //		addProximityAlert(lat,lng, Globals.PROX_LUNCH);
-
 	}
 
 	// overloaded method
@@ -285,16 +284,24 @@ OnMarkerClickListener {
 		localBundle.putInt(Globals.PROX_TYPE_INDIC, key);
 		
 		// If the geofencing type is for event markers, unpackage the marker
-		if (key == Globals.PROX_EVENT_MARKERS){
-			// obj will be a Marker type
-			localBundle.putString("eventTitle", obj.getTitle());
-			localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
-		} 
+		switch (key){
+			case(Globals.PROX_EVENT_MARKERS):
+				Toast.makeText(getApplicationContext(), "events prox loaded",
+						Toast.LENGTH_LONG).show();
+				// obj will be a Marker type
+				localBundle.putString("eventTitle", obj.getTitle());
+				localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
+				break;
+			
+			case(Globals.PROX_LUNCH):
+				break;
+		}
 		
 		Intent intent = new Intent(Globals.PROX_ALERT_INTENT);
 		intent.putExtras(localBundle);
 		
-		PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+		PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 
+				PendingIntent.FLAG_UPDATE_CURRENT);
 
 		mLocationManager.addProximityAlert(
 				latitude, // the latitude of the central point of the alert region
@@ -302,7 +309,7 @@ OnMarkerClickListener {
 				Globals.POINT_RADIUS, // the radius of the central point of the alert region, in meters
 				Globals.PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
 				proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
-				);
+			);
 
 		IntentFilter filter = new IntentFilter(Globals.PROX_ALERT_INTENT);  
 		registerReceiver(new ProximityReceiver(), filter);	   
