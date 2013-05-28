@@ -4,8 +4,10 @@ package dartmouth.timely;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -163,10 +165,6 @@ OnMarkerClickListener {
 	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
 	private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
 
-	private static final long POINT_RADIUS = 1000; // in Meters
-	private static final long PROX_ALERT_EXPIRATION = -1;
-
-	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
 
 	/** Called when the activity is first created. */
@@ -266,25 +264,47 @@ OnMarkerClickListener {
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		//Add ProximityReceiver for Novack
-		double lat=43.705816, lng=-72.288712;		
-		addProximityAlert(lat,lng);
+		// Uncomment after
+//		double lat=43.705816, lng=-72.288712;		
+//		addProximityAlert(lat,lng, Globals.PROX_LUNCH);
 
 	}
 
-	private void addProximityAlert(double latitude, double longitude) {
-
-		Intent intent = new Intent(PROX_ALERT_INTENT);
+	// overloaded method
+	public void addProximityAlert(double latitude, double longitude, int key) {
+		addProximityAlert(latitude, longitude, key, null);
+	}
+	/**
+	 * addProximityAlert
+	 * @param latitude
+	 * @param longitude
+	 * @param key
+	 */
+	public void addProximityAlert(double latitude, double longitude, int key, Marker obj) {
+		Bundle localBundle = new Bundle();
+		localBundle.putInt(Globals.PROX_TYPE_INDIC, key);
+		
+		// If the geofencing type is for event markers, unpackage the marker
+		if (key == Globals.PROX_EVENT_MARKERS){
+			// obj will be a Marker type
+			localBundle.putString("eventTitle", obj.getTitle());
+			localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
+		} 
+		
+		Intent intent = new Intent(Globals.PROX_ALERT_INTENT);
+		intent.putExtras(localBundle);
+		
 		PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
 		mLocationManager.addProximityAlert(
 				latitude, // the latitude of the central point of the alert region
 				longitude, // the longitude of the central point of the alert region
-				POINT_RADIUS, // the radius of the central point of the alert region, in meters
-				PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
+				Globals.POINT_RADIUS, // the radius of the central point of the alert region, in meters
+				Globals.PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
 				proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
 				);
 
-		IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
+		IntentFilter filter = new IntentFilter(Globals.PROX_ALERT_INTENT);  
 		registerReceiver(new ProximityReceiver(), filter);	   
 	}
 
@@ -307,9 +327,34 @@ OnMarkerClickListener {
 
 			// Scrape campus events and load onto map as markers
 			// This loads the events from the API via the URL. Then it will
-			// populate the map with
-			// markers
+			// populate the map with markers
+			// It also stores a list of markers and their start Dates in the eventMap
 			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
+			
+			for (int i = 0; i < eventMarkers.size(); i++){
+				// First load the set of markers
+				Set<Marker> eventForLoad = eventMarkers.get(i).keySet();
+				Iterator<Marker> iterator = eventForLoad.iterator();
+				
+				while (iterator.hasNext()){
+					Marker eventIter = iterator.next();
+					
+					// For every event that is available, load a proximity alert to load..
+					double eventLat = eventIter.getPosition().latitude;
+					double eventLong = eventIter.getPosition().longitude;
+					
+					// Testing for the Novack
+					eventLat =  -43.705816;
+					eventLong = -72.288712;
+					addProximityAlert(eventLat, eventLong, 
+							Globals.PROX_EVENT_MARKERS, eventIter);
+				}
+			}
+			
+			
+			// Iterate through the new eventMap and add each of the marker lat/lngs into 
+			// geofences. When a user walks by a possible marker, show a more detailed version of the 
+			// event
 
 			// Load routes: path of the user with clicks (shortest distance)
 			polyline_options = new PolylineOptions();
@@ -1040,19 +1085,20 @@ OnMarkerClickListener {
 	@Override
 	/**
 	 * This function handles when a marker is clicked. 
-	 * Generally, Aaditya will need to implement this for the Maps Card
 	 */
 	public boolean onMarkerClick(Marker clickedMarker) {
 
 		closeLunchMenus(this);
 		checkSwitches();
 
-		// try to match the event
+		// try to match the event when the marker is clicked
+		// These events will be stored in the eventMap
 		for (int i = 0; i < eventMarkers.size(); i++){
 			if (eventMarkers.get(i).containsKey(clickedMarker)){
 				clickedMarker.showInfoWindow();
 
 				// show a card and schedule button
+				// Schedule button: once clicked, it will fire the async scheduling and schedule to GCal
 				String card_text = "Schedule: " + clickedMarker.getTitle();
 				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
 

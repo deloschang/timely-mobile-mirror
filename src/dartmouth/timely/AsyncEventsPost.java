@@ -11,6 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ParseException;
 import android.os.AsyncTask;
 
@@ -28,13 +31,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 	class AsyncEventsPost extends AsyncTask<String, Void, String>
 		implements OnMarkerClickListener{
 
-		// will shift lat / lng
-//		final double POSITIVE_RANDOMIZER = 0.0015;
-//		final double NEGATIVE_RANDOMIZER = 0.0015;
-		
-		final double POSITIVE_RANDOMIZER = 0.0;
-		final double NEGATIVE_RANDOMIZER = 0.0;
-		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -82,13 +78,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						
 						// location exists, retrieve lat and long
 						// lat and lon named on the API 
-						double latitude = Double.parseDouble(locationObject.getString("lat")) 
-								+ Math.random() * (POSITIVE_RANDOMIZER) 
-								- Math.random() * (NEGATIVE_RANDOMIZER);
-						
-						double longitude = Double.parseDouble(locationObject.getString("lon")) 
-								+ Math.random() * (POSITIVE_RANDOMIZER)
-								- Math.random() * (NEGATIVE_RANDOMIZER);
+						double latitude = Double.parseDouble(locationObject.getString("lat"));
+						double longitude = Double.parseDouble(locationObject.getString("lon"));
 						
 						LatLng event_location = new LatLng(latitude, longitude);
 						
@@ -133,4 +124,5 @@ import com.google.android.gms.maps.model.MarkerOptions;
 			// TODO Auto-generated method stub
 			return false;
 		}
+		
 	}
