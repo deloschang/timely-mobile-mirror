@@ -40,12 +40,20 @@
             </intent-filter>
         </activity>
         <activity android:name="NotificationReceiverActivity"></activity>
-       
-        <service android:name="SensorService" />
+        
+        <activity android:name="dartmouth.timely.PieChartActivity">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        
+        <service android:name="dartmouth.timely.SensorService" />
         <activity android:name="ProximityReceiver"></activity>
         
 		<meta-data
 		   android:name="com.google.android.maps.v2.API_KEY"
-		   android:value="AIzaSyCo9fftDeRqMx1ZGkkMb7rWzKpKc6jfIzo"/>
+		   android:value="AIzaSyCXk4K4m8lF3BP2DJsZ4gc8bbm5hNMqXcQ"/>
     </application>
 </manifest>

@@ -209,6 +209,26 @@ OnMarkerClickListener {
 			}
 		};
 		new Thread(runnableOffMain).start();
+
+        final TextView card_obj = (TextView) findViewById(R.id.timeUsageCard);
+        card_obj.setText(Globals.TIME_USAGE_TEXT);
+        
+        //findViewById(R.id.noChartText).setVisibility(View.GONE);
+
+        //final PieChart piechart = new PieChart(this,imgView,data_values,color_values, labels);
+        View.OnClickListener timeChartListener = new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						//v.setVisibility(View.GONE);
+                        Intent localIntent = new Intent ( getApplicationContext(), PieChartActivity.class );
+                        startActivity(localIntent);
+					}
+				};
+				
+		card_obj.setOnClickListener(timeChartListener);
+
+
+
 		// end
 		
 		/*
@@ -244,7 +264,7 @@ OnMarkerClickListener {
 				.build();
 		
 		menuUp=false;
-mapStuff();
+        mapStuff();
 		
 //		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
 

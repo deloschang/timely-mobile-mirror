@@ -234,5 +234,19 @@
             </dartmouth.timely.NowLayout>
         </ScrollView>
     </LinearLayout>
-
+    <TextView
+    android:id="@+id/timeUsageCard"
+    style="@style/nowCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="34dp"
+    android:text="Data Chart Card"
+    android:typeface="sans"
+    android:textSize="15sp"
+    android:layout_marginTop="2dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="2dp"
+    android:background="@color/white"
+            />
+    
 </LinearLayout>
