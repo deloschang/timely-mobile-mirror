@@ -47,6 +47,9 @@ public class ProximityReceiver extends BroadcastReceiver {
 					String concord = extras.getString("eventConcord");
 					Toast.makeText(context, "Event " + title + " " + concord, 
 							Toast.LENGTH_LONG).show();
+					
+					// Done loading, don't load again
+					MainActivity.done_registering_event = 1;
 					break;
 					
 				case Globals.PROX_LUNCH:

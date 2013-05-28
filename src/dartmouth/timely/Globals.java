@@ -49,7 +49,7 @@ public abstract class Globals {
 	
 	// key for geofencing
 	public static final String PROX_TYPE_INDIC= "prox";
-	public static final int PROX_EVENT_MARKERS = 1;
-	public static final int PROX_LUNCH = 2;
+	public static final int PROX_EVENT_MARKERS = 2;
+	public static final int PROX_LUNCH = 1;
 
 }

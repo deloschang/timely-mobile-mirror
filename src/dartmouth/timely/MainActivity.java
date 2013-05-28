@@ -134,7 +134,10 @@ OnMarkerClickListener {
 	int silence_phone = 0;
 	//	static int class_visited = 0;
 	static int load_lunch = 0;
+	
+	// Flags to check if the asynchronous task has finished loading the event
 	static int done_loading_event = 0;
+	static int done_registering_event = 0;
 	
 	//	static int estimate_reminder = 0;
 	//	static int reset_estimate_click = 0;
@@ -292,8 +295,8 @@ OnMarkerClickListener {
 						Toast.LENGTH_LONG).show();
 			
 				// obj will be a Marker type
-				localBundle.putString("eventTitle", obj.getTitle());
-				localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
+//				localBundle.putString("eventTitle", obj.getTitle());
+//				localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
 				break;
 			
 			case(Globals.PROX_LUNCH):
@@ -339,7 +342,7 @@ OnMarkerClickListener {
 			// This loads the events from the API via the URL. Then it will
 			// populate the map with markers
 			// It also stores a list of markers and their start Dates in the eventMap
-			new AsyncEventsPost().execute(TIMELY_EVENTS_API);
+			new AsyncEventsPost(this).execute(TIMELY_EVENTS_API);
 			
 			// Iterate through the new eventMap and add each of the marker lat/lngs into 
 			// geofences. When a user walks by a possible marker, show a more detailed version of the 
@@ -863,30 +866,6 @@ OnMarkerClickListener {
 	}
 
 	public void delayedCheck(){
-		// The asynchronous task is done loading the vent
-		if (done_loading_event == 1){
-			for (int i = 0; i < eventMarkers.size(); i++){
-				// First load the set of markers
-				Set<Marker> eventForLoad = eventMarkers.get(i).keySet();
-				Iterator<Marker> iterator = eventForLoad.iterator();
-
-				while (iterator.hasNext()){
-					Marker eventIter = iterator.next();
-
-					// For every event that is available, load a proximity alert to load..
-					double eventLat = eventIter.getPosition().latitude;
-					double eventLong = eventIter.getPosition().longitude;
-
-					// Testing for the Novack
-					eventLat =  -43.705816;
-					eventLong = -72.288712;
-					addProximityAlert(eventLat, eventLong, 
-							Globals.PROX_EVENT_MARKERS, eventIter);
-				}
-			}
-			// Done loading, don't load again
-			done_loading_event = 0;
-		}
 		// Runs in a separate thread. 
 		if (load_lunch == 1){
 			noteLatLong("Lunch Menu Options Loaded", "because of your usual lunch time", getApplicationContext());
