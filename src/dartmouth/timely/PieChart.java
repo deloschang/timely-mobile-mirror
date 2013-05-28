@@ -90,7 +90,7 @@ public class PieChart extends Drawable implements OnTouchListener {
 			float newStartAngle = startAngle + endAngle;
 
 
-			int flickr_pink = color_values[i % color_values.length];
+			int flickr_pink = color_values[i];
 			paint.setColor(flickr_pink);
 			paint.setAntiAlias(true);
 			paint.setStyle(Paint.Style.FILL);
@@ -115,19 +115,20 @@ public class PieChart extends Drawable implements OnTouchListener {
 			canvas.drawArc(arc_bounds, startAngle, endAngle, true, linePaint);
 
 			int barStartX = 50;
-			int barWidth = 10;
-			int barStartY = view_h-150+(i-1)*2*barWidth;
+			int barWidth = 20;
+			int barStartY = view_h-250+(i-1)*2*barWidth;
 
 			Rect barRect = new Rect(barStartX,barStartY,barStartX+barWidth,barStartY+barWidth);
 
 			//draw legend box
-			canvas.drawRect(barRect, paint);
+			paint.setColor(Color.BLACK);
+            canvas.drawRect(barRect, paint);
 			canvas.drawRect(barRect,linePaint);
 
 			Paint textPaint = new Paint();
 			textPaint.setAntiAlias(true);
 			textPaint.setColor(Color.WHITE);
-			textPaint.setTextSize(10);
+			textPaint.setTextSize(20);
 
 			//draw legend text
 			canvas.drawText(data_names[i], barStartX+2*barWidth, barStartY+barWidth, textPaint);

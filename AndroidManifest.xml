@@ -41,7 +41,7 @@
         </activity>
         <activity android:name="NotificationReceiverActivity"></activity>
         
-        <activity android:name="dartmouth.timely.PieChartActivity">
+        <activity android:name="PieChartActivity">
         </activity>
         
         
