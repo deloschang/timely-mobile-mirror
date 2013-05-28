@@ -131,7 +131,7 @@ OnMarkerClickListener {
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 //	static int class_visited = 0;
-	static int load_lunch = 0;
+	static int load_lunch = 1;
 //	static int estimate_reminder = 0;
 //	static int reset_estimate_click = 0;
 	
@@ -1128,7 +1128,6 @@ mapStuff();
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			curMotion = intent.getIntExtra("CLASSIFICATION_RESULT", -1);
-			
 			System.out.println("Current Motion: " + curMotion);
 		}		
 
