@@ -60,6 +60,8 @@ public class ProximityReceiver extends BroadcastReceiver {
 		  (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
 
 		notificationManager.notify(NOTIFICATION_ID, noti); 
+		
+		
 	}
 
 
