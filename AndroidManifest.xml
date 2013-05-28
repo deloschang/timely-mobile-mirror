@@ -40,12 +40,12 @@
             </intent-filter>
         </activity>
         <activity android:name="NotificationReceiverActivity"></activity>
-        
+    
         <activity android:name="PieChartActivity">
         </activity>
+        <activity android:name="PieChartActivity"></activity>
         
-        
-        <service android:name="dartmouth.timely.SensorService" />
+        <service android:name="SensorService" />
         <activity android:name="ProximityReceiver"></activity>
         
 		<meta-data

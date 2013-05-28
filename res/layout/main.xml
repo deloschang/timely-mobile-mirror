@@ -43,8 +43,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text=""
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textColor="#454545"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -56,15 +56,15 @@
                 android:id="@+id/mapCard"
                 style="@style/nowCardStyle"
                 android:layout_width="match_parent"
-                android:layout_height="34dp"
+                android:layout_height="100dp"
                 android:layout_marginBottom="3dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="2dp"
                 android:background="@color/white"
                 android:text="Map"
-                android:textSize="15sp"
-                android:typeface="sans" />
+                android:textSize="25sp"
+                android:textColor="#454545" />
 
             <fragment
                 android:id="@+id/map"
@@ -106,7 +106,7 @@
                     android:background="@color/white"
                     android:text="Lunch Card"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545" />
 
                 <TextView
                     android:id="@+id/focoCard"
@@ -120,7 +120,7 @@
                     android:background="@color/white"
                     android:text="FoCo Menu Item"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <ListView
                     android:id="@+id/focoMenuCard"
@@ -142,7 +142,7 @@
                     android:background="@color/white"
                     android:text="King Arthur&apos;s Cafe Lunch Menu"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <ListView
                     android:id="@+id/kafMenuCard"
@@ -162,7 +162,7 @@
                     android:background="@color/white"
                     android:text="Hop&apos;s Lunch Menu"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <ListView
                     android:id="@+id/hopMenuCard"
@@ -182,7 +182,7 @@
                     android:background="@color/white"
                     android:text="Boloco&apos;s Lunch Menu"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <ListView
                     android:id="@+id/bolocoMenuCard"
@@ -202,7 +202,7 @@
                     android:background="@color/white"
                     android:text="Phone Ringtone Card"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <TextView
                     android:id="@+id/assignmentCard"
@@ -216,7 +216,7 @@
                     android:background="@color/white"
                     android:text="Assignment Card"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
 
                 <TextView
                     android:id="@+id/eventCard"
@@ -230,10 +230,11 @@
                     android:background="@color/white"
                     android:text="Event Card"
                     android:textSize="15sp"
-                    android:typeface="sans" />
+                    android:textColor="#454545"  />
             </dartmouth.timely.NowLayout>
         </ScrollView>
     </LinearLayout>
+
     <TextView
     android:id="@+id/timeUsageCard"
     style="@style/nowCardStyle"
@@ -250,3 +251,4 @@
             />
     
 </LinearLayout>
+
