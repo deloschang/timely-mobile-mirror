@@ -75,24 +75,23 @@ public class PieChartActivity extends Activity {
 		imgView.setImageDrawable(pieChart);
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		registerReceiver(activityReceiver, new IntentFilter("bio_activity"));
 	}
-	
-	
+
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(activityReceiver);
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		unregisterReceiver(activityReceiver);
 	}
 	
 	private int[] getDataFromBio() {

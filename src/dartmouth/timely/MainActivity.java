@@ -91,7 +91,9 @@ OnMapClickListener, OnMarkerClickListener {
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 
 	// Google Maps API lat/lng for Hanover
-
+	
+	
+    //private static WeakReference<FragmentActivity> wrActivity = null;
 	private SupportMapFragment mMapFragment;
 
 	public static boolean menuUp;
@@ -328,13 +330,23 @@ OnMapClickListener, OnMarkerClickListener {
 		menuUp=false;
 		mapJunk();
 	}
-
+	
+	@Override
+	protected void onSaveInstanceState (Bundle outstate) {
+		//super.onSaveInstanceState (outstate);
+	}
+	
+	
 	public void hideMap(){
-		mMapFragment = ((SupportMapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map));
-		getSupportFragmentManager().beginTransaction()
-		.hide(mMapFragment).commit();
-		mapOn = false;
+		new Handler().post(new Runnable() {
+            public void run() {
+            	mMapFragment = ((SupportMapFragment) getSupportFragmentManager()
+        				.findFragmentById(R.id.map));
+        		getSupportFragmentManager().beginTransaction()
+        		.hide(mMapFragment).commit();
+        		mapOn = false;
+            }
+        });
 	}
 
 	public void mapJunk() {
@@ -827,8 +839,10 @@ OnMapClickListener, OnMarkerClickListener {
 		// after GET request finished
 		protected void onPostExecute(Wrapper p) {
 			try {
-				HttpEntity resEntityGet = p.result.getEntity();
-
+				HttpEntity resEntityGet = null;	
+				if (p.result != null) {
+					resEntityGet = p.result.getEntity();
+				}
 				if (resEntityGet != null) {
 					String response;
 
