@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity implements OnMapClickListener
 OnMarkerClickListener {
 	// API for calendar
 	final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/calendar";
-
+	
 	// Places API 
 	final String TIMELY_DEMO_URL = "http://timely-api.herokuapp.com/places";
 	
@@ -131,7 +131,7 @@ OnMarkerClickListener {
 	// Then, for example, we can infer where classes are. Then silence phone based on that. 
 	int silence_phone = 0;
 //	static int class_visited = 0;
-	static int load_lunch = 1;
+	static int load_lunch = 0;
 //	static int estimate_reminder = 0;
 //	static int reset_estimate_click = 0;
 	
@@ -158,6 +158,7 @@ OnMarkerClickListener {
 	// Use to set flags
 	public LatLng curLatLng;
 	public int curMotion;
+	boolean isFirstlocation=true;
 	
 	// Proximity Declarations
 	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
@@ -1119,6 +1120,10 @@ mapStuff();
 				
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 				//TODO Robin do something with current location
+				//TODO: added first location as hotspot
+				if(isFirstlocation) {
+					addProximityAlert(curLatLng.latitude, curLatLng.longitude);
+				}
 			}				
 		}		
 	};
