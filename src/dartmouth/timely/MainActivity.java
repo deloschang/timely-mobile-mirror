@@ -94,6 +94,9 @@ OnMapClickListener, OnMarkerClickListener {
 	
 	
     //private static WeakReference<FragmentActivity> wrActivity = null;
+	
+	public static long appStartTime;
+	
 	private SupportMapFragment mMapFragment;
 
 	public static boolean menuUp;
@@ -205,6 +208,8 @@ OnMapClickListener, OnMarkerClickListener {
 		setContentView(R.layout.main);
 
 		mapOn = false;
+		
+		appStartTime = System.currentTimeMillis();
 
 		// This section enables a different thread that can do something every X
 		// sec

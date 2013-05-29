@@ -66,18 +66,18 @@ public class PieChart extends Drawable implements OnTouchListener {
 				250
 				);
         
-		/*
+		
         if (data_values[0] == Globals.NO_DATA_FOUND) {
 		           
-			Paint textPaint = new Paint();
-			textPaint.setAntiAlias(true);
-			textPaint.setColor(Color.WHITE);
-			textPaint.setTextSize(40);
+			Paint noDataPaint = new Paint();
+			noDataPaint.setAntiAlias(true);
+			noDataPaint.setColor(Color.WHITE);
+			noDataPaint.setTextSize(40);
 			//draw legend text
-			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT, 75, 75, textPaint);
+			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT, 75, 75, noDataPaint);
             return;
             
-        }*/
+        }
             
         Paint textPaint2 = new Paint();
 		textPaint2.setAntiAlias(true);
