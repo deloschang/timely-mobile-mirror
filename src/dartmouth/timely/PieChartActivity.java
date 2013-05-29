@@ -22,9 +22,13 @@ public class PieChartActivity extends Activity {
 	private String mLocation;
 	private String mConversation;
 
-	private String currActivity = "Stationary";
-
-	private boolean DEMO_ENABLED = false;
+	private String currActivity = "";
+	private long totalConversationTime = 0L;
+	private long totalSilentStudyTime = 0L;
+	private long totalOnTheMoveTime = 0L;
+	private long totalRelaxTime = 0L;
+	
+	private boolean DEMO_ENABLED = true;
 	
 	private long totalTime = 0L;
 	private String location = "";
@@ -32,7 +36,6 @@ public class PieChartActivity extends Activity {
 	public static final String DATE_FORMAT = "H:mm:ss MMM d yyyy";
 
 	private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
-
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Bundle data = intent.getExtras();
@@ -75,7 +78,7 @@ public class PieChartActivity extends Activity {
 			mLocation = locationStat;
 			//Log.e("MainActivity", "location" + mLocation);
 		}
-	};
+    };
 
 	private BroadcastReceiver activityReceiver = new BroadcastReceiver() {
 		@Override
@@ -123,6 +126,7 @@ public class PieChartActivity extends Activity {
 			System.out.println ("Conversation Update Received!");
 			
 			MainActivity.totalConversationTime += Double.valueOf(conversationComponents[1]).longValue() - Double.valueOf(conversationComponents[0]).longValue();
+
 			
 			//Log.e("MainActivity", "conversation" + mConversation);
 		}
@@ -164,6 +168,7 @@ public class PieChartActivity extends Activity {
 		registerReceiver(locationReceiver, new IntentFilter("bio_location"));
 		registerReceiver(conversationReceiver, new IntentFilter(
 				"bio_conversation"));
+		
 		drawPiechart();
 	}
 	
@@ -211,6 +216,7 @@ public class PieChartActivity extends Activity {
 			System.out.println ("Total on the move time " + MainActivity.totalOnTheMoveTime);
 			
 			int arrayToReturn[] = { (int) MainActivity.totalConversationTime, (int)MainActivity.totalSilentStudyTime, (int) MainActivity.totalOnTheMoveTime, (int) MainActivity.totalRelaxTime };
+			
 			System.out.println (arrayToReturn[0]);
 			return arrayToReturn;
 			} else {

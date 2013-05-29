@@ -19,6 +19,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -51,6 +52,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,7 +95,6 @@ OnMapClickListener, OnMarkerClickListener {
 
 	// Google Maps API lat/lng for Hanover
 	
-	
     //private static WeakReference<FragmentActivity> wrActivity = null;
 	
 	public static long appStartTime;
@@ -101,8 +102,9 @@ OnMapClickListener, OnMarkerClickListener {
 	public static long totalSilentStudyTime = 500L;
 	public static long totalOnTheMoveTime = 500L;
 	public static long totalRelaxTime = 500L;
-	
-	
+
+
+
 	private SupportMapFragment mMapFragment;
 
 	public static boolean menuUp;
@@ -153,7 +155,7 @@ OnMapClickListener, OnMarkerClickListener {
 	int silence_phone = 0;
 
 	static int class_visited = 0;
-	static int load_lunch = 0;
+	static int load_lunch = 1;
 	static int estimate_reminder = 0;
 	static int reset_estimate_click = 0;
 
@@ -163,7 +165,7 @@ OnMapClickListener, OnMarkerClickListener {
 	// These are for Events API.
 	// The list is used to iterate through the markers and add them onto the
 	// map.
-	
+
 	// These are for Events API. 
 	// The list is used to iterate through the markers and add them onto the map.
 
@@ -181,7 +183,7 @@ OnMapClickListener, OnMarkerClickListener {
 	static public Typeface tf;
 	static TextView mappview;
 
-	
+
 	//SensorService Declarations
 	public SensorService mSensorService;
 	public boolean mIsBound;
@@ -198,18 +200,22 @@ OnMapClickListener, OnMarkerClickListener {
 	public Marker marker;
 	boolean isFirstlocation=true;
 	
+
+	
+
 	// Proximity Declarations
 
 	public LocationManager mLocationManager;
-	
 	public static boolean isLunchLaunched = false;
 
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		
 		mapOn = false;
 		
 		appStartTime = System.currentTimeMillis();
@@ -222,9 +228,10 @@ OnMapClickListener, OnMarkerClickListener {
 		tf = Typeface.createFromAsset(getAssets(), fontPath);
 
 		final TextView current_location = (TextView) findViewById(R.id.current_location);
-
+		final TextView events_card = (TextView) findViewById(R.id.eventsShowCard);
 		// Apply font
 		current_location.setTypeface(tf);
+		events_card.setTypeface(tf);
 
 		final TextView map_card = (TextView) findViewById(R.id.mapCard); 
 		map_card.setTypeface(tf);
@@ -269,22 +276,22 @@ OnMapClickListener, OnMarkerClickListener {
 		};
 		new Thread(runnableOffMain).start();
 
-        final TextView card_obj = (TextView) findViewById(R.id.timeUsageCard);
-        card_obj.setText(Globals.TIME_USAGE_TEXT);
-        card_obj.setTypeface(tf);
-        
-        //findViewById(R.id.noChartText).setVisibility(View.GONE);
+		final TextView card_obj = (TextView) findViewById(R.id.timeUsageCard);
+		card_obj.setText(Globals.TIME_USAGE_TEXT);
+		card_obj.setTypeface(tf);
 
-        //final PieChart piechart = new PieChart(this,imgView,data_values,color_values, labels);
-        View.OnClickListener timeChartListener = new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						//v.setVisibility(View.GONE);
-                        Intent localIntent = new Intent ( getApplicationContext(), PieChartActivity.class );
-                        startActivity(localIntent);
-					}
-				};
-				
+		//findViewById(R.id.noChartText).setVisibility(View.GONE);
+
+		//final PieChart piechart = new PieChart(this,imgView,data_values,color_values, labels);
+		View.OnClickListener timeChartListener = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//v.setVisibility(View.GONE);
+				Intent localIntent = new Intent ( getApplicationContext(), PieChartActivity.class );
+				startActivity(localIntent);
+			}
+		};
+
 		card_obj.setOnClickListener(timeChartListener);
 
 
@@ -300,7 +307,7 @@ OnMapClickListener, OnMarkerClickListener {
 
 
 
-
+		menuUp=false;
 
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
@@ -336,34 +343,34 @@ OnMapClickListener, OnMarkerClickListener {
 				transport, jsonFactory, credential)
 		.setApplicationName("Timely").build();
 
-		menuUp=false;
 		mapJunk();
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState (Bundle outstate) {
 		//super.onSaveInstanceState (outstate);
 	}
-	
-	
+
+
 	public void hideMap(){
 		new Handler().post(new Runnable() {
-            public void run() {
-            	mMapFragment = ((SupportMapFragment) getSupportFragmentManager()
-        				.findFragmentById(R.id.map));
-        		getSupportFragmentManager().beginTransaction()
-        		.hide(mMapFragment).commit();
-        		mapOn = false;
-            }
-        });
+			public void run() {
+				if(mMapFragment != null){
+					mMapFragment = ((SupportMapFragment) getSupportFragmentManager()
+							.findFragmentById(R.id.map));
+					getSupportFragmentManager().beginTransaction()
+					.hide(mMapFragment).commit();
+					mapOn = false;
+				}
+			}
+		});
 	}
 
 	public void mapJunk() {
-		
-		menuUp=false;
-        mapStuff();
-		
-//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
+
+		mapStuff();
+
+		//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
 
 		//Register GPS sensor to receive location update
 		mLocationUpdateFilter = new IntentFilter();
@@ -378,14 +385,15 @@ OnMapClickListener, OnMarkerClickListener {
 		mServiceIntent = new Intent(this, SensorService.class);
 		startService(mServiceIntent);
 		doBindService();			
-		
+
 		//LocationManager Initializer
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		
+		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
 		addProximityAlert(43.70209, -72.28788,Globals.PROX_LUNCH);
 		
+
 	}
 
 	private void addProximityAlert(double latitude, double longitude, int key) {
@@ -423,7 +431,7 @@ OnMapClickListener, OnMarkerClickListener {
 	   IntentFilter filter = new IntentFilter(Globals.PROX_ALERT_INTENT);  
 	   registerReceiver(new ProximityReceiver(), filter);	   
 	}
-	
+
 	public void mapStuff() {
 
 		// Google Maps API v2 dance
@@ -494,15 +502,23 @@ OnMapClickListener, OnMarkerClickListener {
 					getSupportFragmentManager().beginTransaction()
 					.show(mMapFragment).commit();
 					mapOn = true;
-					findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
-					findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
-					findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
-					findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
+					View p = (View) v.getRootView();
+					if (p != null) {
+						TextView lunchstuff = (TextView) p.findViewById(R.id.lunchCard);
+						if (lunchstuff.getVisibility() == View.VISIBLE)
+						findViewById(R.id.focoCard).setVisibility(View.GONE);
+						findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
+						findViewById(R.id.kafCard).setVisibility(View.GONE);
+						findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+						findViewById(R.id.hopCard).setVisibility(View.GONE);
+						findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
+						findViewById(R.id.bolocoCard).setVisibility(View.GONE);
+						findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
+						menuUp=false;
+					}
 				}
 			}
-
 		});
-
 	}
 
 
@@ -521,13 +537,13 @@ OnMapClickListener, OnMarkerClickListener {
 		if (checkGooglePlayServicesAvailable()) {
 			haveGooglePlayServices();
 		}
-//		class_visited = 0;
-		
+		//		class_visited = 0;
+
 		//Register receivers for location and motion updates
 		registerReceiver(mLocationUpdateReceiver, mLocationUpdateFilter);
 		registerReceiver(mMotionUpdateReceiver, mMotionUpdateFilter);
 	}
-	
+
 	@Override
 	protected void onPause(){
 		unregisterReceiver(mLocationUpdateReceiver);
@@ -543,9 +559,9 @@ OnMapClickListener, OnMarkerClickListener {
 		super.onDestroy();
 
 		// reset parameters
-//		class_visited = 0;
-//		estimate_reminder = 0;
-//		reset_estimate_click = 0;
+		//		class_visited = 0;
+		//		estimate_reminder = 0;
+		//		reset_estimate_click = 0;
 	}
 
 	/** GOOGLE PLAY OAUTH2 STUFF **/
@@ -641,7 +657,7 @@ OnMapClickListener, OnMarkerClickListener {
 	 * foreground service ( Justice should handle this stuff )
 	 */
 	/** Grab location coordinates and do something **/
-/*
+	/*
 	public void sendLocation() {
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Location location = lm
@@ -713,7 +729,7 @@ OnMapClickListener, OnMarkerClickListener {
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
 				locationListener);
 	}
-*/
+	 */
 
 	// POST request to the Timely API
 	// private class NetworkPost extends AsyncTask<String, Void, HttpResponse> {
@@ -777,6 +793,7 @@ OnMapClickListener, OnMarkerClickListener {
 
 	// checks all the lunch menus and closes them
 	public static void closeLunchMenus(Activity activity) {
+
 		ListView focoMenuCard = (ListView) activity
 				.findViewById(R.id.focoMenuCard);
 		ListView kafMenuCard = (ListView) activity
@@ -1129,48 +1146,60 @@ OnMapClickListener, OnMarkerClickListener {
 			// Load estimate Card. [Demo feature]
 			// This card would load a "time estimate" from the Google Calnedar
 
-			case Globals.LOAD_ESTIMATE:
-				card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
-				OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
-					
-//					@Override
-//					public void onClick(View v) {
-//						if (reset_estimate_click == 0){
-//							card_obj.setTextColor(Color.BLUE);
-//							card_obj.setText(assignEstimate);
-//							reset_estimate_click = 1;
-//							
-//						} else if (reset_estimate_click == 1){
-//							card_obj.setTextColor(Color.parseColor("#707070"));
-//							card_obj.setText(assignDueDate);
-//							reset_estimate_click = 0;
-//						}
-//					}
-				};
-				
-				card_obj.setOnClickListener(estOnClickListener);
-				break;
-			
+		case Globals.LOAD_ESTIMATE:
+			card_obj = (TextView) activity.findViewById(R.id.assignmentCard);
+			OnClickListener estOnClickListener = new estOnClickListener(card_obj, assignEstimate, assignDueDate) {
+
+				//					@Override
+				//					public void onClick(View v) {
+				//						if (reset_estimate_click == 0){
+				//							card_obj.setTextColor(Color.BLUE);
+				//							card_obj.setText(assignEstimate);
+				//							reset_estimate_click = 1;
+				//							
+				//						} else if (reset_estimate_click == 1){
+				//							card_obj.setTextColor(Color.parseColor("#707070"));
+				//							card_obj.setText(assignDueDate);
+				//							reset_estimate_click = 0;
+				//						}
+				//					}
+			};
+
+			card_obj.setOnClickListener(estOnClickListener);
+			break;
+
 
 			// These load all the lunch options at once.
 			// In the real app, we will need to trigger this when it is typically
 			// the user's lunch time
 		case Globals.LOAD_LUNCH_OPTIONS:
 			card_obj = (TextView) activity.findViewById(R.id.lunchCard);
-			activity.findViewById(R.id.phoneSilenceCard).setVisibility(
+			/*			activity.findViewById(R.id.phoneSilenceCard).setVisibility(
 					View.GONE); // close
-
+			 */
 			OnClickListener lunchListener = new lunchOnclickListener(activity) {
 				@Override
 				public void onClick(View v) {
 					//v.setVisibility(View.GONE);
 					// open Foco card
-					updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
-					updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
-					updateBar(Globals.HOP_MENU, activity, Globals.HOP_TEXT);
-					updateBar(Globals.BOLOCO_MENU, activity,
-							Globals.BOLOCO_TEXT);
-
+					if(menuUp == false){
+						updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
+						updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
+						updateBar(Globals.HOP_MENU, activity, Globals.HOP_TEXT);
+						updateBar(Globals.BOLOCO_MENU, activity, Globals.BOLOCO_TEXT);
+						menuUp=true;
+					}
+					else{
+						activity.findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.focoCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.hopCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.bolocoCard).setVisibility(View.GONE);
+						activity.findViewById(R.id.kafCard).setVisibility(View.GONE);
+						menuUp=false;
+					}
 				}
 
 			};
@@ -1179,54 +1208,54 @@ OnMapClickListener, OnMarkerClickListener {
 
 			// when user selects an event to be scheduled
 
-			case Globals.SCHEDULE_EVENT:
-				card_obj = (TextView) activity.findViewById(R.id.eventCard);
-				
-				System.out.println(eventStartTime);
-				OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
-					@Override
-					public void onClick(View v) {
-						// insert event into calendar
-						new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
-						
-						// remove after scheduled
-						v.setVisibility(View.GONE);
-						noteLatLong("Event Scheduled", param2, activity.getApplicationContext(), "");
-					}
-					
-				};
-				
-				card_obj.setOnClickListener(calListener);
-				break;
-			
-			case Globals.FOCO_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.focoCard);
-				
-				// GET request for the Foco Menu and set listener
-				System.out.println("Reached async, about to execute");
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-			
-			case Globals.KAF_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.kafCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			case Globals.HOP_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.hopCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			case Globals.BOLOCO_MENU:
-				card_obj = (TextView) activity.findViewById(R.id.bolocoCard);
-				
-				new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
-				break;
-				
-			default:
-				break;
+		case Globals.SCHEDULE_EVENT:
+			card_obj = (TextView) activity.findViewById(R.id.eventCard);
+
+			System.out.println(eventStartTime);
+			OnClickListener calListener = new calendarOnClickListener(activity, eventStartTime, eventStartName){
+				@Override
+				public void onClick(View v) {
+					// insert event into calendar
+					new AsyncEventsInsert((MainActivity)activity, param, param2).execute();
+
+					// remove after scheduled
+					v.setVisibility(View.GONE);
+					noteLatLong("Event Scheduled", param2, activity.getApplicationContext(), "");
+				}
+
+			};
+
+			card_obj.setOnClickListener(calListener);
+			break;
+
+		case Globals.FOCO_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.focoCard);
+
+			// GET request for the Foco Menu and set listener
+			System.out.println("Reached async, about to execute");
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.KAF_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.kafCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.HOP_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.hopCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		case Globals.BOLOCO_MENU:
+			card_obj = (TextView) activity.findViewById(R.id.bolocoCard);
+
+			new AsyncMenuPost(activity, card_obj).execute(TIMELY_MENU_API);
+			break;
+
+		default:
+			break;
 
 		}
 
@@ -1270,7 +1299,7 @@ OnMapClickListener, OnMarkerClickListener {
 				String card_text = "Schedule: " + clickedMarker.getTitle();
 				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
 
-				updateBar(Globals.SCHEDULE_EVENT, this, card_text,
+updateBar(Globals.SCHEDULE_EVENT, this, card_text,
 						eventStartTime, clickedMarker.getTitle());
 				return true;
 			}
@@ -1283,24 +1312,24 @@ OnMapClickListener, OnMarkerClickListener {
 		// DEMO FEATURE FOR WHEN A CLASS MARKER IS CLICKED
 
 		// We don't need this but you guys can see how easy it is to silence the phone.
-//		if (clickedMarker.equals(classMarker) && class_visited == 0){
-//			// Add the point to the path  with options
-//			addToPolyline(classMarker);
-//				
-//			// Silence phone in class
-//			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-//		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-//			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
-//			
-//			// set update bar
-//			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
-//			
-//			silence_phone = 1;
-//			class_visited = 1;
-//			
-//			return true;
-//		}
-		
+		//		if (clickedMarker.equals(classMarker) && class_visited == 0){
+		//			// Add the point to the path  with options
+		//			addToPolyline(classMarker);
+		//				
+		//			// Silence phone in class
+		//			AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		//		    audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		//			noteLatLong("Auto-silencing phone", "in class", getApplicationContext());
+		//			
+		//			// set update bar
+		//			updateBar(Globals.SILENCE_PHONE, this, Globals.SILENCE_PHONE_TEXT);
+		//			
+		//			silence_phone = 1;
+		//			class_visited = 1;
+		//			
+		//			return true;
+		//		}
+
 		if (clickedMarker.equals(kafMarker)){
 			addToPolyline(kafMarker);
 			return true;
@@ -1313,7 +1342,7 @@ OnMapClickListener, OnMarkerClickListener {
 
 		return false;
 	}
-	
+
 	/**
 	 * Location tracking stuff. All this stuff needs to be changed to the foreground service 
 	 *  ( Justice should handle this stuff )
@@ -1331,7 +1360,7 @@ OnMapClickListener, OnMarkerClickListener {
 				if (mLocationList == null || mLocationList.isEmpty())
 					return;
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
-				
+
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 
 				
@@ -1404,6 +1433,6 @@ OnMapClickListener, OnMarkerClickListener {
 			mIsBound = false;
 		}
 	}	
-	
-	
+
+
 }
