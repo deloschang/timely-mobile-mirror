@@ -28,7 +28,7 @@ public class PieChartActivity extends Activity {
 	private long totalOnTheMoveTime = 0L;
 	private long totalRelaxTime = 0L;
 	
-	private boolean DEMO_ENABLED = false;
+	private boolean DEMO_ENABLED = true;
 	
 	private long totalTime = 0L;
 	private String location = "";
