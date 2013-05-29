@@ -41,8 +41,7 @@
         </activity>
         <activity android:name="NotificationReceiverActivity"></activity>
     
-        <activity android:name="PieChartActivity">
-        </activity>
+
         <activity android:name="PieChartActivity"></activity>
         
         <service android:name="SensorService" />
@@ -50,6 +49,6 @@
         
 		<meta-data
 		   android:name="com.google.android.maps.v2.API_KEY"
-		   android:value="AIzaSyCXk4K4m8lF3BP2DJsZ4gc8bbm5hNMqXcQ"/>
+		   android:value="AIzaSyCo9fftDeRqMx1ZGkkMb7rWzKpKc6jfIzo"/>
     </application>
 </manifest>

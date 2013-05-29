@@ -29,11 +29,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 		implements OnMarkerClickListener{
 
 		// will shift lat / lng
-//		final double POSITIVE_RANDOMIZER = 0.0015;
-//		final double NEGATIVE_RANDOMIZER = 0.0015;
-		
-		final double POSITIVE_RANDOMIZER = 0.0;
-		final double NEGATIVE_RANDOMIZER = 0.0;
 		
 		@Override
 		protected void onPreExecute() {
@@ -82,13 +77,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 						
 						// location exists, retrieve lat and long
 						// lat and lon named on the API 
-						double latitude = Double.parseDouble(locationObject.getString("lat")) 
-								+ Math.random() * (POSITIVE_RANDOMIZER) 
-								- Math.random() * (NEGATIVE_RANDOMIZER);
-						
-						double longitude = Double.parseDouble(locationObject.getString("lon")) 
-								+ Math.random() * (POSITIVE_RANDOMIZER)
-								- Math.random() * (NEGATIVE_RANDOMIZER);
+						double latitude = Double.parseDouble(locationObject.getString("lat"));
+						double longitude = Double.parseDouble(locationObject.getString("lon"));
 						
 						LatLng event_location = new LatLng(latitude, longitude);
 						

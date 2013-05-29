@@ -147,7 +147,7 @@ OnMapClickListener, OnMarkerClickListener {
 	int silence_phone = 0;
 
 	static int class_visited = 0;
-	static int load_lunch = 1;
+	static int load_lunch = 0;
 	static int estimate_reminder = 0;
 	static int reset_estimate_click = 0;
 
@@ -191,15 +191,10 @@ OnMapClickListener, OnMarkerClickListener {
 	boolean isFirstlocation=true;
 	
 	// Proximity Declarations
-	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
-	private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
 
-	private static final long POINT_RADIUS = 1000; // in Meters
-	private static final long PROX_ALERT_EXPIRATION = -1;
-
-	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
-		
+	
+	public static boolean isLunchLaunched = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -381,24 +376,43 @@ OnMapClickListener, OnMarkerClickListener {
 		
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
-		addProximityAlert(lat,lng);
+		addProximityAlert(lat,lng,Globals.PROX_LUNCH);
 		
 	}
 
-	private void addProximityAlert(double latitude, double longitude) {
+	private void addProximityAlert(double latitude, double longitude, int key) {
+			Bundle localBundle = new Bundle();
+			localBundle.putInt(Globals.PROX_TYPE_INDIC, key);
+
+			// If the geofencing type is for event markers, unpackage the marker
+			switch (key){
+				case(Globals.PROX_EVENT_MARKERS):
+					Toast.makeText(getApplicationContext(), "events prox loaded",
+							Toast.LENGTH_LONG).show();
+
+					// obj will be a Marker type
+//					localBundle.putString("eventTitle", obj.getTitle());
+//					localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
+					break;
+
+				case(Globals.PROX_LUNCH):
+					break;
+			}
+		
+		
 	    
-	    Intent intent = new Intent(PROX_ALERT_INTENT);
+	    Intent intent = new Intent(Globals.PROX_ALERT_INTENT);
 	    PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 	    
 	    mLocationManager.addProximityAlert(
 	        latitude, // the latitude of the central point of the alert region
 	        longitude, // the longitude of the central point of the alert region
-	        POINT_RADIUS, // the radius of the central point of the alert region, in meters
-	        PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
+	        Globals.POINT_RADIUS, // the radius of the central point of the alert region, in meters
+	        Globals.PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
 	        proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
 	   );
 	    
-	   IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
+	   IntentFilter filter = new IntentFilter(Globals.PROX_ALERT_INTENT);  
 	   registerReceiver(new ProximityReceiver(), filter);	   
 	}
 	
@@ -985,7 +999,12 @@ OnMapClickListener, OnMarkerClickListener {
 	}
 
 	public void delayedCheck() {
+		
+
+		
 		if (load_lunch == 1) {
+			if (isLunchLaunched) return;
+			
 			hideMap();
 			noteLatLong("Lunch Menu Options Loaded",
 					"because of your usual lunch time", getApplicationContext());
@@ -1011,6 +1030,7 @@ OnMapClickListener, OnMarkerClickListener {
 					.snippet("Lunch menu loaded"));
 
 			kafMarker.showInfoWindow();
+			isLunchLaunched = true;
 		}
 
 		if (estimate_reminder == 0) {
@@ -1307,7 +1327,7 @@ OnMapClickListener, OnMarkerClickListener {
 				//TODO Robin do something with current location
 				//TODO: added first location as hotspot
 				if(isFirstlocation) {
-					addProximityAlert(curLatLng.latitude, curLatLng.longitude);
+					addProximityAlert(curLatLng.latitude, curLatLng.longitude,Globals.PROX_LUNCH);
 				}
 			}				
 		}		
