@@ -48,7 +48,7 @@ public abstract class Globals {
 	public static int ACC_CACHE_SIZE=64;
 	
 	// common parameters
-		public static final long POINT_RADIUS = 1000; // in Meters
+		public static final long POINT_RADIUS = 100; // in Meters
 		public static final long PROX_ALERT_EXPIRATION = -1;
 		public static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 

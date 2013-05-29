@@ -95,6 +95,9 @@ OnMapClickListener, OnMarkerClickListener {
 	
 	
     //private static WeakReference<FragmentActivity> wrActivity = null;
+	
+	public static long appStartTime;
+	
 	private SupportMapFragment mMapFragment;
 
 	public static boolean menuUp;
@@ -203,6 +206,8 @@ OnMapClickListener, OnMarkerClickListener {
 		setContentView(R.layout.main);
 
 		mapOn = false;
+		
+		appStartTime = System.currentTimeMillis();
 
 		// This section enables a different thread that can do something every X
 		// sec
@@ -374,7 +379,7 @@ OnMapClickListener, OnMarkerClickListener {
 		
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
-		addProximityAlert(lat,lng,Globals.PROX_LUNCH);
+		addProximityAlert(43.70209, -72.28788,Globals.PROX_LUNCH);
 		
 	}
 
@@ -1323,6 +1328,7 @@ OnMapClickListener, OnMarkerClickListener {
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
 				
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
+
 				
 				//Center map on current location
 				map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng,ZOOM_LEVEL));
@@ -1344,6 +1350,7 @@ OnMapClickListener, OnMarkerClickListener {
 				}				
 				
 				
+
 			}				
 		}		
 	};
