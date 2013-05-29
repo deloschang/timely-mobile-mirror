@@ -46,5 +46,15 @@ public abstract class Globals {
 	// Constants for sensor services
 	public static int GPS_CACHE_SIZE=100;
 	public static int ACC_CACHE_SIZE=64;
+	
+	// common parameters
+		public static final long POINT_RADIUS = 1000; // in Meters
+		public static final long PROX_ALERT_EXPIRATION = -1;
+		public static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
+
+		// key for geofencing
+		public static final String PROX_TYPE_INDIC= "prox";
+		public static final int PROX_EVENT_MARKERS = 2;
+		public static final int PROX_LUNCH = 1;
 
 }
