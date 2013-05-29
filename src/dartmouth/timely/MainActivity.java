@@ -97,6 +97,11 @@ OnMapClickListener, OnMarkerClickListener {
     //private static WeakReference<FragmentActivity> wrActivity = null;
 	
 	public static long appStartTime;
+	public static long totalConversationTime = 500L;
+	public static long totalSilentStudyTime = 500L;
+	public static long totalOnTheMoveTime = 500L;
+	public static long totalRelaxTime = 500L;
+	
 	
 	private SupportMapFragment mMapFragment;
 
@@ -1360,7 +1365,7 @@ OnMapClickListener, OnMarkerClickListener {
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			curMotion = intent.getIntExtra("CLASSIFICATION_RESULT", -1);
-			System.out.println("Current Motion: " + curMotion);
+			//System.out.println("Current Motion: " + curMotion);
 		}		
 
 	};

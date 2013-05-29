@@ -74,7 +74,8 @@ public class PieChart extends Drawable implements OnTouchListener {
 			noDataPaint.setColor(Color.WHITE);
 			noDataPaint.setTextSize(30);
 			//draw legend text
-			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT + " " + timeText, 75, 75, noDataPaint);
+			int remainingSeconds = 300000- Integer.parseInt(timeText);
+			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT + ": Wait " + remainingSeconds + " seconds"  , 75, 75, noDataPaint);
             return;
             
         }

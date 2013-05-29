@@ -22,13 +22,9 @@ public class PieChartActivity extends Activity {
 	private String mLocation;
 	private String mConversation;
 
-	private String currActivity = "";
-	private long totalConversationTime = 0L;
-	private long totalSilentStudyTime = 0L;
-	private long totalOnTheMoveTime = 0L;
-	private long totalRelaxTime = 0L;
-	
-	private boolean DEMO_ENABLED = true;
+	private String currActivity = "Stationary";
+
+	private boolean DEMO_ENABLED = false;
 	
 	private long totalTime = 0L;
 	private String location = "";
@@ -41,6 +37,7 @@ public class PieChartActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			Bundle data = intent.getExtras();
 			mLocation = data.getString("key_bio_location", "");
+			System.out.println ("Location Update Received!");
 			String[] locationLines = mLocation.split(";");
 			String locationStat = "";
 			String currLocation = "";
@@ -54,15 +51,23 @@ public class PieChartActivity extends Activity {
 			}
 			
 			String tokens[] = currLocation.split("-");
+			System.out.println( tokens[0] );
 			
 			if ( tokens[0].equalsIgnoreCase("BerryLib") || tokens[0].equalsIgnoreCase("Carson") ) {
 				if ( currActivity.equalsIgnoreCase("Stationary") ) {
-					totalSilentStudyTime += 10000;
+					System.out.println ("Incrementing Silent Study Time");
+					MainActivity.totalSilentStudyTime += 10000L;
+					System.out.println ("New silent study time " + MainActivity.totalSilentStudyTime);
 				}
 			} else {
 				if ( currActivity.equalsIgnoreCase("Stationary") ) {
-					totalRelaxTime += 10000;
-				} else totalOnTheMoveTime += 10000;
+					System.out.println ("Incrementing Relax Time");
+					MainActivity.totalRelaxTime += 10000L;
+				} else 
+					{
+					System.out.println ("Incrementing On the Move Time");
+					MainActivity.totalOnTheMoveTime += 10000L;
+					}
 				
 			}
 			
@@ -75,8 +80,11 @@ public class PieChartActivity extends Activity {
 	private BroadcastReceiver activityReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			
 			Bundle data = intent.getExtras();
-
+			System.out.println ("Activity Update Received!");
+			
+			
 			mActivity = data.getString("key_bio_activity", "");
 			String[] activityComponents = mActivity.split(",");
 			int mActivityType = Long.valueOf(activityComponents[1]).intValue();
@@ -111,8 +119,10 @@ public class PieChartActivity extends Activity {
 			Bundle data = intent.getExtras();
 			mConversation = data.getString("key_bio_conversation", "");
 			String[] conversationComponents = mConversation.split(",");
-
-			totalConversationTime += Double.valueOf(conversationComponents[1]).longValue() - Double.valueOf(conversationComponents[0]).longValue();
+			
+			System.out.println ("Conversation Update Received!");
+			
+			MainActivity.totalConversationTime += Double.valueOf(conversationComponents[1]).longValue() - Double.valueOf(conversationComponents[0]).longValue();
 			
 			//Log.e("MainActivity", "conversation" + mConversation);
 		}
@@ -136,7 +146,9 @@ public class PieChartActivity extends Activity {
 		//main layout
 		setContentView(R.layout.display_chart);
 		registerReceiver(activityReceiver, new IntentFilter("bio_activity"));	
-
+		registerReceiver(locationReceiver, new IntentFilter("bio_location"));
+		registerReceiver(conversationReceiver, new IntentFilter(
+				"bio_conversation"));
 		//String data_values = getDataValues(LiveDataProvider)
 
 		//pie chart parameters
@@ -148,8 +160,10 @@ public class PieChartActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		registerReceiver(activityReceiver, new IntentFilter("bio_activity"));
-		
+		registerReceiver(activityReceiver, new IntentFilter("bio_activity"));	
+		registerReceiver(locationReceiver, new IntentFilter("bio_location"));
+		registerReceiver(conversationReceiver, new IntentFilter(
+				"bio_conversation"));
 		drawPiechart();
 	}
 	
@@ -163,7 +177,9 @@ public class PieChartActivity extends Activity {
 		ImageView imgView = (ImageView ) findViewById(R.id.image_placeholder);
 
 		//create pie chart Drawable and set it to ImageView
-		PieChart pieChart = new PieChart(this, imgView, Long.toString(totalTime/1000L) , labels, data_values, color_values);
+		String timeText = Long.toString(totalTime/1000L);
+		timeText = "Data collected for " + timeText + " seconds";
+		PieChart pieChart = new PieChart(this, imgView, timeText , labels, data_values, color_values);
 		imgView.setImageDrawable(pieChart);
 	}
 
@@ -172,6 +188,9 @@ public class PieChartActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(activityReceiver);
+		unregisterReceiver(locationReceiver);
+		unregisterReceiver(conversationReceiver);
+
 	}
 
 	@Override
@@ -188,11 +207,11 @@ public class PieChartActivity extends Activity {
 		} else 
 		{
 			if (!DEMO_ENABLED) {
-			System.out.println ("Total conversation time " + totalConversationTime);
-			System.out.println ("Total silent study time " + totalSilentStudyTime);
-			System.out.println ("Total on the move time " + totalOnTheMoveTime);
+			System.out.println ("Total conversation time " + MainActivity.totalConversationTime);
+			System.out.println ("Total silent study time " + MainActivity.totalSilentStudyTime);
+			System.out.println ("Total on the move time " + MainActivity.totalOnTheMoveTime);
 			
-			int arrayToReturn[] = { (int) totalConversationTime/(int)totalTime , (int)totalSilentStudyTime/(int)totalTime , (int) totalOnTheMoveTime/(int)totalTime, (int) totalRelaxTime/(int)totalTime };
+			int arrayToReturn[] = { (int) MainActivity.totalConversationTime, (int)MainActivity.totalSilentStudyTime, (int) MainActivity.totalOnTheMoveTime, (int) MainActivity.totalRelaxTime };
 			System.out.println (arrayToReturn[0]);
 			return arrayToReturn;
 			} else {
