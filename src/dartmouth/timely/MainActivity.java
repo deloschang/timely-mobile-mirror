@@ -939,7 +939,7 @@ OnMapClickListener, OnMarkerClickListener {
 						.setSound(notification).setAutoCancel(true);
 		Notification n = builder.build();
 
-		final int YOUR_NOTIF_ID = 0;
+		final int YOUR_NOTIF_ID = 1000;
 		nm.notify(YOUR_NOTIF_ID, n);
 	}
 
