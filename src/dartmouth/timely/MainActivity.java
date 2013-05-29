@@ -76,6 +76,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.calendar.CalendarScopes;
 
+
 public class MainActivity extends FragmentActivity implements
 OnMapClickListener, OnMarkerClickListener {
 	// API for calendar
@@ -93,9 +94,13 @@ OnMapClickListener, OnMarkerClickListener {
 	final String MAPQUEST_API = "http://open.mapquestapi.com/nominatim/v1/reverse.php?format=json";
 
 	// Google Maps API lat/lng for Hanover
+	
+    //private static WeakReference<FragmentActivity> wrActivity = null;
+	
+	public static long appStartTime;
+	
 
 
-	//private static WeakReference<FragmentActivity> wrActivity = null;
 	private SupportMapFragment mMapFragment;
 
 	public static boolean menuUp;
@@ -146,7 +151,7 @@ OnMapClickListener, OnMarkerClickListener {
 	int silence_phone = 0;
 
 	static int class_visited = 0;
-	static int load_lunch = 1;
+	static int load_lunch = 0;
 	static int estimate_reminder = 0;
 	static int reset_estimate_click = 0;
 
@@ -182,24 +187,19 @@ OnMapClickListener, OnMarkerClickListener {
 	private IntentFilter mMotionUpdateFilter;
 	private IntentFilter mLocationUpdateFilter;
 	public ArrayList<Location> mLocationList;
-
-
+	
+	
 	// Use to set flags
 	public LatLng curLatLng;
 	public int curMotion;
+	public Marker marker;
 	boolean isFirstlocation=true;
 
 	// Proximity Declarations
-	private static final long MINIMUM_DISTANCECHANGE_FOR_UPDATE = 1; // in Meters
-	private static final long MINIMUM_TIME_BETWEEN_UPDATE = 1000; // in Milliseconds
 
-	private static final long POINT_RADIUS = 1000; // in Meters
-	private static final long PROX_ALERT_EXPIRATION = -1;
-
-	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
-
 	public static boolean isLunchLaunched = false;
+
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -209,6 +209,8 @@ OnMapClickListener, OnMarkerClickListener {
 
 		
 		mapOn = false;
+		
+		appStartTime = System.currentTimeMillis();
 
 		// This section enables a different thread that can do something every X
 		// sec
@@ -381,25 +383,45 @@ OnMapClickListener, OnMarkerClickListener {
 
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
-		addProximityAlert(lat,lng);
+		addProximityAlert(43.70209, -72.28788,Globals.PROX_LUNCH);
+		
 
 	}
 
-	private void addProximityAlert(double latitude, double longitude) {
+	private void addProximityAlert(double latitude, double longitude, int key) {
+			Bundle localBundle = new Bundle();
+			localBundle.putInt(Globals.PROX_TYPE_INDIC, key);
 
-		Intent intent = new Intent(PROX_ALERT_INTENT);
-		PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+			// If the geofencing type is for event markers, unpackage the marker
+			switch (key){
+				case(Globals.PROX_EVENT_MARKERS):
+					Toast.makeText(getApplicationContext(), "events prox loaded",
+							Toast.LENGTH_LONG).show();
 
-		mLocationManager.addProximityAlert(
-				latitude, // the latitude of the central point of the alert region
-				longitude, // the longitude of the central point of the alert region
-				POINT_RADIUS, // the radius of the central point of the alert region, in meters
-				PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
-				proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
-				);
+					// obj will be a Marker type
+//					localBundle.putString("eventTitle", obj.getTitle());
+//					localBundle.putString("eventConcord", obj.getSnippet()); // should get a description instead
+					break;
 
-		IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);  
-		registerReceiver(new ProximityReceiver(), filter);	   
+				case(Globals.PROX_LUNCH):
+					break;
+			}
+		
+		
+	    
+	    Intent intent = new Intent(Globals.PROX_ALERT_INTENT);
+	    PendingIntent proximityIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+	    
+	    mLocationManager.addProximityAlert(
+	        latitude, // the latitude of the central point of the alert region
+	        longitude, // the longitude of the central point of the alert region
+	        Globals.POINT_RADIUS, // the radius of the central point of the alert region, in meters
+	        Globals.PROX_ALERT_EXPIRATION, // time for this proximity alert, in milliseconds, or -1 to indicate no expiration 
+	        proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+	   );
+	    
+	   IntentFilter filter = new IntentFilter(Globals.PROX_ALERT_INTENT);  
+	   registerReceiver(new ProximityReceiver(), filter);	   
 	}
 
 	public void mapStuff() {
@@ -419,7 +441,8 @@ OnMapClickListener, OnMarkerClickListener {
 			map.setOnMapClickListener(this);
 
 			mapOn = true;
-
+			
+			
 			// Scrape campus events and load onto map as markers
 			// This loads the events from the API via the URL. Then it will
 			// populate the map with
@@ -939,7 +962,7 @@ OnMapClickListener, OnMarkerClickListener {
 						.setSound(notification).setAutoCancel(true);
 		Notification n = builder.build();
 
-		final int YOUR_NOTIF_ID = 0;
+		final int YOUR_NOTIF_ID = 1000;
 		nm.notify(YOUR_NOTIF_ID, n);
 	}
 
@@ -994,6 +1017,9 @@ OnMapClickListener, OnMarkerClickListener {
 	}
 
 	public void delayedCheck() {
+		
+
+		
 		if (load_lunch == 1) {
 			if (isLunchLaunched) return;
 			hideMap();
@@ -1264,7 +1290,7 @@ OnMapClickListener, OnMarkerClickListener {
 				String card_text = "Schedule: " + clickedMarker.getTitle();
 				String eventStartTime = eventMarkers.get(i).get(clickedMarker);
 
-				updateBar(Globals.SCHEDULE_EVENT, this, card_text,
+updateBar(Globals.SCHEDULE_EVENT, this, card_text,
 						eventStartTime, clickedMarker.getTitle());
 				return true;
 			}
@@ -1327,11 +1353,28 @@ OnMapClickListener, OnMarkerClickListener {
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
 
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
-				//TODO Robin do something with current location
-				//TODO: added first location as hotspot
-				//if(isFirstlocation) {
-				//	addProximityAlert(curLatLng.latitude, curLatLng.longitude);
-				//}
+
+				
+				//Center map on current location
+				map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng,ZOOM_LEVEL));
+
+				//Draw markers and set proximity alert
+				if(isFirstlocation) {
+					addProximityAlert(curLatLng.latitude, curLatLng.longitude,Globals.PROX_LUNCH);
+			
+					marker = map.addMarker(new MarkerOptions().position(curLatLng)
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+										
+					isFirstlocation = false;
+				} else {
+					marker.remove();
+					marker = map.addMarker(new MarkerOptions().position(curLatLng)
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+				}				
+				
+				
 			}				
 		}		
 	};
