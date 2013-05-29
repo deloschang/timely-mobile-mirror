@@ -141,7 +141,7 @@ OnMapClickListener, OnMarkerClickListener {
 	// boilerplate set up.
 	// Then, for example, we can infer where classes are. Then silence phone
 	// based on that.
-	static int silence_phone = 1;
+	static int silence_phone = 0;
 	static int class_visited = 0;
 	static int load_lunch = 0;
 //	static int estimate_reminder = 0;
@@ -624,140 +624,6 @@ OnMapClickListener, OnMarkerClickListener {
 	 * foreground service ( Justice should handle this stuff )
 	 */
 	/** Grab location coordinates and do something **/
-/*
-	public void sendLocation() {
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		Location location = lm
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-		if (location != null) {
-			// LatLng object and Strings of coordinates
-			String latitude = Double.toString(location.getLatitude());
-			String longitude = Double.toString(location.getLongitude());
-			System.out.println("Latitude: " + latitude + " Longitude: "
-					+ longitude);
-
-			// Post to API with latitude and longitude
-			// new NetworkPost().execute(TIMELY_DEMO_URL, latitude,longitude);
-
-			// GET request to MapQuest with latitude longitude
-			String url = MAPQUEST_API + "&lat=" + latitude + "&lon="
-					+ longitude;
-			new NetworkGet(this).execute(url);
-		}
-
-		final LocationListener locationListener = new LocationListener() {
-			// Once location has changed
-			public void onLocationChanged(Location location) {
-				String latitude = Double.toString(location.getLatitude());
-				String longitude = Double.toString(location.getLongitude());
-				System.out.println("Latitude_new: " + latitude + "; Longitude "
-						+ longitude);
-
-				// POST to API with latitude and longitude
-				// new NetworkPost().execute(TIMELY_DEMO_URL, latitude,
-				// longitude);
-
-				// GET request to MapQuest with latitude longitude
-				// String url = MAPQUEST_API+"&lat="+latitude+"&lon="+longitude;
-
-				// creates a marker at current user location //
-				// LatLng user_coord = new LatLng(location.getLatitude(),
-				// location.getLongitude());
-				// new NetworkGet().execute(url, user_coord);
-				// new NetworkGet().execute(url);
-
-				// test send notification
-				// noteLatLong(latitude, longitude);
-			}
-
-			@Override
-			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				// TODO Auto-generated method stub
-
-			}
-		};
-
-		// TextView view = (TextView) findViewById(R.id.text);
-		// view.setText(location);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
-				locationListener);
-	}
-*/
-
-	// POST request to the Timely API
-	// private class NetworkPost extends AsyncTask<String, Void, HttpResponse> {
-	// @Override
-	// protected HttpResponse doInBackground(String... params) {
-	// String link = params[0];
-	//
-	// HttpPost httppost = new HttpPost(link);
-	// List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	// nameValuePairs.add(new BasicNameValuePair("latitude", params[1]));
-	// nameValuePairs.add(new BasicNameValuePair("longitude", params[2]));
-	//
-	// try {
-	// httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-	// } catch (UnsupportedEncodingException e1) {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// }
-	//
-	// AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-	// try {
-	// return client.execute(httppost);
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// return null;
-	// } finally {
-	// client.close();
-	// }
-	// }
-	//
-	// @Override
-	// protected void onPostExecute(HttpResponse result) {
-	// if (result != null) {
-	// String location;
-	// try {
-	// location = EntityUtils.toString(result.getEntity());
-	// System.out.println ("Info from server " + location);
-	//
-	// // Test the JSON (uncomment id.text from main.xml)
-	// // TextView view = (TextView) findViewById(R.id.text);
-	// // view.setText(location);
-	//
-	// // Parse JSON from the API response
-	// // JSONObject jObject = new JSONObject(location);
-	// // String header = jObject.getString("message");
-	// // String snippet = "This is a test snippet";
-	//
-	// // test send notification
-	// // noteLatLong(header, snippet, getApplicationContext());
-	//
-	// } catch (ParseException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-	// }
-
 	// checks all the lunch menus and closes them
 	public static void closeLunchMenus(Activity activity) {
 		ListView focoMenuCard = (ListView) activity
@@ -813,7 +679,6 @@ OnMapClickListener, OnMarkerClickListener {
 	// GET request for the Mapquest API
 	// Wrapper class enables multiple type parameters
 	private class NetworkGet extends AsyncTask<Object, Void, Wrapper> {
-
 		Activity activity;
 
 		NetworkGet(Activity activity) {
@@ -876,7 +741,11 @@ OnMapClickListener, OnMarkerClickListener {
 					String display_name_obj = jObject.getString("display_name");
 
 					String[] display_name_arr = display_name_obj.split(",");
-
+					
+					// Update the header with the location
+					final TextView current_location = (TextView) findViewById(R.id.current_location);
+					current_location.setText(display_name_arr[0]);
+					
 					// Create marker at user's point
 					// Marker usermarker = map.addMarker(new
 					// MarkerOptions().position(p.point)
@@ -884,7 +753,7 @@ OnMapClickListener, OnMarkerClickListener {
 					// usermarker.showInfoWindow(); // display marker title
 					// automatically
 
-					closeLunchMenus(activity);
+//					closeLunchMenus(activity);
 
 					// Add the point to the path with options
 					// polyline_options.add(p.point);
@@ -894,8 +763,6 @@ OnMapClickListener, OnMarkerClickListener {
 					//
 					// map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 
-					// check switches delayed
-//					checkSwitches();
 				}
 
 			} catch (IOException e) {
@@ -991,6 +858,13 @@ OnMapClickListener, OnMarkerClickListener {
 	}
 
 	public void delayedCheck() {
+		// first update the location in human-readable (reverse-geocoded)
+		String url = MAPQUEST_API + "&lat=" + curLatLng.latitude + "&lon="
+				+ curLatLng.longitude;
+
+		// Send lat/lng in parameters to draw a marker on the map with the title
+		// Also update the header
+		new NetworkGet(this).execute(url, curLatLng); // reverse-geocode
 		
 
 		
