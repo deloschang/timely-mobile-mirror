@@ -202,6 +202,7 @@ HashMap<Integer, String> posToURL= new HashMap<Integer, String>();
 						new String[] { MOVIE_NAME, MOVIE_TIME, MOVIE_PLACE }, new int[] { R.id.itemName, R.id.itemText, R.id.itemPlace }));
 
 				scrollMenu.setAdapter(adapter);
+				MainActivity.eventsLoaded=true;
 
 				// Unique links for each item
 				scrollMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
