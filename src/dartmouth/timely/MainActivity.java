@@ -263,6 +263,7 @@ OnMapClickListener, OnMarkerClickListener {
 
         final TextView card_obj = (TextView) findViewById(R.id.timeUsageCard);
         card_obj.setText(Globals.TIME_USAGE_TEXT);
+        card_obj.setTypeface(tf);
         
         //findViewById(R.id.noChartText).setVisibility(View.GONE);
 
@@ -465,7 +466,10 @@ OnMapClickListener, OnMarkerClickListener {
 					getSupportFragmentManager().beginTransaction()
 					.show(mMapFragment).commit();
 					mapOn = true;
-
+					findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
+					findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+					findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
+					findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
 				}
 			}
 
@@ -1125,7 +1129,7 @@ OnMapClickListener, OnMarkerClickListener {
 			OnClickListener lunchListener = new lunchOnclickListener(activity) {
 				@Override
 				public void onClick(View v) {
-					v.setVisibility(View.GONE);
+					//v.setVisibility(View.GONE);
 					// open Foco card
 					updateBar(Globals.FOCO_MENU, activity, Globals.FOCO_TEXT);
 					updateBar(Globals.KAF_MENU, activity, Globals.KAF_TEXT);
