@@ -269,7 +269,10 @@ OnMapClickListener, OnMarkerClickListener {
 								// though.
 								delayedCheck();
 							} else {
-								current_location.setText("Updating location..");
+								if (at_building_location == ""){
+									current_location.setText("Updating location..");
+								}
+								
 								isUpdating = true;
 							}
 						}
@@ -486,21 +489,6 @@ OnMapClickListener, OnMarkerClickListener {
 			MainActivity.map.setOnMarkerClickListener(this); // for marker
 
 			// clicks
-			Marker starting_point = map.addMarker(new MarkerOptions()
-			.position(DORM_LOCATION)
-			.title("Home")
-			.snippet("from location and sleep sensing")
-			.icon(BitmapDescriptorFactory
-					.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event
-					// color
-					);
-			starting_point.showInfoWindow(); // display marker title
-			// automatically
-
-			polyline_options.add(DORM_LOCATION);
-			polyline_options.width(10);
-			polyline_options.color(Color.CYAN);
-
 			Polyline path_from_clicks = map.addPolyline(polyline_options);
 
 		} else {
@@ -809,6 +797,7 @@ OnMapClickListener, OnMarkerClickListener {
 					// .title(display_name_arr[0]));
 					// usermarker.showInfoWindow(); // display marker title
 					// automatically
+					
 
 //					closeLunchMenus(activity);
 
@@ -941,44 +930,69 @@ OnMapClickListener, OnMarkerClickListener {
 
 				isLibraryVibrate = true;
 			} else {
+				findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 				isLibraryVibrate = false;
 			}
 			
-		}
-		
-		
-
-		
-		if (load_lunch == 1) {
-			if (isLunchLaunched) return;
+			if (at_building_location.contains("1953 Commons")){
+				if (isLunchLaunched) return;
+				hideMap();
+				noteLatLong("Lunch Menu Options Loaded",
+						"because of lunch time/location", getApplicationContext());
+	
+				updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
+				//load_lunch = 0;
+				
+				isLunchLaunched = true;
+			} else {
+				findViewById(R.id.lunchCard).setVisibility(View.GONE);
+				findViewById(R.id.focoCard).setVisibility(View.GONE);
+				findViewById(R.id.focoMenuCard).setVisibility(View.GONE);
+				findViewById(R.id.kafCard).setVisibility(View.GONE);
+				findViewById(R.id.kafMenuCard).setVisibility(View.GONE);
+				findViewById(R.id.hopCard).setVisibility(View.GONE);
+				findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
+				findViewById(R.id.bolocoCard).setVisibility(View.GONE);
+				findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
+				isLunchLaunched = false;
+			}
+				
 			
-			hideMap();
-			noteLatLong("Lunch Menu Options Loaded",
-					"because of your usual lunch time", getApplicationContext());
-
-			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
-			load_lunch = 0;
-
-			// Add food options
-			hopMarker = map.addMarker(new MarkerOptions()
-			.position(HOP_LOCATION)
-			.title("Eat at the Hop")
-			.icon(BitmapDescriptorFactory
-					.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event
-					// color
-					.snippet("Lunch menu loaded"));
-
-			kafMarker = map.addMarker(new MarkerOptions()
-			.position(KAF)
-			.title("Eat at King Arthur's Flour")
-			.icon(BitmapDescriptorFactory
-					.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event
-					// color
-					.snippet("Lunch menu loaded"));
-
-			kafMarker.showInfoWindow();
-			isLunchLaunched = true;
 		}
+		
+		
+
+		
+//		if (load_lunch == 1) {
+//			if (isLunchLaunched) return;
+//			
+//			hideMap();
+//			noteLatLong("Lunch Menu Options Loaded",
+//					"because of your usual lunch time", getApplicationContext());
+//
+//			updateBar(Globals.LOAD_LUNCH_OPTIONS, this, Globals.LOAD_LUNCH_TEXT);
+//			load_lunch = 0;
+//
+//			// Add food options
+//			hopMarker = map.addMarker(new MarkerOptions()
+//			.position(HOP_LOCATION)
+//			.title("Eat at the Hop")
+//			.icon(BitmapDescriptorFactory
+//					.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event
+//					// color
+//					.snippet("Lunch menu loaded"));
+//
+//			kafMarker = map.addMarker(new MarkerOptions()
+//			.position(KAF)
+//			.title("Eat at King Arthur's Flour")
+//			.icon(BitmapDescriptorFactory
+//					.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)) // event
+//					// color
+//					.snippet("Lunch menu loaded"));
+//
+//			kafMarker.showInfoWindow();
+//			isLunchLaunched = true;
+//		}
 
 //		if (estimate_reminder == 0) {
 			// new AsyncLoadEstimate(this).execute();
@@ -1301,6 +1315,7 @@ updateBar(Globals.SCHEDULE_EVENT, this, card_text,
 				} else {
 					marker.remove();
 					marker = map.addMarker(new MarkerOptions().position(curLatLng)
+							.title("Current location")
 							.icon(BitmapDescriptorFactory
 									.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 				}				
