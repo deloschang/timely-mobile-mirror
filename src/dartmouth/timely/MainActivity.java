@@ -196,7 +196,8 @@ OnMapClickListener, OnMarkerClickListener {
 
 	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
-		
+	
+	public static boolean isLunchLaunched = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -980,7 +981,12 @@ OnMapClickListener, OnMarkerClickListener {
 	}
 
 	public void delayedCheck() {
+		
+
+		
 		if (load_lunch == 1) {
+			if (isLunchLaunched) return;
+			
 			hideMap();
 			noteLatLong("Lunch Menu Options Loaded",
 					"because of your usual lunch time", getApplicationContext());
@@ -1006,6 +1012,7 @@ OnMapClickListener, OnMarkerClickListener {
 					.snippet("Lunch menu loaded"));
 
 			kafMarker.showInfoWindow();
+			isLunchLaunched = true;
 		}
 
 		if (estimate_reminder == 0) {

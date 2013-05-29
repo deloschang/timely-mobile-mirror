@@ -20,7 +20,7 @@ import android.widget.Toast;
 public class ProximityReceiver extends BroadcastReceiver {
 
 	private static final int NOTIFICATION_ID = 1000;
-
+	
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -40,6 +40,7 @@ public class ProximityReceiver extends BroadcastReceiver {
 		}else{
 		    //Other custom Notification 
 		    Toast.makeText(context, "Exiting Hotspot", Toast.LENGTH_LONG).show();
+		    MainActivity.isLunchLaunched = false;
 		  }
 	  
 		//Building notification
