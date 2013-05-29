@@ -191,20 +191,6 @@
                     android:background="@android:color/white" />
 
                 <TextView
-                    android:id="@+id/phoneSilenceCard"
-                    style="@style/nowCardStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="34dp"
-                    android:layout_marginBottom="2dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginTop="2dp"
-                    android:background="@color/white"
-                    android:text="Phone Ringtone Card"
-                    android:textSize="15sp"
-                    android:textColor="#454545"  />
-
-                <TextView
                     android:id="@+id/assignmentCard"
                     style="@style/nowCardStyle"
                     android:layout_width="match_parent"
@@ -236,6 +222,21 @@
                     android:layout_width="fill_parent"
                     android:layout_height="204dp"
                     android:background="@android:color/white" />
+                 
+                 <TextView
+                    android:id="@+id/phoneSilenceCard"
+                    style="@style/nowCardStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@color/white"
+                    android:text="Phone Ringtone Card"
+                    android:textSize="15sp"
+                    android:textColor="#454545"  />
+                
                 
                 <TextView
                     android:id="@+id/eventCard"

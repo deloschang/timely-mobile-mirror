@@ -29,7 +29,7 @@ public class PieChart extends Drawable implements OnTouchListener {
 	Paint paint;
 
 	String timeText;
-	
+
 	String[] data_names;
 	int[] color_values;
 	int[] data_values;
@@ -40,7 +40,7 @@ public class PieChart extends Drawable implements OnTouchListener {
 	public PieChart(Context c, View v, String timeText, String[] data_names, int[] data_values, int[] color_values) {
 		context = c;
 		view = v;
-		
+
 		this.timeText = timeText;
 		this.data_values = data_values;
 		this.color_values = color_values;
@@ -65,10 +65,10 @@ public class PieChart extends Drawable implements OnTouchListener {
 				250,
 				250
 				);
-        
-		
-        if (data_values[0] == Globals.NO_DATA_FOUND) {
-		           
+
+
+		if (data_values[0] == Globals.NO_DATA_FOUND) {
+
 			Paint noDataPaint = new Paint();
 			noDataPaint.setAntiAlias(true);
 			noDataPaint.setColor(Color.WHITE);
@@ -76,19 +76,19 @@ public class PieChart extends Drawable implements OnTouchListener {
 			//draw legend text
 			int remainingSeconds = 300 - Integer.parseInt(timeText);
 			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT + ": Wait " + remainingSeconds + " seconds"  , 75, 75, noDataPaint);
-            return;
-            
-        }
-            
-        /*
+			return;
+
+		}
+
+		/*
         Paint textPaint2 = new Paint();
 		textPaint2.setAntiAlias(true);
 		textPaint2.setColor(Color.WHITE);
 		textPaint2.setTextSize(20);
 		//draw legend text
 		canvas.drawText (timeText, view_w/2, view_h/2, textPaint2);
-        */
-            //sum of data values
+		 */
+		//sum of data values
 		for (int datum : data_values)
 			value_sum += datum;
 
@@ -135,7 +135,7 @@ public class PieChart extends Drawable implements OnTouchListener {
 
 			//draw legend box
 			paint.setColor(color_values[i]);
-            canvas.drawRect(barRect, paint);
+			canvas.drawRect(barRect, paint);
 			canvas.drawRect(barRect,linePaint);
 
 			Paint textPaint = new Paint();
@@ -169,42 +169,46 @@ public class PieChart extends Drawable implements OnTouchListener {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
 		//mouse down event
-		if( event.getAction() == MotionEvent.ACTION_DOWN)
-		{
+		if (event != null && arc_bounds != null) {
+			try{
+				if( event.getAction() == MotionEvent.ACTION_DOWN){
 
-			double clickAngle;
-			//relative x & y position
-			float xPos = event.getX() - arc_bounds.centerX();
-			float yPos = event.getY() - arc_bounds.centerY();
-			//calcuate the click angle
-			clickAngle = Math.atan2(yPos,xPos) * 180 / Math.PI;
-			if(clickAngle < 0)
-				clickAngle = 360 + clickAngle;
-			float startAngle = 0;
-			int itemIndex = 0;
-			for (int datum : data_values) {
-				if (datum == 0) continue;
+					double clickAngle;
+					//relative x & y position
+					float xPos = event.getX() - arc_bounds.centerX();
+					float yPos = event.getY() - arc_bounds.centerY();
+					//calcuate the click angle
+					clickAngle = Math.atan2(yPos,xPos) * 180 / Math.PI;
+					if(clickAngle < 0)
+						clickAngle = 360 + clickAngle;
+					float startAngle = 0;
+					int itemIndex = 0;
+					for (int datum : data_values) {
+						if (datum == 0) continue;
 
-				float endAngle = value_sum == 0 ? 0 : 360 * datum / (float) value_sum;
-				float newStartAngle = startAngle + endAngle;
+						float endAngle = value_sum == 0 ? 0 : 360 * datum / (float) value_sum;
+						float newStartAngle = startAngle + endAngle;
 
-				//check the condition of start angle & end angle of data item.
-				if(arc_bounds.contains(event.getX(),event.getY())  && clickAngle > startAngle && clickAngle < newStartAngle)
-				{
+						//check the condition of start angle & end angle of data item.
+						if(arc_bounds.contains(event.getX(),event.getY())  && clickAngle > startAngle && clickAngle < newStartAngle)
+						{
 
-					Toast.makeText(context, data_names[itemIndex], Toast.LENGTH_SHORT).show();
-					Log.d("Pie","pie item is clicked-->" + data_names[itemIndex]);
-					break;
+							Toast.makeText(context, data_names[itemIndex], Toast.LENGTH_SHORT).show();
+							Log.d("Pie","pie item is clicked-->" + data_names[itemIndex]);
+							break;
+						}
+
+						itemIndex++;
+						startAngle = newStartAngle;
+					} 
 				}
-
-				itemIndex++;
-				startAngle = newStartAngle;
-
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 

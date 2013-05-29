@@ -332,6 +332,7 @@ OnMapClickListener, OnMarkerClickListener {
 		findViewById(R.id.eventListing).setVisibility(View.GONE);
 		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		
+		findViewById(R.id.allEventsCard).setVisibility(View.VISIBLE);
 		// Set up the events card which is always shown
 //		 ignore the fact that it is lunchOnclickListener
 		TextView event_card_obj = (TextView) findViewById(R.id.allEventsCard);
