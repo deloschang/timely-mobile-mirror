@@ -130,9 +130,6 @@ OnMapClickListener, OnMarkerClickListener {
 
 	// These are the markers that will be shown on the Map.
 	// e.g. hopMarker will be the marker for the Hop at the specified coordinate
-	static Marker routeMarker;
-	static Marker classMarker; // class marker (e.g. COSC 51) [demo feature]
-	static Marker mollysMarker;
 	static Marker kafMarker;
 	static Marker hopMarker;
 
@@ -145,6 +142,7 @@ OnMapClickListener, OnMarkerClickListener {
 	static int silence_phone = 0;
 	static int class_visited = 0;
 	static int load_lunch = 0;
+//	static int load_event = 0;
 	
 	public static boolean isLunchLaunched = false;
 	public static boolean isLibraryVibrate = false;
@@ -284,11 +282,6 @@ OnMapClickListener, OnMarkerClickListener {
 
 		// deflate the update bar
 		// Hide all the cards first
-
-
-
-
-
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
@@ -300,15 +293,25 @@ OnMapClickListener, OnMarkerClickListener {
 		findViewById(R.id.hopMenuCard).setVisibility(View.GONE);
 		findViewById(R.id.bolocoCard).setVisibility(View.GONE);
 		findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
-		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
+		findViewById(R.id.eventListing).setVisibility(View.GONE);
+		
+		// Set up the events card which is always shown
+//		 ignore the fact that it is lunchOnclickListener
+		TextView event_card_obj = (TextView) findViewById(R.id.allEventsCard);
 
+		OnClickListener eventCardListener = new lunchOnclickListener(this) {
+			@Override
+			public void onClick(View v) {
+				// open events card
+				new AsyncAllEventsPost(activity).execute(TIMELY_EVENTS_API);
 
+				// open movie card
+			}
 
+		};
+		event_card_obj.setOnClickListener(eventCardListener);
 
-		// POST the lat/lng to API first
-
-		//sendLocation();
 
 
 		// These are for the Google OAuth 2 stuff.
@@ -860,35 +863,37 @@ OnMapClickListener, OnMarkerClickListener {
 //			silence_phone = 0;
 //			load_lunch = 1; // unique param that loads lunch
 //		}
-
 	}
 
 	public void delayedCheck() {
 		// first update the location in human-readable (reverse-geocoded)
-		String url = MAPQUEST_API + "&lat=" + curLatLng.latitude + "&lon="
-				+ curLatLng.longitude;
+		if (curLatLng != null){
+			String url = MAPQUEST_API + "&lat=" + curLatLng.latitude + "&lon="
+					+ curLatLng.longitude;
 
-		// Send lat/lng in parameters to draw a marker on the map with the title
-		// Also update the header
-		new NetworkGet(this).execute(url, curLatLng); // reverse-geocode
-		
-		// If the location is the library, make sure to set phone to vibrate.
-		if (at_building_location.contains("Library") || at_building_location.contains("library")){
-			if (isLibraryVibrate) return;
-			
-			// In library, set to vibrate
-			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-			 audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-			noteLatLong("Phone set to vibrate", "in the library",
-					getApplicationContext());
+			// Send lat/lng in parameters to draw a marker on the map with the title
+			// Also update the header
+			new NetworkGet(this).execute(url, curLatLng); // reverse-geocode
 
-			// set status bar
-			updateBar(Globals.VIBRATE_PHONE, this,
-					Globals.LIBRARY_VIBRATE);
+			// If the location is the library, make sure to set phone to vibrate.
+			if (at_building_location.contains("Library") || at_building_location.contains("library")){
+				if (isLibraryVibrate) return;
+
+				// In library, set to vibrate
+				AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+				audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+				noteLatLong("Phone set to vibrate", "in the library",
+						getApplicationContext());
+
+				// set status bar
+				updateBar(Globals.VIBRATE_PHONE, this,
+						Globals.LIBRARY_VIBRATE);
+
+				isLibraryVibrate = true;
+			} else {
+				isLibraryVibrate = false;
+			}
 			
-			isLibraryVibrate = true;
-		} else {
-			isLibraryVibrate = false;
 		}
 		
 		
