@@ -183,6 +183,7 @@ OnMapClickListener, OnMarkerClickListener {
 	static public Typeface tf;
 	static TextView mappview;
 
+	public static boolean TIME_USAGE_CLICKED_FLAG = true;
 
 	//SensorService Declarations
 	public SensorService mSensorService;
@@ -287,8 +288,10 @@ OnMapClickListener, OnMarkerClickListener {
 			@Override
 			public void onClick(View v) {
 				//v.setVisibility(View.GONE);
-				Intent localIntent = new Intent ( getApplicationContext(), PieChartActivity.class );
-				startActivity(localIntent);
+					Intent localIntent = new Intent ( getApplicationContext(), PieChartActivity.class );
+					startActivity(localIntent);
+				
+			
 			}
 		};
 

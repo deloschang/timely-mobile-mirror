@@ -80,13 +80,14 @@ public class PieChart extends Drawable implements OnTouchListener {
             
         }
             
+        /*
         Paint textPaint2 = new Paint();
 		textPaint2.setAntiAlias(true);
 		textPaint2.setColor(Color.WHITE);
 		textPaint2.setTextSize(20);
 		//draw legend text
 		canvas.drawText (timeText, view_w/2, view_h/2, textPaint2);
-        
+        */
             //sum of data values
 		for (int datum : data_values)
 			value_sum += datum;
@@ -126,14 +127,14 @@ public class PieChart extends Drawable implements OnTouchListener {
 			//draw border arc
 			canvas.drawArc(arc_bounds, startAngle, endAngle, true, linePaint);
 
-			int barStartX = 50;
+			int barStartX = 350;
 			int barWidth = 20;
-			int barStartY = view_h-250+(i-1)*2*barWidth;
+			int barStartY = 50+(i-1)*2*barWidth;
 
 			Rect barRect = new Rect(barStartX,barStartY,barStartX+barWidth,barStartY+barWidth);
 
 			//draw legend box
-			paint.setColor(Color.BLACK);
+			paint.setColor(color_values[i]);
             canvas.drawRect(barRect, paint);
 			canvas.drawRect(barRect,linePaint);
 
