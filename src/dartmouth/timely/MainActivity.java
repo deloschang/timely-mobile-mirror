@@ -155,7 +155,7 @@ OnMapClickListener, OnMarkerClickListener {
 	static String at_building_location = ""; // string for where the user currently is (e.g. Baker Memorial Library)
 	static int silence_phone = 0;
 	static int class_visited = 0;
-	static int load_lunch = 0;
+	static int load_lunch = 1;
 //	static int load_event = 0;
 	
 	public static boolean isLunchLaunched = false;
@@ -198,9 +198,10 @@ OnMapClickListener, OnMarkerClickListener {
 	public int curMotion;
 	public Marker marker;
 	boolean isFirstlocation=true;
-	
+	boolean showEventStuff = false;
+	public static boolean eventsLoaded = false;
 
-	
+
 
 	// Proximity Declarations
 
@@ -321,6 +322,9 @@ OnMapClickListener, OnMarkerClickListener {
 
 
 		findViewById(R.id.phoneSilenceCard).setVisibility(View.GONE);
+		TextView phone_card_obj = (TextView) findViewById(R.id.phoneSilenceCard);
+		phone_card_obj.setTypeface(tf);
+		
 		findViewById(R.id.assignmentCard).setVisibility(View.GONE);
 		findViewById(R.id.lunchCard).setVisibility(View.GONE);
 		findViewById(R.id.focoCard).setVisibility(View.GONE);
@@ -339,14 +343,22 @@ OnMapClickListener, OnMarkerClickListener {
 		// Set up the events card which is always shown
 //		 ignore the fact that it is lunchOnclickListener
 		TextView event_card_obj = (TextView) findViewById(R.id.allEventsCard);
+		event_card_obj.setTypeface(tf);
 
+		
 		OnClickListener eventCardListener = new lunchOnclickListener(this) {
 			@Override
 			public void onClick(View v) {
 				// open events card
 				// Asynchronous posting to the events and movies api
 				new AsyncAllEventsPost(activity).execute(TIMELY_EVENTS_API, TIMELY_MOVIES_API);
-
+				
+				if(eventsLoaded = true){
+					if (findViewById(R.id.eventListing).getVisibility() == View.VISIBLE)
+						findViewById(R.id.eventListing).setVisibility(View.GONE);
+				else
+					findViewById(R.id.eventListing).setVisibility(View.VISIBLE);
+				}
 			}
 
 		};
