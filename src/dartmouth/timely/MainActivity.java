@@ -295,6 +295,7 @@ OnMapClickListener, OnMarkerClickListener {
 		findViewById(R.id.bolocoMenuCard).setVisibility(View.GONE);
 		findViewById(R.id.nowlayout).setVisibility(View.GONE);
 		findViewById(R.id.eventListing).setVisibility(View.GONE);
+		findViewById(R.id.eventCard).setVisibility(View.GONE);
 		
 		// Set up the events card which is always shown
 //		 ignore the fact that it is lunchOnclickListener
