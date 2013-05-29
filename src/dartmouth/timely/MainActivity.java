@@ -141,9 +141,13 @@ OnMapClickListener, OnMarkerClickListener {
 	// boilerplate set up.
 	// Then, for example, we can infer where classes are. Then silence phone
 	// based on that.
+	static String at_building_location = ""; // string for where the user currently is (e.g. Baker Memorial Library)
 	static int silence_phone = 0;
 	static int class_visited = 0;
 	static int load_lunch = 0;
+	
+	public static boolean isLunchLaunched = false;
+	public static boolean isLibraryVibrate = false;
 //	static int estimate_reminder = 0;
 //	static int reset_estimate_click = 0;
 
@@ -188,7 +192,6 @@ OnMapClickListener, OnMarkerClickListener {
 
 	public LocationManager mLocationManager;
 	
-	public static boolean isLunchLaunched = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -746,6 +749,9 @@ OnMapClickListener, OnMarkerClickListener {
 					final TextView current_location = (TextView) findViewById(R.id.current_location);
 					current_location.setText(display_name_arr[0]);
 					
+					// Update the global string with the new location
+					at_building_location = display_name_arr[0];
+					
 					// Create marker at user's point
 					// Marker usermarker = map.addMarker(new
 					// MarkerOptions().position(p.point)
@@ -866,6 +872,26 @@ OnMapClickListener, OnMarkerClickListener {
 		// Also update the header
 		new NetworkGet(this).execute(url, curLatLng); // reverse-geocode
 		
+		// If the location is the library, make sure to set phone to vibrate.
+		if (at_building_location.contains("Library") || at_building_location.contains("library")){
+			if (isLibraryVibrate) return;
+			
+			// In library, set to vibrate
+			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			 audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+			noteLatLong("Phone set to vibrate", "in the library",
+					getApplicationContext());
+
+			// set status bar
+			updateBar(Globals.VIBRATE_PHONE, this,
+					Globals.LIBRARY_VIBRATE);
+			
+			isLibraryVibrate = true;
+		} else {
+			isLibraryVibrate = false;
+		}
+		
+		
 
 		
 		if (load_lunch == 1) {
@@ -899,19 +925,6 @@ OnMapClickListener, OnMarkerClickListener {
 			isLunchLaunched = true;
 		}
 
-		// Check for the silence phone flag
-		if (silence_phone == 1) {
-			// In library, set to vibrate
-			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-			 audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-			noteLatLong("Setting phone to vibrate", "in the library",
-					getApplicationContext());
-
-			// set status bar
-			updateBar(Globals.VIBRATE_PHONE, this,
-					Globals.LIBRARY_VIBRATE);
-		}
-		
 //		if (estimate_reminder == 0) {
 			// new AsyncLoadEstimate(this).execute();
 //			estimate_reminder = 1;
