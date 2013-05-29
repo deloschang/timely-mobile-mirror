@@ -64,6 +64,77 @@ import com.google.android.gms.maps.model.MarkerOptions;
 					for (int i = 0; i < jArray.length(); i++){
 						JSONObject jObject = jArray.getJSONObject(i); // main object
 						
+						if (i == 0){
+							JSONObject dateObject = jObject.getJSONObject("date");
+							String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
+							String startDate  = dateObject.getString("startDate");
+							String index = dateObject.getString("index");
+							
+							// demo case
+							if (startDate == 4){
+								// location exists, retrieve lat and long
+								// lat and lon named on the API  -- go to the Hop for this event
+								double blatitude = 43.70209;
+								double blongitude = -72.28788;
+								
+								LatLng event_location = new LatLng(blatitude, blongitude);
+								
+								// retrieve title and concordance
+								// strip tags
+								String event_title  = jObject.getString("title").replaceAll("<[^>]*", "");
+								
+								
+								// add event marker to the map
+								Marker eventMarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
+										.title(event_title)
+										.snippet(event_concordance)
+										.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color
+										);
+								
+								// add to the array
+								MainActivity.eventMap.put(eventMarker, startDate); // dict with marker and startDate
+								MainActivity.eventMarkers.add(MainActivity.eventMap);
+								
+							}
+							
+						} 
+						
+						if (i == 2){
+							JSONObject dateObject = jObject.getJSONObject("date");
+							String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
+							String startDate  = dateObject.getString("startDate");
+							String index = dateObject.getString("index");
+							
+							// demo case
+							if (index == 12){
+								// location exists, retrieve lat and long
+								// lat and lon named on the API  -- go to the Sigma Delta for this event
+								double alatitude = 43.702166;
+								double alongitude = -72.291206;
+								
+								LatLng event_location = new LatLng(alatitude, alongitude);
+								
+								// retrieve title and concordance
+								// strip tags
+								String event_title  = jObject.getString("title").replaceAll("<[^>]*", "");
+								
+								
+								
+								// add event marker to the map
+								Marker eventMarker = MainActivity.map.addMarker(new MarkerOptions().position(event_location)
+										.title(event_title)
+										.snippet(event_concordance)
+										.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // event color
+										);
+								
+								// add to the array
+								MainActivity.eventMap.put(eventMarker, startDate); // dict with marker and startDate
+								MainActivity.eventMarkers.add(MainActivity.eventMap);
+								
+							}
+							
+						}
+						
 						try { 
 							// test to see if the location object is null
 							jObject.getJSONObject("location");
