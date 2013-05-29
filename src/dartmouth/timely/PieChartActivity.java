@@ -178,7 +178,6 @@ public class PieChartActivity extends Activity {
 
 		//create pie chart Drawable and set it to ImageView
 		String timeText = Long.toString(totalTime/1000L);
-		timeText = "Data collected for " + timeText + " seconds";
 		PieChart pieChart = new PieChart(this, imgView, timeText , labels, data_values, color_values);
 		imgView.setImageDrawable(pieChart);
 	}
