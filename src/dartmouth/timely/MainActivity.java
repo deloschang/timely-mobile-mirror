@@ -405,7 +405,6 @@ OnMapClickListener, OnMarkerClickListener {
 
 		mapStuff();
 
-		//		Toast.makeText(this, "REACHED", Toast.LENGTH_LONG).show();
 
 		//Register GPS sensor to receive location update
 		mLocationUpdateFilter = new IntentFilter();
@@ -438,8 +437,6 @@ OnMapClickListener, OnMarkerClickListener {
 			// If the geofencing type is for event markers, unpackage the marker
 			switch (key){
 				case(Globals.PROX_EVENT_MARKERS):
-					Toast.makeText(getApplicationContext(), "events prox loaded",
-							Toast.LENGTH_LONG).show();
 
 					// obj will be a Marker type
 //					localBundle.putString("eventTitle", obj.getTitle());
@@ -504,8 +501,7 @@ OnMapClickListener, OnMarkerClickListener {
 			Polyline path_from_clicks = map.addPolyline(polyline_options);
 
 		} else {
-			Toast.makeText(getApplicationContext(), "No Google Play found",
-					Toast.LENGTH_LONG).show();
+            // something
 		}
 
 

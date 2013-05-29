@@ -209,8 +209,6 @@ HashMap<Integer, String> posToURL= new HashMap<Integer, String>();
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
 						// When clicked, show a toast with the TextView text
-						Toast.makeText(activity.getApplicationContext(), "pos: "+position+" id: "+id,
-								Toast.LENGTH_SHORT).show();
 						
 						// Start the URL
 						Intent i = new Intent();
