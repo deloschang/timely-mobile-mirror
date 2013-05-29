@@ -23,7 +23,14 @@ public class PieChartActivity extends Activity {
 	private String mConversation;
 
 	private String currActivity = "";
-	private boolean inConversation = false;
+	private long totalConversationTime = 0L;
+	private long totalSilentStudyTime = 0L;
+	private long totalOnTheMoveTime = 0L;
+	private long totalRelaxTime = 0L;
+	
+	private boolean DEMO_ENABLED = true;
+	
+	private long totalTime = 0L;
 	private String location = "";
 
 	public static final String DATE_FORMAT = "H:mm:ss MMM d yyyy";
@@ -36,36 +43,34 @@ public class PieChartActivity extends Activity {
 			mLocation = data.getString("key_bio_location", "");
 			String[] locationLines = mLocation.split(";");
 			String locationStat = "";
+			String currLocation = "";
+			
 			for (String line : locationLines) {
 				String[] wifiComponents = line.split(",");
 				locationStat = locationStat
 						+ parseTime(Double.valueOf(wifiComponents[0]).longValue())+","
 						+ wifiComponents[1] +","+wifiComponents[2] + "\n";
+				currLocation = wifiComponents[1];
 			}
+			
+			String tokens[] = currLocation.split("-");
+			
+			if ( tokens[0].equalsIgnoreCase("BerryLib") || tokens[0].equalsIgnoreCase("Carson") ) {
+				if ( currActivity.equalsIgnoreCase("Stationary") ) {
+					totalSilentStudyTime += 10000;
+				}
+			} else {
+				if ( currActivity.equalsIgnoreCase("Stationary") ) {
+					totalRelaxTime += 10000;
+				} else totalOnTheMoveTime += 10000;
+				
+			}
+			
+			
 			mLocation = locationStat;
 			//Log.e("MainActivity", "location" + mLocation);
 		}
 	};
-
-	private BroadcastReceiver colocationReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Bundle data = intent.getExtras();
-
-			mColocation = data.getString("key_bio_colocation", "");
-			String[] colocationLines = mColocation.split(";");
-			String colocationStat = "";
-			for (String line : colocationLines) {
-				String[] bluetoothComponents=line.split(",");
-				colocationStat=colocationStat
-						+ parseTime(Double.valueOf(bluetoothComponents[0]).longValue())+","
-						+ bluetoothComponents[1] +","+ bluetoothComponents[2] + "\n";
-			}
-			mColocation = colocationStat;
-			//Log.e("MainActivity", "colocation" + mColocation);
-		}
-	};
-
 
 	private BroadcastReceiver activityReceiver = new BroadcastReceiver() {
 		@Override
@@ -78,19 +83,20 @@ public class PieChartActivity extends Activity {
 			switch (mActivityType) {
 
 			case (0):
-				currActivity = "Stationary";
+				currActivity = "Currently: Stationary";
 			break;
 			case (1):
-				currActivity = "Walking";
+				currActivity = "Currently: Walking";
+				
 			break;
 			case (2):
-				currActivity = "Unknown";
+				currActivity = "Currently: Unknown";
 			break;
 			case (3):
-				currActivity = "Running";
+				currActivity = "Currently: Running";
 			break;
 			case (4):
-				currActivity = "Unknown";
+				currActivity = "Currently: Unknown";
 			break;
 			default:
 				currActivity = "Error";
@@ -106,6 +112,8 @@ public class PieChartActivity extends Activity {
 			mConversation = data.getString("key_bio_conversation", "");
 			String[] conversationComponents = mConversation.split(",");
 
+			totalConversationTime += Double.valueOf(conversationComponents[1]).longValue() - Double.valueOf(conversationComponents[0]).longValue();
+			
 			//Log.e("MainActivity", "conversation" + mConversation);
 		}
 	};
@@ -147,15 +155,15 @@ public class PieChartActivity extends Activity {
 	
 	public void drawPiechart() {
 		int data_values[] = getDataFromBio();
-		int color_values[] = {Color.MAGENTA, Color.RED, Color.GREEN,Color.BLUE,Color.YELLOW,Color.CYAN};
+		int color_values[] = {Color.RED, Color.GREEN,Color.BLUE,Color.YELLOW};
 
-		String labels[] = { "Study", "Sleep", "Class", "Gym", "Relax","Party"};
+		String labels[] = { "Conversation", "Silent Study", "On the Move", "Relax"};
 
 		//get the imageview
 		ImageView imgView = (ImageView ) findViewById(R.id.image_placeholder);
 
 		//create pie chart Drawable and set it to ImageView
-		PieChart pieChart = new PieChart(this, imgView, currActivity, labels, data_values, color_values);
+		PieChart pieChart = new PieChart(this, imgView, Long.toString(totalTime/1000L) , labels, data_values, color_values);
 		imgView.setImageDrawable(pieChart);
 	}
 
@@ -172,16 +180,26 @@ public class PieChartActivity extends Activity {
 	}
 
 	private int[] getDataFromBio() {
-
-		if ( ( System.currentTimeMillis() - MainActivity.appStartTime ) < 300000 ) {
+		totalTime = System.currentTimeMillis() - MainActivity.appStartTime;
+		if ( totalTime < 60000 ) {
 			int arrayToReturn[] = {1};
 			arrayToReturn[0] = -1;
 			return arrayToReturn;
 		} else 
 		{
-			int arrayToReturn[] = { 20,10,25,5,15,25 };
+			if (!DEMO_ENABLED) {
+			System.out.println ("Total conversation time " + totalConversationTime);
+			System.out.println ("Total silent study time " + totalSilentStudyTime);
+			System.out.println ("Total on the move time " + totalOnTheMoveTime);
+			
+			int arrayToReturn[] = { (int) totalConversationTime/(int)totalTime , (int)totalSilentStudyTime/(int)totalTime , (int) totalOnTheMoveTime/(int)totalTime, (int) totalRelaxTime/(int)totalTime };
+			System.out.println (arrayToReturn[0]);
 			return arrayToReturn;
-
+			} else {
+				int arrayToReturn[] = {10,15,20,15};
+				return arrayToReturn;
+			}
+			
 		}
 	}
 }

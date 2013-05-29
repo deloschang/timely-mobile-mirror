@@ -28,7 +28,7 @@ public class PieChart extends Drawable implements OnTouchListener {
 	View view;
 	Paint paint;
 
-	String activityText;
+	String timeText;
 	
 	String[] data_names;
 	int[] color_values;
@@ -37,11 +37,11 @@ public class PieChart extends Drawable implements OnTouchListener {
 
 	int value_sum = 0;
 
-	public PieChart(Context c, View v, String activityText, String[] data_names, int[] data_values, int[] color_values) {
+	public PieChart(Context c, View v, String timeText, String[] data_names, int[] data_values, int[] color_values) {
 		context = c;
 		view = v;
 		
-		this.activityText = activityText;
+		this.timeText = timeText;
 		this.data_values = data_values;
 		this.color_values = color_values;
 		this.data_names = data_names;
@@ -72,9 +72,9 @@ public class PieChart extends Drawable implements OnTouchListener {
 			Paint noDataPaint = new Paint();
 			noDataPaint.setAntiAlias(true);
 			noDataPaint.setColor(Color.WHITE);
-			noDataPaint.setTextSize(40);
+			noDataPaint.setTextSize(30);
 			//draw legend text
-			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT, 75, 75, noDataPaint);
+			canvas.drawText (Globals.NOT_ENOUGH_DATA_TEXT + " " + timeText, 75, 75, noDataPaint);
             return;
             
         }
@@ -82,9 +82,9 @@ public class PieChart extends Drawable implements OnTouchListener {
         Paint textPaint2 = new Paint();
 		textPaint2.setAntiAlias(true);
 		textPaint2.setColor(Color.WHITE);
-		textPaint2.setTextSize(40);
+		textPaint2.setTextSize(20);
 		//draw legend text
-		canvas.drawText (activityText, view_w/2, view_h/2, textPaint2);
+		canvas.drawText (timeText, view_w/2, view_h/2, textPaint2);
         
             //sum of data values
 		for (int datum : data_values)

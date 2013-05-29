@@ -376,7 +376,7 @@ OnMapClickListener, OnMarkerClickListener {
 		
 		//Add ProximityReceiver for Novack
 		double lat=43.705816, lng=-72.288712;		
-		addProximityAlert(lat,lng,Globals.PROX_LUNCH);
+		addProximityAlert(43.70209, -72.28788,Globals.PROX_LUNCH);
 		
 	}
 
@@ -1325,10 +1325,10 @@ OnMapClickListener, OnMarkerClickListener {
 				
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 				//TODO Robin do something with current location
-				//TODO: added first location as hotspot
-				if(isFirstlocation) {
-					addProximityAlert(curLatLng.latitude, curLatLng.longitude,Globals.PROX_LUNCH);
-				}
+//				//TODO: added first location as hotspot
+//				if(isFirstlocation) {
+//					addProximityAlert(curLatLng.latitude, curLatLng.longitude,Globals.PROX_LUNCH);
+//				}
 			}				
 		}		
 	};
