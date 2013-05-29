@@ -12,8 +12,8 @@ public abstract class Globals {
 
 
 	// keys for updateBar
-	public static final int SILENCE_PHONE = 1;
-	public static final String SILENCE_PHONE_TEXT = "Phone silenced (in class)";
+	public static final int VIBRATE_PHONE = 1;
+	public static final String LIBRARY_VIBRATE = "Phone set to vibrate (in library)";
 	
 	public static final int UNSILENCE_PHONE = 2;
 	public static final String UNSILENCE_PHONE_TEXT = "Phone unsilenced (out of class)";

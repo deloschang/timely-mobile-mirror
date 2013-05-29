@@ -141,14 +141,11 @@ OnMapClickListener, OnMarkerClickListener {
 	// boilerplate set up.
 	// Then, for example, we can infer where classes are. Then silence phone
 	// based on that.
-	int silence_phone = 0;
-
+	static int silence_phone = 1;
 	static int class_visited = 0;
 	static int load_lunch = 0;
-	static int estimate_reminder = 0;
-	static int reset_estimate_click = 0;
-
-
+//	static int estimate_reminder = 0;
+//	static int reset_estimate_click = 0;
 
 
 	// These are for Events API.
@@ -898,7 +895,7 @@ OnMapClickListener, OnMarkerClickListener {
 					// map.animateCamera(CameraUpdateFactory.newLatLng(p.point));
 
 					// check switches delayed
-					checkSwitches();
+//					checkSwitches();
 				}
 
 			} catch (IOException e) {
@@ -976,20 +973,20 @@ OnMapClickListener, OnMarkerClickListener {
 	}
 
 	public void checkSwitches() {
-		if (silence_phone == 1) {
-			// Unsilence phone
-			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-			// audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-			noteLatLong("Unsilencing phone", "you're out of class",
-					getApplicationContext());
-
-			// set status bar
-			updateBar(Globals.UNSILENCE_PHONE, this,
-					Globals.UNSILENCE_PHONE_TEXT);
-
-			silence_phone = 0;
-			load_lunch = 1; // unique param that loads lunch
-		}
+//		if (silence_phone == 1) {
+//			// Unsilence phone
+//			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//			// audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//			noteLatLong("Unsilencing phone", "you're out of class",
+//					getApplicationContext());
+//
+//			// set status bar
+//			updateBar(Globals.UNSILENCE_PHONE, this,
+//					Globals.UNSILENCE_PHONE_TEXT);
+//
+//			silence_phone = 0;
+//			load_lunch = 1; // unique param that loads lunch
+//		}
 
 	}
 
@@ -1028,11 +1025,23 @@ OnMapClickListener, OnMarkerClickListener {
 			isLunchLaunched = true;
 		}
 
-		if (estimate_reminder == 0) {
-			// new AsyncLoadEstimate(this).execute();
+		// Check for the silence phone flag
+		if (silence_phone == 1) {
+			// In library, set to vibrate
+			AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			 audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+			noteLatLong("Setting phone to vibrate", "in the library",
+					getApplicationContext());
 
-			estimate_reminder = 1;
+			// set status bar
+			updateBar(Globals.VIBRATE_PHONE, this,
+					Globals.LIBRARY_VIBRATE);
 		}
+		
+//		if (estimate_reminder == 0) {
+			// new AsyncLoadEstimate(this).execute();
+//			estimate_reminder = 1;
+//		}
 
 	}
 
@@ -1086,13 +1095,15 @@ OnMapClickListener, OnMarkerClickListener {
 
 		switch (key) {
 
-		case Globals.SILENCE_PHONE:
+		// User is in the library, set phone to vibrate
+		case Globals.VIBRATE_PHONE:
 			card_obj = (TextView) activity.findViewById(R.id.phoneSilenceCard);
 			View.OnClickListener silenceListener = new View.OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					v.setVisibility(View.GONE);
+					// What to do if this card is clicked
+//					v.setVisibility(View.GONE);
 				}
 			};
 
@@ -1245,7 +1256,7 @@ OnMapClickListener, OnMarkerClickListener {
 	public boolean onMarkerClick(Marker clickedMarker) {
 
 		closeLunchMenus(this);
-		checkSwitches();
+//		checkSwitches();
 
 		// try to match the event
 		for (int i = 0; i < eventMarkers.size(); i++) {
