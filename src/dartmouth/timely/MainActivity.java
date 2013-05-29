@@ -74,6 +74,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.calendar.CalendarScopes;
 
+
 public class MainActivity extends FragmentActivity implements
 OnMapClickListener, OnMarkerClickListener {
 	// API for calendar
@@ -180,11 +181,13 @@ OnMapClickListener, OnMarkerClickListener {
 	private IntentFilter mMotionUpdateFilter;
 	private IntentFilter mLocationUpdateFilter;
 	public ArrayList<Location> mLocationList;
+	public ArrayList<LatLng> mLatLngList;
 	
 	
 	// Use to set flags
 	public LatLng curLatLng;
 	public int curMotion;
+	public Marker marker;
 	boolean isFirstlocation=true;
 	
 	// Proximity Declarations
@@ -428,7 +431,8 @@ OnMapClickListener, OnMarkerClickListener {
 			map.setOnMapClickListener(this);
 
 			mapOn = true;
-
+			
+			
 			// Scrape campus events and load onto map as markers
 			// This loads the events from the API via the URL. Then it will
 			// populate the map with
@@ -1319,11 +1323,27 @@ OnMapClickListener, OnMarkerClickListener {
 				curLatLng = Utils.fromLocationToLatLng(mLocationList.get(mLocationList.size() -1));	
 				
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
-				//TODO Robin do something with current location
-				//TODO: added first location as hotspot
+				
+				//Center map on current location
+				map.animateCamera(CameraUpdateFactory.newLatLngZoom(curLatLng,ZOOM_LEVEL));
+
+				//Draw markers and set proximity alert
 				if(isFirstlocation) {
 					addProximityAlert(curLatLng.latitude, curLatLng.longitude,Globals.PROX_LUNCH);
-				}
+			
+					marker = map.addMarker(new MarkerOptions().position(curLatLng)
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+										
+					isFirstlocation = false;
+				} else {
+					marker.remove();
+					marker = map.addMarker(new MarkerOptions().position(curLatLng)
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+				}				
+				
+				
 			}				
 		}		
 	};
