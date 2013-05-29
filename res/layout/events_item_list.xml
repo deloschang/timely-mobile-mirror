@@ -9,17 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         
-        <!-- 
-        <TextView
-            android:id="@+id/itemHeader"
-            android:gravity="left"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:paddingTop="2dip"
-            android:paddingBottom="2dip" />
-            -->
-        
 		<!-- Name Label -->
         <TextView
             android:id="@+id/itemName"
@@ -31,6 +20,19 @@
             android:paddingTop="2dip"
 			android:paddingLeft="6dip"
             android:paddingBottom="2dip" />
+        
+        <!--  Text label for description -->
+        <TextView
+            android:id="@+id/itemText"
+            android:gravity="left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#707070"
+            android:textSize="14sp"
+            android:paddingTop="2dip"
+			android:paddingLeft="6dip"
+            android:paddingBottom="2dip" />
+        
         
     </LinearLayout>
 

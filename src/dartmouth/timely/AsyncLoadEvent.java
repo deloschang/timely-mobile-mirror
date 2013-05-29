@@ -69,12 +69,12 @@ class AsyncLoadEvent extends AsyncTask<MainActivity, Void, String>{
 	
 	protected final void onPostExecute(String success) {
 		// continue
-		MainActivity.classMarker = MainActivity.map.addMarker(new MarkerOptions()
-				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
-				.title(success)
-				.snippet("from Class Scheduler")
-				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
-				);
+//		MainActivity.classMarker = MainActivity.map.addMarker(new MarkerOptions()
+//				.position(MainActivity.CLASS_AT_KEMENY_LOCATION)
+//				.title(success)
+//				.snippet("from Class Scheduler")
+//				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)) // event color
+//				);
 		
 //		if (MainActivity.class_visited == 0){
 //			MainActivity.noteLatLong(Globals.LEAVE_FOR_CLASS_TEXT, success, context);

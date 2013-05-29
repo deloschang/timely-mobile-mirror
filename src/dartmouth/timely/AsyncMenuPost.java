@@ -287,7 +287,6 @@ class AsyncMenuPost extends AsyncTask<String, Void, Wrapper>{
 
 
 				scrollMenu.setAdapter(adapter);
-				System.out.println("reached done");
 			}
 
 		} catch (ParseException e) {

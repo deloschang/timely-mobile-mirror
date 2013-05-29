@@ -2,25 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">  
+    android:orientation="horizontal">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         
-        <!-- 
-        <TextView
-            android:id="@+id/itemHeader"
-            android:gravity="left"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:paddingTop="2dip"
-            android:paddingBottom="2dip" />
-            -->
-        
-		<!-- Name Label -->
+<!-- Name Label -->
         <TextView
             android:id="@+id/itemName"
             android:gravity="left"
@@ -29,7 +18,31 @@
             android:textColor="#707070"
             android:textSize="14sp"
             android:paddingTop="2dip"
-			android:paddingLeft="6dip"
+android:paddingLeft="6dip"
+            android:paddingBottom="2dip" />
+        
+        <!-- Text label for description -->
+        <TextView
+            android:id="@+id/itemText"
+            android:gravity="left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#707070"
+            android:textSize="14sp"
+            android:paddingTop="2dip"
+android:paddingLeft="6dip"
+            android:paddingBottom="2dip" />
+        
+        <!-- Text label for place-->
+        <TextView
+            android:id="@+id/itemPlace"
+            android:gravity="left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#707070"
+            android:textSize="14sp"
+            android:paddingTop="2dip"
+android:paddingLeft="6dip"
             android:paddingBottom="2dip" />
         
     </LinearLayout>
