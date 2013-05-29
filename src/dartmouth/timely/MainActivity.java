@@ -199,13 +199,15 @@ OnMapClickListener, OnMarkerClickListener {
 	private static final String PROX_ALERT_INTENT ="dartmouth.timely.ProximityAlert";
 	public LocationManager mLocationManager;
 
-
+	public static boolean isLunchLaunched = false;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		
 		mapOn = false;
 
 		// This section enables a different thread that can do something every X
@@ -216,9 +218,10 @@ OnMapClickListener, OnMarkerClickListener {
 		tf = Typeface.createFromAsset(getAssets(), fontPath);
 
 		final TextView current_location = (TextView) findViewById(R.id.current_location);
-
+		final TextView events_card = (TextView) findViewById(R.id.eventsShowCard);
 		// Apply font
 		current_location.setTypeface(tf);
+		events_card.setTypeface(tf);
 
 		final TextView map_card = (TextView) findViewById(R.id.mapCard); 
 		map_card.setTypeface(tf);
@@ -992,6 +995,7 @@ OnMapClickListener, OnMarkerClickListener {
 
 	public void delayedCheck() {
 		if (load_lunch == 1) {
+			if (isLunchLaunched) return;
 			hideMap();
 			noteLatLong("Lunch Menu Options Loaded",
 					"because of your usual lunch time", getApplicationContext());
@@ -1017,6 +1021,7 @@ OnMapClickListener, OnMarkerClickListener {
 					.snippet("Lunch menu loaded"));
 
 			kafMarker.showInfoWindow();
+			isLunchLaunched = true;
 		}
 
 		if (estimate_reminder == 0) {
@@ -1324,9 +1329,9 @@ OnMapClickListener, OnMarkerClickListener {
 				System.out.println("Lat: " + curLatLng.latitude + " " + curLatLng.longitude);
 				//TODO Robin do something with current location
 				//TODO: added first location as hotspot
-				if(isFirstlocation) {
-					addProximityAlert(curLatLng.latitude, curLatLng.longitude);
-				}
+				//if(isFirstlocation) {
+				//	addProximityAlert(curLatLng.latitude, curLatLng.longitude);
+				//}
 			}				
 		}		
 	};

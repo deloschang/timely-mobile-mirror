@@ -40,6 +40,7 @@ public class ProximityReceiver extends BroadcastReceiver {
 		}else{
 		    //Other custom Notification 
 		    Toast.makeText(context, "Exiting Hotspot", Toast.LENGTH_LONG).show();
+		    MainActivity.isLunchLaunched=false;
 		  }
 	  
 		//Building notification
