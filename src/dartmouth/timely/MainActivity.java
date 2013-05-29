@@ -83,6 +83,9 @@ OnMapClickListener, OnMarkerClickListener {
 
 	// Events API
 	final String TIMELY_EVENTS_API = "http://timely-api.herokuapp.com/events";
+	
+	// Movies API
+	final String TIMELY_MOVIES_API = "http://damp-forest-6177.herokuapp.com/api/v1/movies";
 
 	// Menu API
 	static final String TIMELY_MENU_API = "http://timely-api.herokuapp.com/menus";
@@ -305,9 +308,9 @@ OnMapClickListener, OnMarkerClickListener {
 			@Override
 			public void onClick(View v) {
 				// open events card
-				new AsyncAllEventsPost(activity).execute(TIMELY_EVENTS_API);
+				// Asynchronous posting to the events and movies api
+				new AsyncAllEventsPost(activity).execute(TIMELY_EVENTS_API, TIMELY_MOVIES_API);
 
-				// open movie card
 			}
 
 		};
