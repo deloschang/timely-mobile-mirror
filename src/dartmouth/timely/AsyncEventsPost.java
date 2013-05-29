@@ -68,10 +68,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 							JSONObject dateObject = jObject.getJSONObject("date");
 							String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
 							String startDate  = dateObject.getString("startDate");
-							String index = dateObject.getString("index");
+							int index = dateObject.getInt("index");
 							
 							// demo case
-							if (startDate == 4){
+							if (index == 4){
 								// location exists, retrieve lat and long
 								// lat and lon named on the API  -- go to the Hop for this event
 								double blatitude = 43.70209;
@@ -103,7 +103,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 							JSONObject dateObject = jObject.getJSONObject("date");
 							String event_concordance  = dateObject.getString("concordance").replaceAll("<[^>]*", "");;
 							String startDate  = dateObject.getString("startDate");
-							String index = dateObject.getString("index");
+							int index = dateObject.getInt("index");
 							
 							// demo case
 							if (index == 12){
